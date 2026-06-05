@@ -7,7 +7,7 @@ import { useGameStore } from '../store/gameStore.js';
 import { DIFFICULTIES } from '../core/state.js';
 import { script } from '../data/script.js';
 import SlotCard from './components/SlotCard.jsx';
-import SessionPanel from './components/SessionPanel.jsx';
+import MapScreen from './screens/MapScreen.jsx';
 
 const DIFFICULTY_LABEL = { facil: 'Fácil', normal: 'Normal', dificil: 'Difícil' };
 
@@ -20,14 +20,13 @@ export default function App() {
 
   const [difficulty, setDifficulty] = useState('normal');
 
-  // Partida activa: panel de sesión (placeholder hasta M1).
+  // Partida activa: enrutar por vista en juego.
   if (game) {
-    return (
-      <main className="screen">
-        <Header />
-        <SessionPanel />
-      </main>
-    );
+    switch (game.view) {
+      case 'map':
+      default:
+        return <MapScreen />;
+    }
   }
 
   // Menú de título: 3 slots + selector de dificultad.

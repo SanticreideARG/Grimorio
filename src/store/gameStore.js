@@ -11,6 +11,10 @@ import {
   listSlots,
 } from '../core/save.js';
 import { bus, EVENTS } from '../core/events.js';
+import {
+  resolveNode as boardResolveNode,
+  advanceNode as boardAdvanceNode,
+} from '../systems/board.js';
 
 export const useGameStore = create((set, get) => ({
   /** Estado de la partida activa, o null en el menú de título. */
@@ -64,6 +68,24 @@ export const useGameStore = create((set, get) => ({
         : { ...game, ...mutator };
     if (activeSlot != null) saveToSlot(activeSlot, next);
     set({ game: next, slots: listSlots() });
+  },
+
+  // ---------- Tablero (M1) ----------
+
+  /** Resuelve el nodo actual (lo marca visitado + log) y autoguarda. */
+  resolveNode() {
+    const { game } = get();
+    if (game == null) return;
+    const { state } = boardResolveNode(game);
+    get().patchGame(() => state);
+    bus.emit(EVENTS.NODE_ENTERED, state);
+  },
+
+  /** Avanza al siguiente nodo del capítulo (si el actual está resuelto). */
+  advanceNode() {
+    const { game } = get();
+    if (game == null) return;
+    get().patchGame((g) => boardAdvanceNode(g));
   },
 
   /** Borra un slot (y desactiva la partida si era la activa). */

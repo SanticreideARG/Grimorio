@@ -47,7 +47,10 @@ Ver `docs/ROADMAP.md` (milestones M0–M7) y `docs/QUESTIONNAIRE.md` (decisiones
 
 - **M0 ✅** — Andamiaje: motor (state/save/rng/events), data con esquemas,
   store Zustand, pantalla de título con 3 slots, tests headless.
-- **M1 ◻** — Tablero y bucle de mapa (Cap.1).
+- **M1 ✅** — Tablero y bucle de mapa: `systems/board.js` (avance lineal),
+  Cap.1 completo en datos (16 nodos), render del mapa en React (pergamino,
+  sendero, nodos data-driven, peón) y recorrido nodo a nodo.
+- **M2 ◻** — Combate (dados de símbolos, frente/retaguardia).
 
 ## Documentación
 

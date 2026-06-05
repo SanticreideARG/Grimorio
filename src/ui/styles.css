@@ -228,29 +228,401 @@ body {
   box-shadow: 0 0 14px rgba(201, 145, 63, 0.3);
 }
 
-/* ===== Sesión (M0 placeholder) ===== */
-.session {
-  width: 100%;
-  max-width: 520px;
-  border: 1px solid rgba(201, 145, 63, 0.35);
-  border-radius: 10px;
-  background: linear-gradient(180deg, rgba(40, 26, 12, 0.55), rgba(15, 9, 4, 0.7));
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
-  padding: 26px;
+/* ===== Botón fantasma (HUD) ===== */
+.btn--ghost {
+  flex: 0 0 auto;
+  background: transparent;
+  border-color: rgba(201, 145, 63, 0.3);
+}
+
+/* ===== Pantalla de mapa (M1) ===== */
+.map-screen {
+  min-height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
-.session__title {
+
+/* --- HUD --- */
+.hud {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 22px;
+  border-bottom: 1px solid rgba(201, 145, 63, 0.25);
+  background: linear-gradient(180deg, rgba(24, 16, 9, 0.9), rgba(10, 7, 5, 0.7));
+}
+.hud__quit {
+  font-size: 13px;
+  padding: 8px 14px;
+}
+.hud__chapter {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+.hud__sub {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: var(--amber);
+}
+.hud__title {
   font-family: 'Cinzel Decorative', serif;
-  font-size: 26px;
+  font-size: 22px;
   color: var(--amber-lt);
 }
-.session__hint {
+.hud__stats {
+  margin-left: auto;
+  display: flex;
+  gap: 18px;
+}
+.hud__stat {
+  font-size: 15px;
+  color: var(--text);
+  letter-spacing: 0.04em;
+}
+
+/* --- Cuerpo: tablero + panel --- */
+.map-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+  padding: 20px;
+  align-items: start;
+}
+
+/* --- Tablero --- */
+.board {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.6);
+  isolation: isolate;
+}
+.board__parchment,
+.board__soot,
+.board__svg,
+.board__nodes,
+.board__vignette {
+  position: absolute;
+  inset: 0;
+}
+.board__parchment {
+  background: radial-gradient(
+    140% 120% at 38% 30%,
+    #e7c896 0%,
+    #d9b577 26%,
+    #c79c56 50%,
+    #a8773a 72%,
+    #7c4f24 100%
+  );
+}
+.board__soot {
+  background:
+    radial-gradient(60% 90% at 30% 110%, rgba(20, 12, 6, 0.55), transparent 60%),
+    radial-gradient(50% 80% at 78% 115%, rgba(20, 12, 6, 0.5), transparent 60%),
+    radial-gradient(70% 60% at 50% -10%, rgba(40, 22, 10, 0.4), transparent 65%);
+  mix-blend-mode: multiply;
+}
+.board__vignette {
+  pointer-events: none;
+  background: radial-gradient(
+    120% 120% at 50% 50%,
+    transparent 52%,
+    rgba(40, 22, 8, 0.5) 78%,
+    rgba(15, 8, 3, 0.92) 100%
+  );
+}
+.board__svg {
+  pointer-events: none;
+}
+.board__road {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.board__road--bed {
+  stroke: #6b3f18;
+  stroke-width: 26;
+  opacity: 0.34;
+}
+.board__road--mid {
+  stroke: #a87838;
+  stroke-width: 16;
+  opacity: 0.42;
+}
+.board__road--dots {
+  stroke: #3a1f0c;
+  stroke-width: 6;
+  stroke-dasharray: 1 22;
+  opacity: 0.85;
+}
+.board__road--done {
+  stroke: #7e1d16;
+  stroke-width: 7;
+  stroke-dasharray: 1 20;
+  opacity: 0.9;
+}
+
+/* --- Nodos --- */
+.board__nodes {
+  pointer-events: none;
+}
+.node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 5.2%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.node__medallion {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 38% 32%, #f1d59a 0%, #cf9d4f 42%, #a9762f 78%, #835414 100%);
+  box-shadow:
+    0 0 0 2px rgba(60, 33, 12, 0.9),
+    0 0 0 4px rgba(214, 170, 95, 0.55),
+    0 0 0 6px rgba(48, 26, 9, 0.85),
+    0 8px 18px rgba(20, 10, 3, 0.55),
+    inset 0 2px 5px rgba(255, 238, 200, 0.55),
+    inset 0 -8px 16px rgba(70, 40, 14, 0.6);
+}
+.node__icon {
+  font-size: clamp(14px, 1.7vw, 30px);
+  line-height: 1;
+  filter: saturate(0.85) contrast(1.05);
+}
+.node__num {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  color: #f3dcab;
+  background: radial-gradient(circle at 38% 32%, #5a3214, #2c1606);
+  box-shadow: 0 0 0 2px rgba(214, 170, 95, 0.7), 0 3px 7px rgba(0, 0, 0, 0.5);
+}
+.node--elite .node__medallion {
+  background: radial-gradient(circle at 38% 32%, #e9b27e 0%, #b5602f 50%, #6e2414 100%);
+}
+.node--boss {
+  width: 8%;
+}
+.node--boss .node__medallion {
+  background: radial-gradient(circle at 40% 32%, #e9b27e 0%, #c0612f 38%, #8a2a18 72%, #4d130c 100%);
+  box-shadow:
+    0 0 0 3px rgba(40, 12, 6, 0.95),
+    0 0 0 6px rgba(178, 53, 34, 0.55),
+    0 0 0 9px rgba(34, 10, 5, 0.9),
+    0 0 34px 6px rgba(150, 30, 18, 0.5),
+    inset 0 3px 8px rgba(255, 210, 170, 0.45),
+    inset 0 -12px 24px rgba(70, 16, 10, 0.7);
+  animation: bosspulse 3.6s ease-in-out infinite;
+}
+@keyframes bosspulse {
+  50% {
+    box-shadow:
+      0 0 0 3px rgba(40, 12, 6, 0.95),
+      0 0 0 6px rgba(178, 53, 34, 0.6),
+      0 0 0 9px rgba(34, 10, 5, 0.9),
+      0 0 52px 12px rgba(178, 42, 24, 0.7),
+      inset 0 3px 8px rgba(255, 210, 170, 0.45),
+      inset 0 -12px 24px rgba(70, 16, 10, 0.7);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .node--boss .node__medallion {
+    animation: none;
+  }
+}
+/* estado de los nodos según progreso */
+.node.is-future {
+  opacity: 0.55;
+  filter: grayscale(0.3);
+}
+.node.is-visited .node__medallion {
+  filter: brightness(0.8) saturate(0.7);
+}
+.node.is-current .node__medallion {
+  box-shadow:
+    0 0 0 2px rgba(60, 33, 12, 0.9),
+    0 0 0 5px var(--amber-lt),
+    0 0 22px 4px rgba(232, 196, 131, 0.7),
+    inset 0 2px 5px rgba(255, 238, 200, 0.55),
+    inset 0 -8px 16px rgba(70, 40, 14, 0.6);
+}
+/* peón: marcador del jugador sobre el nodo actual */
+.node__pawn {
+  position: absolute;
+  top: -38%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  transform: translateX(-50%) rotate(45deg);
+  background: linear-gradient(135deg, #e8c483, #b23522);
+  border: 2px solid #2c1606;
+  box-shadow: 0 0 12px rgba(232, 196, 131, 0.8);
+  animation: pawnbob 1.8s ease-in-out infinite;
+}
+@keyframes pawnbob {
+  0%, 100% { top: -38%; }
+  50% { top: -48%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .node__pawn { animation: none; }
+}
+
+/* --- Cartela del título sobre el tablero --- */
+.board__cartouche {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  pointer-events: none;
+  z-index: 3;
+}
+.board__sub {
+  font-weight: 600;
+  letter-spacing: 0.4em;
+  font-size: 13px;
+  color: #5b3414;
+  text-indent: 0.4em;
+}
+.board__title {
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 900;
+  font-size: clamp(22px, 3vw, 42px);
+  color: #4a1410;
+  text-shadow: 0 1px 0 rgba(255, 230, 190, 0.45);
+}
+.board__orn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 4px;
+  color: #6e3f1a;
+  font-size: 16px;
+}
+.board__orn .ln {
+  width: 80px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #6e3f1a);
+}
+.board__orn .ln.r {
+  background: linear-gradient(90deg, #6e3f1a, transparent);
+}
+
+/* --- Panel del nodo actual --- */
+.node-panel {
+  border: 1px solid rgba(201, 145, 63, 0.35);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(40, 26, 12, 0.6), rgba(15, 9, 4, 0.75));
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: sticky;
+  top: 20px;
+}
+.node-panel__mc {
   font-family: 'IM Fell English', serif;
   font-style: italic;
-  color: var(--text-dim);
   font-size: 15px;
+  line-height: 1.55;
+  color: var(--amber-lt);
+  border-left: 2px solid rgba(201, 145, 63, 0.5);
+  padding-left: 12px;
+  margin-bottom: 4px;
+}
+.node-panel__type {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+.node-panel__name {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 24px;
+  color: var(--amber-lt);
+  line-height: 1.1;
+}
+.node-panel__desc {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text-dim);
+}
+.node-panel__actions {
+  margin-top: auto;
+  display: flex;
+  gap: 10px;
+}
+
+/* --- Overlay de fin de capítulo --- */
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5, 3, 2, 0.82);
+  z-index: 10;
+}
+.overlay__card {
+  max-width: 480px;
+  text-align: center;
+  border: 1px solid rgba(201, 145, 63, 0.4);
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(40, 26, 12, 0.95), rgba(15, 9, 4, 0.97));
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+  padding: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.overlay__sub {
+  letter-spacing: 0.35em;
+  font-size: 13px;
+  color: var(--amber);
+}
+.overlay__title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 30px;
+  color: var(--amber-lt);
+}
+.overlay__text {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text);
+}
+.overlay__hint {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+@media (max-width: 900px) {
+  .map-body {
+    grid-template-columns: 1fr;
+  }
 }
 
 .footnote {

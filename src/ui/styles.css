@@ -1073,6 +1073,167 @@ body {
   .combat-log { max-height: 200px; }
 }
 
+/* ===== HUD — barra de Perdición ===== */
+.doom-stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.doom-label {
+  font-size: 13px;
+  color: #e7a89a;
+  letter-spacing: 0.04em;
+}
+.doom-bar {
+  width: 80px;
+  height: 10px;
+  border-radius: 5px;
+  background: rgba(10, 6, 3, 0.6);
+  border: 1px solid rgba(178, 53, 34, 0.4);
+  overflow: hidden;
+}
+.doom-bar__fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6b1e18, #b23522);
+  transition: width 0.4s ease;
+  border-radius: 5px;
+}
+.doom-num {
+  font-size: 13px;
+  color: #e7a89a;
+}
+
+/* ===== Pantalla de evento (M3) ===== */
+.event-screen {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: radial-gradient(120% 120% at 50% 30%, #181009 0%, #0a0705 70%, #050302 100%);
+}
+.event-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(201, 145, 63, 0.2);
+}
+.event-header__label {
+  letter-spacing: 0.35em;
+  font-size: 13px;
+  color: var(--amber);
+}
+.btn--sm {
+  padding: 7px 12px;
+  font-size: 13px;
+}
+.event-body {
+  flex: 1;
+  width: 100%;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 32px 24px;
+}
+.event-card {
+  border: 1px solid rgba(201, 145, 63, 0.4);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(50, 32, 14, 0.7), rgba(20, 12, 5, 0.85));
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  padding: 28px 32px;
+}
+.event-card__title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 28px;
+  color: var(--amber-lt);
+  margin-bottom: 14px;
+}
+.event-card__text {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 18px;
+  line-height: 1.65;
+  color: var(--text);
+}
+.event-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.event-choice {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 20px;
+  border: 1px solid rgba(201, 145, 63, 0.3);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(40, 26, 12, 0.55), rgba(15, 9, 4, 0.7));
+  color: var(--text);
+  cursor: pointer;
+  transition: transform 0.08s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.event-choice:hover {
+  border-color: var(--amber);
+  transform: translateX(4px);
+  box-shadow: 0 0 14px rgba(201, 145, 63, 0.25);
+}
+.event-choice__label {
+  font-size: 16px;
+  color: var(--amber-lt);
+  font-weight: 600;
+}
+.event-choice__check {
+  font-size: 13px;
+  color: #9fb0d0;
+  letter-spacing: 0.05em;
+}
+.event-choice__effect {
+  font-size: 13px;
+  color: var(--text-dim);
+  font-style: italic;
+}
+/* Panel de chequeo de dados */
+.check-panel {
+  border: 1px solid rgba(159, 176, 208, 0.4);
+  border-radius: 12px;
+  background: rgba(10, 7, 5, 0.7);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.check-panel__title {
+  letter-spacing: 0.25em;
+  font-size: 13px;
+  color: #9fb0d0;
+  text-transform: uppercase;
+}
+.check-panel__faces {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.check-panel__result {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+}
+.check-pass { color: #7cffb0; font-weight: 700; }
+.check-fail { color: #e7a89a; font-weight: 700; }
+.check-detail { color: var(--text-dim); font-size: 14px; }
+.check-panel__effect {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: var(--text);
+  font-size: 15px;
+}
+
 /* ===== Animaciones de combate ===== */
 .fx-layer {
   position: fixed;

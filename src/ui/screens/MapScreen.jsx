@@ -14,6 +14,8 @@ import {
   nodeLabel,
   nodeActionLabel,
 } from '../../systems/board.js';
+import { getDoomRatio } from '../../systems/doom.js';
+import { content } from '../../data/index.js';
 import BoardMap from '../components/BoardMap.jsx';
 
 const COMBAT_TYPES = new Set(['combat', 'elite', 'boss']);
@@ -23,6 +25,7 @@ export default function MapScreen() {
   const resolveNode = useGameStore((s) => s.resolveNode);
   const advanceNode = useGameStore((s) => s.advanceNode);
   const startCombat = useGameStore((s) => s.startCombat);
+  const startEvent = useGameStore((s) => s.startEvent);
   const quitToMenu = useGameStore((s) => s.quitToMenu);
 
   const chapter = getChapter(game);
@@ -33,9 +36,10 @@ export default function MapScreen() {
   const complete = isChapterComplete(game);
   const atStart = game.nodeIndex === 0 && !resolved;
   const isCombat = COMBAT_TYPES.has(node.type);
+  const isEvent = node.type === 'event';
 
-  // Acción al resolver el nodo: combate lanza el motor; el resto, narrativa.
-  const onResolve = isCombat ? startCombat : resolveNode;
+  // Acción al resolver el nodo según tipo.
+  const onResolve = isCombat ? startCombat : isEvent ? startEvent : resolveNode;
 
   return (
     <main className="map-screen">
@@ -49,15 +53,18 @@ export default function MapScreen() {
           <span className="hud__title">{chapter.title}</span>
         </div>
         <div className="hud__stats">
-          <span className="hud__stat" title="Perdición">
-            ☠ {game.doom}/{chapter.doomMax}
+          <span className="hud__stat doom-stat" title="Perdición">
+            <span className="doom-label">☠ Perdición</span>
+            <span className="doom-bar">
+              <span
+                className="doom-bar__fill"
+                style={{ width: `${getDoomRatio(game, Object.values(content.chaptersById)) * 100}%` }}
+              />
+            </span>
+            <span className="doom-num">{game.doom}/{chapter.doomMax}</span>
           </span>
-          <span className="hud__stat" title="Oro">
-            🪙 {game.gold}
-          </span>
-          <span className="hud__stat" title="Progreso">
-            {game.nodeIndex + 1}/{nodes.length}
-          </span>
+          <span className="hud__stat" title="Oro">🪙 {game.gold}</span>
+          <span className="hud__stat" title="Progreso">{game.nodeIndex + 1}/{nodes.length}</span>
         </div>
       </header>
 

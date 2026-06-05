@@ -13,6 +13,7 @@
 
 import { content } from '../data/index.js';
 import { chooseEnemyAction } from './enemyAI.js';
+import { applyCurse, tickCurses } from './curses.js';
 
 const clone = (o) => JSON.parse(JSON.stringify(o));
 
@@ -243,6 +244,22 @@ export function resolveEnemyPhase(combat, rng) {
         const target = pickByBehavior(enemy.behavior, targets, action.targetId, rng);
         applyEnemyHit(c, enemy, target);
       }
+    } else if (action.type === 'attack_curse') {
+      // Ataca al más débil y lo maldice
+      const targets = frontFirst(c.heroes);
+      if (targets.length) {
+        const target = targets.reduce((a, b) => (b.hp < a.hp ? b : a));
+        applyEnemyHit(c, enemy, target);
+        if (action.curse) {
+          const idx = c.heroes.findIndex((h) => h.id === target.id);
+          if (idx >= 0) {
+            c.heroes[idx] = applyCurse(c.heroes[idx], action.curse);
+            pushLog(c, 'curse', `${target.name} queda maldito: ${action.curse}.`);
+          }
+        }
+      }
+    } else if (action.type === 'boss_card') {
+      applyBossCard(c, enemy, action.behaviorCard, rng);
     }
   }
 
@@ -250,16 +267,61 @@ export function resolveEnemyPhase(combat, rng) {
   c = checkEnd(c);
   if (isOver(c)) return c;
 
-  // Nuevo round: resetear estado de turno de los héroes.
+  // Nuevo round: resetear turno y decrementar maldiciones.
   c.round += 1;
-  for (const h of c.heroes) {
-    h.block = 0; h.energy = 0; h.pool = null;
-    h.hasRolled = false; h.hasAttacked = false;
+  for (let i = 0; i < c.heroes.length; i++) {
+    const h = c.heroes[i];
+    c.heroes[i] = tickCurses({ ...h, block: 0, energy: 0, pool: null, hasRolled: false, hasAttacked: false });
   }
   c.phase = 'hero';
   c.activeHeroIndex = firstLivingHero(c);
   pushLog(c, 'phase', `Round ${c.round}.`);
   return c;
+}
+
+/** Aplica una carta del mazo de comportamiento del jefe. */
+function applyBossCard(c, enemy, card, rng) {
+  if (!card) return;
+  pushLog(c, 'bosscard', `${enemy.name}: ${card.name} — ${card.text}`);
+  const fx = card.effect ?? {};
+
+  if (fx.type === 'attack') {
+    const alive = livingHeroes(c);
+    let target;
+    if (fx.target === 'tank') target = alive.reduce((a, b) => (b.maxHp > a.maxHp ? b : a));
+    else if (fx.target === 'weakest') target = alive.reduce((a, b) => (b.hp < a.hp ? b : a));
+    else target = rng.pick(alive);
+    if (target) {
+      const dmgMult = fx.multiplier ?? 1;
+      const boosted = { ...enemy, dmg: Math.round(enemy.dmg * dmgMult) };
+      applyEnemyHit(c, boosted, c.heroes.find((h) => h.id === target.id));
+      if (fx.onKill && c.heroes.find((h) => h.id === target.id)?.down) {
+        c._pendingDoom = (c._pendingDoom ?? 0) + (fx.onKill.doom ?? 0);
+      }
+    }
+  } else if (fx.type === 'summon') {
+    const base = lookupEnemy(fx.spawn);
+    if (base) {
+      const mult = DIFF[c.difficulty] ?? DIFF.normal;
+      for (let i = 0; i < (fx.count ?? 1); i++) {
+        const spawn = makeEnemyInstance(base, `bs${c.summonCounter++}`, mult);
+        c.enemies.push(spawn);
+      }
+      pushLog(c, 'summon', `${enemy.name} invoca ${fx.count ?? 1} ${fx.spawn}.`);
+    }
+    if (fx.doom) c._pendingDoom = (c._pendingDoom ?? 0) + fx.doom;
+  } else if (fx.type === 'curse_all') {
+    for (let i = 0; i < c.heroes.length; i++) {
+      if (!c.heroes[i].down) {
+        c.heroes[i] = applyCurse(c.heroes[i], fx.curse);
+      }
+    }
+    pushLog(c, 'curse', `Toda la party queda maldita: ${fx.curse}.`);
+  } else if (fx.type === 'selfbuff') {
+    enemy.hp = Math.min(enemy.maxHp, enemy.hp + (fx.healSelf ?? 0));
+    if (fx.doom) c._pendingDoom = (c._pendingDoom ?? 0) + fx.doom;
+    pushLog(c, 'bosscard', `${enemy.name} se regenera ${fx.healSelf ?? 0} HP.`);
+  }
 }
 
 function applyEnemyHit(c, enemy, target) {
@@ -314,5 +376,6 @@ function computeLoot(c) {
   for (const e of c.enemies) {
     gold += e.isBoss ? 40 : e.isElite ? 15 : 6;
   }
-  return { gold: Math.round(gold * mult.loot) };
+  // _pendingDoom acumula doom de cartas del jefe — la store lo aplica al estado
+  return { gold: Math.round(gold * mult.loot), pendingDoom: c._pendingDoom ?? 0 };
 }

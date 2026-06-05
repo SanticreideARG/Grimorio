@@ -19,6 +19,15 @@ import {
   getChapter,
   getCurrentNode,
 } from '../systems/board.js';
+import { addDoom } from '../systems/doom.js';
+import { initDecks } from '../systems/decks.js';
+import { getDoomReduction } from '../systems/pets.js';
+import {
+  drawEventCard,
+  resolveEvent,
+  getActiveCard,
+} from '../systems/events.js';
+import { content } from '../data/index.js';
 import {
   initCombat,
   rollActiveHero,
@@ -100,9 +109,19 @@ export const useGameStore = create((set, get) => ({
     get().patchGame((g) => boardAdvanceNode(g));
   },
 
-  /** Define la party fija (1–4 héroes) y entra al mapa. */
+  /** Define la party fija (1–4 héroes), inicializa los mazos y entra al mapa. */
   setParty(heroIds) {
-    get().patchGame((g) => ({ ...g, party: heroIds, view: 'map' }));
+    const rng = createRng(get().game?.rngState ?? Date.now());
+    const decks = initDecks(rng);
+    get().patchGame((g) => ({
+      ...g,
+      party: heroIds,
+      pets: g.pets ?? [],
+      pendingCurses: [],
+      decks,
+      rngState: rng.getState(),
+      view: 'map',
+    }));
   },
 
   // ---------- Combate (M2) ----------
@@ -161,15 +180,20 @@ export const useGameStore = create((set, get) => ({
     get().patchGame((g) => ({ ...g, combat, rngState: rng.getState() }));
   },
 
-  /** Victoria: cobra el botín, marca el nodo resuelto y vuelve al mapa. */
+  /** Victoria: cobra el botín, aplica doom pendiente, marca nodo y vuelve al mapa. */
   finishCombat() {
     const { game } = get();
     if (!game?.combat || game.combat.phase !== 'victory') return;
     get().patchGame((g) => {
       const node = getCurrentNode(g);
       const gold = g.combat.loot?.gold ?? 0;
-      const resolved = markNodeResolved(g, node, `Victoria en ${node.name}. Botín: ${gold} de oro.`);
-      return { ...resolved, gold: g.gold + gold, combat: null, view: 'map' };
+      const pendingDoom = g.combat.loot?.pendingDoom ?? 0;
+      const doomReduction = getDoomReduction(g);
+      const doomDelta = Math.max(0, pendingDoom - doomReduction);
+      let s = markNodeResolved(g, node, `Victoria en ${node.name}. Botín: ${gold} de oro.`);
+      s = { ...s, gold: s.gold + gold, combat: null, view: 'map' };
+      if (doomDelta > 0) s = addDoom(s, doomDelta, Object.values(content.chaptersById));
+      return s;
     });
     bus.emit(EVENTS.COMBAT_END, { result: 'victory' });
   },
@@ -187,6 +211,31 @@ export const useGameStore = create((set, get) => ({
   abandonCombat() {
     get().patchGame((g) => ({ ...g, combat: null, view: 'map' }));
     bus.emit(EVENTS.COMBAT_END, { result: 'abandon' });
+  },
+
+  // ---------- Eventos (M3) ----------
+
+  /** Activa la vista de evento y roba una carta del mazo. */
+  startEvent() {
+    const { game } = get();
+    if (game == null) return;
+    const rng = createRng(game.rngState);
+    const next = drawEventCard(game, rng);
+    get().patchGame(() => ({ ...next, rngState: rng.getState(), view: 'event' }));
+  },
+
+  /** Resuelve la elección del jugador (con pool de dados tirado para el chequeo). */
+  resolveEventChoice(choiceIndex, pool = null) {
+    const { game } = get();
+    if (game == null) return;
+    const chapters = Object.values(content.chaptersById);
+    const next = resolveEvent(game, choiceIndex, pool, chapters);
+    get().patchGame(() => ({ ...next, view: 'map' }));
+  },
+
+  /** Expone la carta activa del evento para la UI. */
+  getActiveEventCard() {
+    return getActiveCard(get().game ?? {});
   },
 
   /** Borra un slot (y desactiva la partida si era la activa). */

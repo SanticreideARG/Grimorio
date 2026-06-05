@@ -7,6 +7,7 @@ import SlotCard from './components/SlotCard.jsx';
 import MapScreen from './screens/MapScreen.jsx';
 import PartySelect from './screens/PartySelect.jsx';
 import CombatScreen from './screens/CombatScreen.jsx';
+import EventScreen from './screens/EventScreen.jsx';
 
 const DIFFICULTY_LABEL = { facil: 'Fácil', normal: 'Normal', dificil: 'Difícil' };
 
@@ -23,6 +24,7 @@ export default function App() {
     switch (game.view) {
       case 'party-select': return <PartySelect />;
       case 'combat':       return <CombatScreen />;
+      case 'event':        return <EventScreen />;
       case 'map':
       default:             return <MapScreen />;
     }

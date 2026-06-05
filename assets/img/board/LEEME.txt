@@ -1,0 +1,1 @@
+(El prompt del tablero/mapa está en docs/PROMPT_TABLERO.md — para Claude Design)

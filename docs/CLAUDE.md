@@ -34,11 +34,18 @@ Ceremonias es siempre la CPU.** Persistencia en localStorage. Sin backend en v1.
 
 ## Estilo de código
 
-- 🔲 Q-STACK define Vanilla JS vs framework. Hasta confirmarse, asumir
-  **Vanilla JS + ES Modules** (patrón validado en el prototipo).
-- Funciones puras donde se pueda; `render(state)` por vista.
+- **Q-STACK resuelto: React 19 + Vite + Zustand.** El motor de juego
+  (`core/`, `systems/`) es **JS puro y framework-agnóstico**; React solo consume
+  el estado. La UI nunca toca `core/` directo: pasa por la store (`src/store/`).
+- Funciones puras donde se pueda. Componentes en `src/ui/` y `src/ui/components/`.
 - Nombres en inglés para código, contenido y textos de juego en español.
 - Comentarios concisos; preferir código claro a comentarios extensos.
+
+## Comandos
+
+- `npm run dev` — servidor de desarrollo (Vite).
+- `npm run build` — build de producción (base `/Grimorio/` para GitHub Pages).
+- `npm test` — tests headless del motor (`node --test`).
 
 ## Qué NO hacer
 

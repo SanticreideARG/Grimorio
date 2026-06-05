@@ -1,0 +1,272 @@
+/* styles.css — Estética dark fantasy (espejo de assets/img/_STYLE.txt).
+   Paleta: ámbar/ascua sobre tinta oscura, acentos carmesí. */
+
+:root {
+  --ink: #0a0705;
+  --ink-2: #181009;
+  --amber: #c9913f;
+  --amber-lt: #e8c483;
+  --sepia: #7c4a1e;
+  --crimson: #7e1d16;
+  --crimson-glow: #b23522;
+  --parchment: #d9b577;
+  --text: #e9d5ab;
+  --text-dim: #b7975f;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: radial-gradient(120% 120% at 50% 30%, #181009 0%, #0a0705 70%, #050302 100%);
+  color: var(--text);
+  font-family: 'Cinzel', serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.screen {
+  min-height: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 48px 24px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ===== Título ===== */
+.title {
+  text-align: center;
+  margin-bottom: 18px;
+}
+.title__sub {
+  font-weight: 600;
+  letter-spacing: 0.46em;
+  font-size: 15px;
+  color: var(--amber);
+  text-indent: 0.46em;
+  margin-bottom: 8px;
+  opacity: 0.85;
+}
+.title__main {
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 900;
+  font-size: 76px;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  color: var(--amber-lt);
+  text-shadow: 0 0 28px rgba(178, 53, 34, 0.45), 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+.title__orn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 12px;
+  color: var(--sepia);
+  font-size: 20px;
+}
+.title__orn .ln {
+  width: 120px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--sepia));
+}
+.title__orn .ln.r {
+  background: linear-gradient(90deg, var(--sepia), transparent);
+}
+
+.intro {
+  max-width: 640px;
+  text-align: center;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--text-dim);
+  margin: 8px 0 28px;
+}
+
+/* ===== Dificultad ===== */
+.difficulty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+.difficulty__label {
+  letter-spacing: 0.3em;
+  font-size: 13px;
+  color: var(--amber);
+  text-transform: uppercase;
+}
+.difficulty__options {
+  display: flex;
+  gap: 10px;
+}
+
+/* ===== Slots ===== */
+.slots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  width: 100%;
+  max-width: 880px;
+}
+.slot {
+  border: 1px solid rgba(201, 145, 63, 0.35);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(40, 26, 12, 0.55), rgba(15, 9, 4, 0.7));
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(232, 196, 131, 0.12);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 230px;
+}
+.slot--empty {
+  border-style: dashed;
+  opacity: 0.9;
+}
+.slot__head {
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  font-size: 15px;
+  color: var(--amber-lt);
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(201, 145, 63, 0.25);
+  padding-bottom: 8px;
+}
+.slot__body {
+  flex: 1;
+}
+.slot__body--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  font-style: italic;
+  font-family: 'IM Fell English', serif;
+}
+.slot__meta,
+.session__meta {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 14px;
+  font-size: 14px;
+}
+.slot__meta dt,
+.session__meta dt {
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+.slot__meta dd,
+.session__meta dd {
+  color: var(--text);
+  text-align: right;
+}
+.slot__actions,
+.session__actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* ===== Botones ===== */
+.btn {
+  flex: 1;
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  color: var(--text);
+  background: linear-gradient(180deg, #3a2410, #241507);
+  border: 1px solid rgba(201, 145, 63, 0.4);
+  border-radius: 7px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: transform 0.08s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.btn:hover {
+  border-color: var(--amber);
+  box-shadow: 0 0 14px rgba(201, 145, 63, 0.3);
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn--primary {
+  background: linear-gradient(180deg, #6b3f18, #3a2410);
+  color: var(--amber-lt);
+}
+.btn--danger {
+  flex: 0 0 auto;
+  border-color: rgba(178, 53, 34, 0.5);
+  color: #e7a89a;
+}
+.btn--danger:hover {
+  border-color: var(--crimson-glow);
+  box-shadow: 0 0 14px rgba(178, 53, 34, 0.35);
+}
+.btn--toggle {
+  flex: 0 0 auto;
+  padding: 8px 22px;
+  opacity: 0.7;
+}
+.btn--toggle.is-active {
+  opacity: 1;
+  border-color: var(--amber);
+  background: linear-gradient(180deg, #6b3f18, #3a2410);
+  color: var(--amber-lt);
+  box-shadow: 0 0 14px rgba(201, 145, 63, 0.3);
+}
+
+/* ===== Sesión (M0 placeholder) ===== */
+.session {
+  width: 100%;
+  max-width: 520px;
+  border: 1px solid rgba(201, 145, 63, 0.35);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(40, 26, 12, 0.55), rgba(15, 9, 4, 0.7));
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.session__title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 26px;
+  color: var(--amber-lt);
+}
+.session__hint {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: var(--text-dim);
+  font-size: 15px;
+}
+
+.footnote {
+  margin-top: auto;
+  padding-top: 28px;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  opacity: 0.6;
+}
+
+@media (max-width: 720px) {
+  .slots {
+    grid-template-columns: 1fr;
+  }
+  .title__main {
+    font-size: 54px;
+  }
+}

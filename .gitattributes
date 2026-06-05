@@ -1,0 +1,12 @@
+# Normaliza saltos de línea: LF en el repo, autoconversión en working copy.
+* text=auto eol=lf
+
+# Binarios: nunca tocar.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.mp3 binary
+*.ogg binary
+*.wav binary

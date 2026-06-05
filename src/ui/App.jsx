@@ -1,11 +1,8 @@
-// App.jsx — Pantalla de título de M0.
-// Demuestra el entregable: la app arranca, crea/guarda/carga partida en 3 slots.
-// El juego en sí (mapa, combate) llega en M1+.
-
 import { useState } from 'react';
 import { useGameStore } from '../store/gameStore.js';
 import { DIFFICULTIES } from '../core/state.js';
 import { script } from '../data/script.js';
+import { menuBg } from '../data/mapImages.js';
 import SlotCard from './components/SlotCard.jsx';
 import MapScreen from './screens/MapScreen.jsx';
 import PartySelect from './screens/PartySelect.jsx';
@@ -22,54 +19,57 @@ export default function App() {
 
   const [difficulty, setDifficulty] = useState('normal');
 
-  // Partida activa: enrutar por vista en juego.
   if (game) {
     switch (game.view) {
-      case 'party-select':
-        return <PartySelect />;
-      case 'combat':
-        return <CombatScreen />;
+      case 'party-select': return <PartySelect />;
+      case 'combat':       return <CombatScreen />;
       case 'map':
-      default:
-        return <MapScreen />;
+      default:             return <MapScreen />;
     }
   }
 
-  // Menú de título: 3 slots + selector de dificultad.
   return (
-    <main className="screen">
-      <Header />
+    <main
+      className="screen screen--menu"
+      style={{ backgroundImage: `url(${menuBg})` }}
+    >
+      {/* Overlay oscuro sobre la imagen para legibilidad */}
+      <div className="menu-overlay" />
 
-      <p className="intro">{script.intro}</p>
+      <div className="menu-content">
+        <Header />
 
-      <section className="difficulty">
-        <span className="difficulty__label">Dificultad</span>
-        <div className="difficulty__options">
-          {DIFFICULTIES.map((d) => (
-            <button
-              key={d}
-              className={`btn btn--toggle${difficulty === d ? ' is-active' : ''}`}
-              onClick={() => setDifficulty(d)}
-            >
-              {DIFFICULTY_LABEL[d]}
-            </button>
+        <p className="intro">{script.intro}</p>
+
+        <section className="difficulty">
+          <span className="difficulty__label">Dificultad</span>
+          <div className="difficulty__options">
+            {DIFFICULTIES.map((d) => (
+              <button
+                key={d}
+                className={`btn btn--toggle${difficulty === d ? ' is-active' : ''}`}
+                onClick={() => setDifficulty(d)}
+              >
+                {DIFFICULTY_LABEL[d]}
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section className="slots">
+          {slots.map((s) => (
+            <SlotCard
+              key={s.slot}
+              info={s}
+              onNew={() => newGame(s.slot, { difficulty })}
+              onLoad={() => load(s.slot)}
+              onDelete={() => remove(s.slot)}
+            />
           ))}
-        </div>
-      </section>
+        </section>
 
-      <section className="slots">
-        {slots.map((s) => (
-          <SlotCard
-            key={s.slot}
-            info={s}
-            onNew={() => newGame(s.slot, { difficulty })}
-            onLoad={() => load(s.slot)}
-            onDelete={() => remove(s.slot)}
-          />
-        ))}
-      </section>
-
-      <footer className="footnote">GRIMORIO · v0.1.0 · M0</footer>
+        <footer className="footnote">GRIMORIO · v0.1.0</footer>
+      </div>
     </main>
   );
 }

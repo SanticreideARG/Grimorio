@@ -1,7 +1,8 @@
 // BoardMap.jsx — Render del mapa del capítulo desde datos.
-// El pergamino, el sendero y el marco son "arte" estilizado en CSS/SVG; los
-// NODOS y el peón vienen del estado (data-driven). Mantiene la estética del
-// proyecto (medallones ámbar, jefe carmesí pulsante) sin acoplar arte a lógica.
+// El fondo es la imagen real del capítulo (mapBg prop).
+// El sendero SVG y los nodos se superponen sobre ella por %.
+
+import { mapImages } from '../../data/mapImages.js';
 
 const ICON = {
   start: '🚩',
@@ -36,35 +37,38 @@ function smoothPath(pts) {
   return d;
 }
 
-export default function BoardMap({ nodes, currentIndex, visited, title, subtitle }) {
+export default function BoardMap({ chapterId, nodes, currentIndex, visited, title, subtitle }) {
   const abs = nodes.map((n) => ({ x: (n.pos.x / 100) * W, y: (n.pos.y / 100) * H }));
   const path = smoothPath(abs);
-  // Porción del sendero ya recorrida (hasta el nodo actual).
   const traveled = smoothPath(abs.slice(0, currentIndex + 1));
+  const bgImage = mapImages[chapterId];
 
   return (
     <div className="board" role="img" aria-label={`Mapa: ${title}`}>
-      {/* Capas de pergamino (arte genérico, no por-capítulo) */}
-      <div className="board__parchment" />
-      <div className="board__soot" />
 
-      {/* Sendero + nodos en el mismo espacio de coordenadas */}
+      {/* Fondo: imagen real del capítulo */}
+      {bgImage
+        ? <img className="board__bg" src={bgImage} alt="" aria-hidden="true" />
+        : <div className="board__parchment" />   /* fallback mientras no haya imagen */
+      }
+
+      {/* Viñeta sutil encima de la imagen para que los nodos resalten */}
+      <div className="board__vignette" />
+
+      {/* Sendero */}
       <svg className="board__svg" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
         <defs>
           <filter id="roadblur" x="-5%" y="-5%" width="110%" height="110%">
             <feGaussianBlur stdDeviation="3" />
           </filter>
         </defs>
-        {/* lecho del camino */}
         <path d={path} className="board__road board__road--bed" filter="url(#roadblur)" />
         <path d={path} className="board__road board__road--mid" filter="url(#roadblur)" />
-        {/* ruta punteada */}
         <path d={path} className="board__road board__road--dots" />
-        {/* tramo recorrido, resaltado */}
         <path d={traveled} className="board__road board__road--done" />
       </svg>
 
-      {/* Nodos (medallones) posicionados por % */}
+      {/* Nodos (medallones) */}
       <div className="board__nodes">
         {nodes.map((n, i) => {
           const isCurrent = i === currentIndex;
@@ -77,9 +81,7 @@ export default function BoardMap({ nodes, currentIndex, visited, title, subtitle
             isCurrent ? 'is-current' : '',
             isVisited ? 'is-visited' : '',
             isFuture ? 'is-future' : '',
-          ]
-            .filter(Boolean)
-            .join(' ');
+          ].filter(Boolean).join(' ');
           return (
             <div
               key={n.id}
@@ -106,8 +108,6 @@ export default function BoardMap({ nodes, currentIndex, visited, title, subtitle
         </div>
       </div>
 
-      {/* Viñeta + borde quemado */}
-      <div className="board__vignette" />
     </div>
   );
 }

@@ -63,6 +63,7 @@ export default function MapScreen() {
 
       <div className="map-body">
         <BoardMap
+          chapterId={chapter.id}
           nodes={nodes}
           currentIndex={game.nodeIndex}
           visited={game.visited}

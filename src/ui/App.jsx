@@ -29,10 +29,11 @@ export default function App() {
   }
 
   return (
-    <main
-      className="screen screen--menu"
-      style={{ backgroundImage: `url(${menuBg})` }}
-    >
+    <main className="screen screen--menu">
+      {/* Imagen de fondo a pantalla completa (capa fija independiente del
+          ancho del contenido). En pantallas anchas se ve completa (contain);
+          en chicas, centrada y recortada (cover). */}
+      <div className="menu-bg" style={{ backgroundImage: `url(${menuBg})` }} />
       {/* Overlay oscuro sobre la imagen para legibilidad */}
       <div className="menu-overlay" />
 

@@ -46,9 +46,16 @@ body {
 /* ===== Menú principal con imagen de fondo ===== */
 .screen--menu {
   position: relative;
-  background-size: cover;
-  background-position: center top;
+}
+/* Capa de imagen a pantalla completa (independiente del max-width del contenido). */
+.menu-bg {
+  position: fixed;
+  inset: 0;
+  background-color: #0a0705;
   background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain; /* pantallas anchas: imagen completa */
+  z-index: 0;
 }
 .menu-overlay {
   position: fixed;
@@ -61,6 +68,12 @@ body {
   );
   pointer-events: none;
   z-index: 0;
+}
+/* Pantallas chicas: la imagen se centra y recorta (solo se ve el centro). */
+@media (max-width: 720px) {
+  .menu-bg {
+    background-size: cover;
+  }
 }
 .menu-content {
   position: relative;

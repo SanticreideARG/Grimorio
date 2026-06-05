@@ -112,9 +112,13 @@ export function validAllyTargets(c) {
 
 // ---------- Acciones del héroe ----------
 
-function pushLog(c, kind, text) {
-  c.log.push({ round: c.round, kind, text });
+function pushLog(c, kind, text, extra) {
+  c.log.push({ round: c.round, kind, text, ...extra });
 }
+
+// Tipo de animación de un golpe físico según la fila del atacante:
+// frente = cuerpo a cuerpo (embate), retaguardia = a distancia (proyectil).
+const hitAnim = (unit) => (unit.row === 'back' ? 'ranged' : 'melee');
 
 /** El héroe activo tira su pool de dados. */
 export function rollActiveHero(combat, rng) {
@@ -150,7 +154,9 @@ export function heroAttack(combat, enemyUid) {
   target.hp = Math.max(0, target.hp - dmg);
   h.hasAttacked = true;
   h.pool.sword = 0;
-  pushLog(c, 'attack', `${h.name} golpea a ${target.name} por ${dmg}.`);
+  pushLog(c, 'attack', `${h.name} golpea a ${target.name} por ${dmg}.`, {
+    anim: hitAnim(h), source: h.id, target: target.uid,
+  });
   return checkEnd(c);
 }
 
@@ -170,19 +176,25 @@ export function heroCast(combat, spellId, targetUid) {
     if (!target) return combat;
     if (!validEnemyTargets(c, fx.ignoreRow).some((e) => e.uid === targetUid)) return combat;
     target.hp = Math.max(0, target.hp - fx.damage);
-    pushLog(c, 'spell', `${h.name} lanza ${spell.name} sobre ${target.name} (${fx.damage}).`);
+    pushLog(c, 'spell', `${h.name} lanza ${spell.name} sobre ${target.name} (${fx.damage}).`, {
+      anim: fx.ignoreRow ? 'ranged' : 'melee', source: h.id, target: target.uid,
+    });
   }
   // Cura a un aliado
   if (fx.heal) {
     const ally = c.heroes.find((a) => a.id === targetUid && !a.down) ?? h;
     ally.hp = Math.min(ally.maxHp, ally.hp + fx.heal);
-    pushLog(c, 'spell', `${h.name} cura a ${ally.name} (+${fx.heal}).`);
+    pushLog(c, 'spell', `${h.name} cura a ${ally.name} (+${fx.heal}).`, {
+      anim: 'heal', source: h.id, target: ally.id,
+    });
   }
   // Bloqueo / autocura al lanzador
   if (fx.block) h.block += fx.block;
   if (fx.selfHeal) {
     h.hp = Math.min(h.maxHp, h.hp + fx.selfHeal);
-    pushLog(c, 'spell', `${h.name} drena ${fx.selfHeal} de vida.`);
+    pushLog(c, 'spell', `${h.name} drena ${fx.selfHeal} de vida.`, {
+      anim: 'heal', source: h.id, target: h.id,
+    });
   }
 
   h.energy -= spell.cost;
@@ -258,7 +270,9 @@ function applyEnemyHit(c, enemy, target) {
   dmg -= absorbed;
   target.hp = Math.max(0, target.hp - dmg);
   const blockTxt = absorbed > 0 ? ` (🛡️${absorbed})` : '';
-  pushLog(c, 'enemyhit', `${enemy.name} ataca a ${target.name} por ${dmg}${blockTxt}.`);
+  pushLog(c, 'enemyhit', `${enemy.name} ataca a ${target.name} por ${dmg}${blockTxt}.`, {
+    anim: hitAnim(enemy), source: enemy.uid, target: target.id,
+  });
   if (target.hp <= 0 && !target.down) {
     target.down = true;
     pushLog(c, 'down', `${target.name} cae.`);

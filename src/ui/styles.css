@@ -1059,3 +1059,129 @@ body {
   }
   .combat-log { max-height: 200px; }
 }
+
+/* ===== Animaciones de combate ===== */
+.fx-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 60;
+}
+
+/* Proyectiles (ataques a distancia) */
+.fx-projwrap {
+  position: absolute;
+  will-change: transform;
+}
+.fx-proj {
+  position: absolute;
+}
+.fx-proj--arrow {
+  width: 32px;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(120, 70, 28, 0.15), #c9913f 55%, #f7e6bf);
+  box-shadow: 0 0 8px rgba(232, 196, 131, 0.85);
+}
+.fx-proj--arrow::after {
+  content: '';
+  position: absolute;
+  right: -7px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-left: 9px solid #f7e6bf;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+}
+.fx-proj--arcane {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #ffe9b0 0%, #e8852f 55%, #b23522 100%);
+  box-shadow: 0 0 18px 5px rgba(226, 120, 40, 0.8), 0 0 6px #ffd089;
+}
+
+/* Impactos */
+.fx-impact {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 244, 220, 0.95) 0%, rgba(201, 145, 63, 0.5) 45%, transparent 70%);
+}
+.fx-impact--arcane {
+  background: radial-gradient(circle, rgba(255, 225, 170, 0.95) 0%, rgba(178, 53, 34, 0.6) 45%, transparent 72%);
+}
+
+/* Curación */
+.fx-heal {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+.fx-heal__glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 130px;
+  height: 130px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(90, 235, 150, 0.6) 0%, rgba(40, 180, 100, 0.22) 45%, transparent 70%);
+  animation: healglow 0.9s ease-out forwards;
+}
+@keyframes healglow {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.25); }
+}
+.fx-heal__cross {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  color: #7cffb0;
+  font-size: 22px;
+  font-weight: 700;
+  text-shadow: 0 0 8px rgba(90, 235, 150, 0.95);
+  opacity: 0;
+  animation: healcross 0.9s ease-out forwards;
+  animation-delay: calc(var(--i) * 0.13s);
+}
+.fx-heal__cross:nth-child(2) { --dx: -20px; }
+.fx-heal__cross:nth-child(3) { --dx: 16px; }
+.fx-heal__cross:nth-child(4) { --dx: -2px; }
+@keyframes healcross {
+  0% { opacity: 0; transform: translate(-50%, 12px) scale(0.6); }
+  25% { opacity: 1; }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--dx, 0px)), -46px) scale(1.05); }
+}
+
+/* Reacciones de las cartas */
+.unit.is-hit {
+  animation: unithit 0.34s ease;
+}
+@keyframes unithit {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-5px); box-shadow: 0 0 18px rgba(178, 53, 34, 0.85); }
+  45% { transform: translateX(5px); }
+  70% { transform: translateX(-3px); box-shadow: 0 0 14px rgba(178, 53, 34, 0.6); }
+  85% { transform: translateX(2px); }
+}
+.unit.is-healing {
+  animation: unitheal 0.82s ease;
+}
+@keyframes unitheal {
+  0% { box-shadow: 0 0 0 rgba(90, 235, 150, 0); }
+  30% { box-shadow: 0 0 24px 4px rgba(90, 235, 150, 0.7); filter: brightness(1.15); }
+  100% { box-shadow: 0 0 0 rgba(90, 235, 150, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .unit.is-hit,
+  .unit.is-healing,
+  .fx-heal__glow,
+  .fx-heal__cross {
+    animation: none;
+  }
+}

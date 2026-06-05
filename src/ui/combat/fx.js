@@ -1,0 +1,152 @@
+// fx.js — Efectos visuales de combate (imperativos, sin React).
+// Reproduce animaciones sobre las cartas usando sus posiciones DOM:
+//   melee  → la carta atacante embiste hacia la víctima y vuelve + impacto
+//   ranged → un proyectil (flecha física / orbe arcano) viaja origen→destino
+//   heal   → brillo verde + cruces ascendentes sobre la carta curada
+// Las cartas se localizan por su atributo data-anim-key (uid de enemigo / id de héroe).
+
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+const prefersReduced = () =>
+  typeof window !== 'undefined' &&
+  window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+function elByKey(key) {
+  if (!key) return null;
+  return document.querySelector(`[data-anim-key="${String(key).replace(/"/g, '\\"')}"]`);
+}
+
+/** Centro de una carta en coordenadas de viewport, o null si no está en el DOM. */
+export function getCenter(key) {
+  const el = elByKey(key);
+  if (!el) return null;
+  const r = el.getBoundingClientRect();
+  return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+}
+
+function flash(key, cls, ms) {
+  const el = elByKey(key);
+  if (!el) return;
+  el.classList.add(cls);
+  setTimeout(() => el.classList.remove(cls), ms);
+}
+
+// ---------- Primitivas de partículas ----------
+
+function spawnProjectile(layer, from, to, variant) {
+  if (!layer) return;
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
+
+  const outer = document.createElement('div');
+  outer.className = 'fx-projwrap';
+  outer.style.left = `${from.x}px`;
+  outer.style.top = `${from.y}px`;
+
+  const inner = document.createElement('div');
+  inner.className = `fx-proj fx-proj--${variant}`;
+  inner.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+  outer.appendChild(inner);
+  layer.appendChild(outer);
+
+  const anim = outer.animate(
+    [
+      { transform: 'translate(0, 0)', opacity: 0.2 },
+      { opacity: 1, offset: 0.15 },
+      { transform: `translate(${dx}px, ${dy}px)`, opacity: 1 },
+    ],
+    { duration: 380, easing: 'cubic-bezier(.35,.1,.7,1)' }
+  );
+  anim.onfinish = () => outer.remove();
+}
+
+function impact(layer, at, variant) {
+  if (!layer) return;
+  const el = document.createElement('div');
+  el.className = `fx-impact fx-impact--${variant}`;
+  el.style.left = `${at.x}px`;
+  el.style.top = `${at.y}px`;
+  layer.appendChild(el);
+  el.animate(
+    [
+      { transform: 'translate(-50%, -50%) scale(.3)', opacity: 0.95 },
+      { transform: 'translate(-50%, -50%) scale(1.6)', opacity: 0 },
+    ],
+    { duration: 340, easing: 'ease-out' }
+  ).onfinish = () => el.remove();
+}
+
+function spawnHeal(layer, at) {
+  if (!layer) return;
+  const el = document.createElement('div');
+  el.className = 'fx-heal';
+  el.style.left = `${at.x}px`;
+  el.style.top = `${at.y}px`;
+  el.innerHTML =
+    '<div class="fx-heal__glow"></div>' +
+    '<span class="fx-heal__cross" style="--i:0">✚</span>' +
+    '<span class="fx-heal__cross" style="--i:1">✚</span>' +
+    '<span class="fx-heal__cross" style="--i:2">✚</span>';
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 900);
+}
+
+// ---------- Reproductores por tipo ----------
+
+async function playMelee(layer, from, to, sourceKey, targetKey) {
+  const src = elByKey(sourceKey);
+  const dx = (to.x - from.x) * 0.55;
+  const dy = (to.y - from.y) * 0.55;
+  if (src) {
+    src.animate(
+      [
+        { transform: 'translate(0,0)' },
+        { transform: `translate(${dx}px, ${dy}px)`, offset: 0.45 },
+        { transform: 'translate(0,0)' },
+      ],
+      { duration: 360, easing: 'cubic-bezier(.3,.85,.4,1)' }
+    );
+  }
+  await wait(170); // hasta el momento del golpe
+  impact(layer, to, 'melee');
+  flash(targetKey, 'is-hit', 340);
+  await wait(200);
+}
+
+async function playRanged(layer, from, to, targetKey, variant) {
+  spawnProjectile(layer, from, to, variant);
+  await wait(380); // viaje del proyectil
+  impact(layer, to, variant);
+  flash(targetKey, 'is-hit', 340);
+  await wait(120);
+}
+
+async function playHeal(layer, at, targetKey) {
+  spawnHeal(layer, at);
+  flash(targetKey, 'is-healing', 820);
+  await wait(720);
+}
+
+/** Reproduce una entrada de log con animación. Resuelve cuando termina. */
+export async function playEvent(layer, e) {
+  if (prefersReduced()) return;
+  const to = getCenter(e.target);
+  if (!to) return;
+
+  if (e.anim === 'heal') {
+    await playHeal(layer, to, e.target);
+    return;
+  }
+  const from = e.source ? getCenter(e.source) : null;
+  if (!from) {
+    flash(e.target, 'is-hit', 340);
+    return;
+  }
+  if (e.anim === 'ranged') {
+    const variant = e.kind === 'spell' ? 'arcane' : 'arrow';
+    await playRanged(layer, from, to, e.target, variant);
+  } else {
+    await playMelee(layer, from, to, e.source, e.target);
+  }
+}

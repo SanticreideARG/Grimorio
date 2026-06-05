@@ -3,7 +3,7 @@
 // (estrellas) → termina turno. Tras todos los héroes, se resuelve la fase
 // enemiga. Victoria/derrota muestran overlay.
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useGameStore } from '../../store/gameStore.js';
 import { content } from '../../data/index.js';
 import {
@@ -11,6 +11,7 @@ import {
   validEnemyTargets,
   validAllyTargets,
 } from '../../systems/combat.js';
+import { useCombatFx } from '../combat/useCombatFx.js';
 
 const KIND_LABEL = { combat: 'Combate', elite: 'Combate de Élite', boss: 'Jefe' };
 
@@ -34,6 +35,10 @@ export default function CombatScreen() {
   const abandon = useGameStore((s) => s.abandonCombat);
 
   const [targetingSpell, setTargetingSpell] = useState(null);
+  const fxRef = useRef(null);
+
+  // Reproduce animaciones de las acciones nuevas del log de combate.
+  useCombatFx(combat, fxRef);
 
   // Cancelar selección de objetivo al cambiar de héroe o de fase.
   useEffect(() => {
@@ -245,6 +250,9 @@ export default function CombatScreen() {
           </div>
         </div>
       )}
+
+      {/* Capa de efectos visuales (proyectiles, impactos, curación) */}
+      <div className="fx-layer" ref={fxRef} aria-hidden="true" />
     </main>
   );
 }
@@ -296,6 +304,7 @@ function EnemyCard({ e, clickable, onClick }) {
   const dead = e.hp <= 0;
   return (
     <button
+      data-anim-key={e.uid}
       className={`unit unit--enemy${e.isBoss ? ' unit--boss' : ''}${e.isElite ? ' unit--elite' : ''}${clickable ? ' is-clickable' : ''}${dead ? ' is-dead' : ''}`}
       onClick={onClick}
       disabled={!clickable}
@@ -310,6 +319,7 @@ function EnemyCard({ e, clickable, onClick }) {
 function HeroCard({ h, active, clickable, onClick }) {
   return (
     <button
+      data-anim-key={h.id}
       className={`unit unit--hero${active ? ' is-active' : ''}${clickable ? ' is-clickable' : ''}${h.down ? ' is-down' : ''}`}
       onClick={onClick}
       disabled={!clickable}

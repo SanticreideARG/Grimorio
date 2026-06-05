@@ -32,7 +32,7 @@ export const cap1 = {
     { id: 'c1n07', type: 'combat', name: 'La Aldea Quemada', pos: { x: 38.65, y: 46.30 }, enemies: ['lanzador', 'esbirro', 'esbirro'] },
     { id: 'c1n08', type: 'elite', name: 'El Carroñero Alfa', pos: { x: 14.17, y: 52.41 }, enemies: ['carronero_alfa'] },
     { id: 'c1n09', type: 'event', name: 'El Pozo Seco', pos: { x: 13.65, y: 70.37 }, eventPool: 'eventos' },
-    { id: 'c1n10', type: 'combat', name: 'Emboscada en la Niebla', pos: { x: 37.50, y: 67.78 }, enemies: ['acechador', 'enjambre'] },
+    { id: 'c1n10', type: 'combat', name: 'Emboscada en la Niebla', pos: { x: 37.50, y: 67.78 }, enemies: ['acechador', 'invocador'] },
     { id: 'c1n11', type: 'rest', name: 'Claro del Viajero', pos: { x: 62.08, y: 72.41 } },
     { id: 'c1n12', type: 'elite', name: 'El Caballero Caído', pos: { x: 86.46, y: 67.96 }, enemies: ['caballero_caido'] },
     { id: 'c1n13', type: 'shop', name: 'Restos del Bazar', pos: { x: 87.29, y: 87.96 } },

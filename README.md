@@ -50,7 +50,11 @@ Ver `docs/ROADMAP.md` (milestones M0–M7) y `docs/QUESTIONNAIRE.md` (decisiones
 - **M1 ✅** — Tablero y bucle de mapa: `systems/board.js` (avance lineal),
   Cap.1 completo en datos (16 nodos), render del mapa en React (pergamino,
   sendero, nodos data-driven, peón) y recorrido nodo a nodo.
-- **M2 ◻** — Combate (dados de símbolos, frente/retaguardia).
+- **M2 ✅** — Combate: `systems/combat.js` (dados de símbolos, frente/
+  retaguardia, hechizos, botín) + `systems/enemyAI.js` (weakest/tank/swarm/
+  summon/boss). Selección de party (1–4), `CombatScreen`, enemigos del Cap.1,
+  3 dificultades. Combate serializable y reanudable.
+- **M3 ◻** — Subsistemas: eventos, maldiciones, mascotas, track de Perdición.
 
 ## Documentación
 

@@ -8,6 +8,8 @@ import { DIFFICULTIES } from '../core/state.js';
 import { script } from '../data/script.js';
 import SlotCard from './components/SlotCard.jsx';
 import MapScreen from './screens/MapScreen.jsx';
+import PartySelect from './screens/PartySelect.jsx';
+import CombatScreen from './screens/CombatScreen.jsx';
 
 const DIFFICULTY_LABEL = { facil: 'Fácil', normal: 'Normal', dificil: 'Difícil' };
 
@@ -23,6 +25,10 @@ export default function App() {
   // Partida activa: enrutar por vista en juego.
   if (game) {
     switch (game.view) {
+      case 'party-select':
+        return <PartySelect />;
+      case 'combat':
+        return <CombatScreen />;
       case 'map':
       default:
         return <MapScreen />;

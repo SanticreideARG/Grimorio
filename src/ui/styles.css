@@ -642,3 +642,384 @@ body {
     font-size: 54px;
   }
 }
+
+/* ===== Selección de party (M2) ===== */
+.roster {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+  width: 100%;
+  max-width: 920px;
+  margin: 8px 0 24px;
+}
+.hero-pick {
+  position: relative;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  border: 1px solid rgba(201, 145, 63, 0.35);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(40, 26, 12, 0.55), rgba(15, 9, 4, 0.7));
+  color: var(--text);
+  cursor: pointer;
+  transition: transform 0.08s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.hero-pick:hover:not(.is-disabled) {
+  border-color: var(--amber);
+  transform: translateY(-2px);
+}
+.hero-pick.is-selected {
+  border-color: var(--amber-lt);
+  box-shadow: 0 0 18px rgba(232, 196, 131, 0.35);
+  background: linear-gradient(180deg, rgba(70, 45, 20, 0.7), rgba(25, 15, 7, 0.85));
+}
+.hero-pick.is-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.hero-pick__order {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #2c1606;
+  background: radial-gradient(circle at 38% 32%, #f1d59a, #cf9d4f);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+.hero-pick__row {
+  align-self: flex-start;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 145, 63, 0.4);
+  color: var(--amber);
+}
+.hero-pick__row--back {
+  color: #9fb0d0;
+  border-color: rgba(120, 140, 180, 0.4);
+}
+.hero-pick__name {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 20px;
+  color: var(--amber-lt);
+}
+.hero-pick__role {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.hero-pick__stats {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+  font-size: 14px;
+}
+.party-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  max-width: 920px;
+}
+.party-actions .btn {
+  flex: 0 0 auto;
+}
+.party-count {
+  margin: 0 auto;
+  letter-spacing: 0.15em;
+  color: var(--amber);
+}
+
+/* ===== Combate (M2) ===== */
+.combat {
+  min-height: 100%;
+  display: grid;
+  grid-template-areas:
+    'top    top'
+    'enemies log'
+    'mid     log'
+    'heroes  log';
+  grid-template-columns: 1fr 260px;
+  gap: 14px;
+  padding: 16px 20px 24px;
+}
+.combat-top {
+  grid-area: top;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(201, 145, 63, 0.25);
+}
+.combat-kind {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 22px;
+  color: var(--amber-lt);
+}
+.combat-round {
+  color: var(--amber);
+  letter-spacing: 0.15em;
+}
+.combat-top .btn {
+  margin-left: auto;
+}
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.side--enemies { grid-area: enemies; }
+.side--heroes { grid-area: heroes; }
+.combat-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.combat-row__label {
+  width: 86px;
+  flex: 0 0 auto;
+  text-align: right;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.combat-row__units {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* unidades (cartas de combate) */
+.unit {
+  width: 150px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid rgba(201, 145, 63, 0.35);
+  border-radius: 9px;
+  background: linear-gradient(180deg, rgba(40, 26, 12, 0.6), rgba(15, 9, 4, 0.78));
+  color: var(--text);
+  cursor: default;
+  transition: transform 0.08s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.unit__name {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--amber-lt);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.unit__meta {
+  font-size: 12px;
+  color: var(--text-dim);
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  min-height: 18px;
+}
+.unit--boss {
+  width: 200px;
+  border-color: rgba(178, 53, 34, 0.6);
+}
+.unit--boss .unit__name {
+  color: #e7a89a;
+}
+.unit--elite {
+  border-color: rgba(178, 90, 40, 0.55);
+}
+.unit.is-clickable {
+  cursor: pointer;
+  border-color: var(--amber);
+  box-shadow: 0 0 14px rgba(201, 145, 63, 0.4);
+}
+.unit.is-clickable:hover {
+  transform: translateY(-2px);
+}
+.unit.is-active {
+  border-color: var(--amber-lt);
+  box-shadow: 0 0 18px rgba(232, 196, 131, 0.5);
+}
+.unit.is-dead,
+.unit.is-down {
+  opacity: 0.4;
+  filter: grayscale(0.6);
+}
+
+/* barra de vida */
+.hpbar {
+  position: relative;
+  height: 16px;
+  border-radius: 4px;
+  background: rgba(10, 6, 3, 0.7);
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+}
+.hpbar__fill {
+  height: 100%;
+  transition: width 0.25s ease;
+}
+.hpbar--hero .hpbar__fill {
+  background: linear-gradient(90deg, #6b3f18, #c9913f);
+}
+.hpbar--enemy .hpbar__fill {
+  background: linear-gradient(90deg, #4d130c, #b23522);
+}
+.hpbar__txt {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #f3dcab;
+  text-shadow: 0 1px 1px #000;
+}
+.chip {
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 145, 63, 0.4);
+}
+.chip--block { color: #9fb0d0; }
+.chip--energy { color: var(--amber-lt); }
+.chip--down { color: #e7a89a; }
+
+/* zona central */
+.combat-mid {
+  grid-area: mid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid rgba(201, 145, 63, 0.2);
+  border-radius: 10px;
+  background: rgba(10, 7, 5, 0.4);
+}
+.active-banner {
+  font-size: 16px;
+  color: var(--text);
+  letter-spacing: 0.04em;
+}
+.active-banner strong {
+  color: var(--amber-lt);
+}
+.btn--big {
+  font-size: 16px;
+  padding: 14px 28px;
+}
+.hint {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: var(--text-dim);
+  font-size: 15px;
+}
+.dice-tray {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.dice-tray__faces {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.die {
+  min-width: 44px;
+  height: 44px;
+  padding: 0 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  border-radius: 8px;
+  background: radial-gradient(circle at 38% 30%, #f1d59a, #cf9d4f 70%, #a9762f);
+  color: #2c1606;
+  box-shadow: inset 0 2px 4px rgba(255, 245, 220, 0.6), 0 4px 10px rgba(0, 0, 0, 0.5);
+  border: 1px solid #835414;
+}
+.dice-tray__totals {
+  display: flex;
+  gap: 16px;
+  font-size: 17px;
+  color: var(--amber-lt);
+}
+.tot.is-spent {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+.spell-bar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.spell-btn {
+  flex: 0 0 auto;
+}
+.spell-btn.is-active {
+  border-color: var(--amber-lt);
+  box-shadow: 0 0 14px rgba(232, 196, 131, 0.5);
+}
+.spell-cost {
+  color: var(--amber);
+}
+.enemy-phase {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+/* registro */
+.combat-log {
+  grid-area: log;
+  border: 1px solid rgba(201, 145, 63, 0.25);
+  border-radius: 10px;
+  background: rgba(10, 7, 5, 0.5);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  line-height: 1.4;
+  overflow-y: auto;
+  max-height: 70vh;
+}
+.logline {
+  color: var(--text-dim);
+  border-bottom: 1px dashed rgba(201, 145, 63, 0.12);
+  padding-bottom: 5px;
+}
+.logline--attack, .logline--spell { color: var(--text); }
+.logline--victory { color: var(--amber-lt); font-weight: 600; }
+.logline--defeat, .logline--down { color: #e7a89a; }
+.logline--phase { color: var(--amber); letter-spacing: 0.05em; }
+
+@media (max-width: 900px) {
+  .combat {
+    grid-template-areas:
+      'top'
+      'enemies'
+      'mid'
+      'heroes'
+      'log';
+    grid-template-columns: 1fr;
+  }
+  .combat-log { max-height: 200px; }
+}

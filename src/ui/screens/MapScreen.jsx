@@ -16,10 +16,13 @@ import {
 } from '../../systems/board.js';
 import BoardMap from '../components/BoardMap.jsx';
 
+const COMBAT_TYPES = new Set(['combat', 'elite', 'boss']);
+
 export default function MapScreen() {
   const game = useGameStore((s) => s.game);
   const resolveNode = useGameStore((s) => s.resolveNode);
   const advanceNode = useGameStore((s) => s.advanceNode);
+  const startCombat = useGameStore((s) => s.startCombat);
   const quitToMenu = useGameStore((s) => s.quitToMenu);
 
   const chapter = getChapter(game);
@@ -29,6 +32,10 @@ export default function MapScreen() {
   const last = isLastNode(game);
   const complete = isChapterComplete(game);
   const atStart = game.nodeIndex === 0 && !resolved;
+  const isCombat = COMBAT_TYPES.has(node.type);
+
+  // Acción al resolver el nodo: combate lanza el motor; el resto, narrativa.
+  const onResolve = isCombat ? startCombat : resolveNode;
 
   return (
     <main className="map-screen">
@@ -79,7 +86,7 @@ export default function MapScreen() {
 
           <div className="node-panel__actions">
             {!resolved && (
-              <button className="btn btn--primary" onClick={resolveNode}>
+              <button className="btn btn--primary" onClick={onResolve}>
                 {nodeActionLabel(node.type)}
               </button>
             )}

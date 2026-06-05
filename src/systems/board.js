@@ -77,28 +77,28 @@ export const describeNode = (node) => (node ? NODE_INTRO[node.type] ?? '' : '');
 // ---------- Transiciones (devuelven nuevo estado) ----------
 
 /**
- * Marca el nodo actual como resuelto y registra una entrada de log.
- * En M1 no aplica efectos profundos (combate/eventos/curación vienen después).
- * @returns {{state: object, entry: object|null}}
+ * Marca un nodo como resuelto (visitado + entrada de log con texto dado).
+ * No-op si ya estaba resuelto. Lo usa tanto la resolución narrativa (M1) como
+ * la victoria de combate (M2).
  */
-export function resolveNode(state) {
-  const node = getCurrentNode(state);
-  if (!node || state.visited.includes(node.id)) {
-    return { state, entry: null };
-  }
-  const entry = {
-    node: node.id,
-    type: node.type,
-    name: node.name,
-    text: describeNode(node),
-    at: Date.now(),
-  };
-  const next = {
+export function markNodeResolved(state, node, text) {
+  if (!node || state.visited.includes(node.id)) return state;
+  const entry = { node: node.id, type: node.type, name: node.name, text, at: Date.now() };
+  return {
     ...state,
     visited: [...state.visited, node.id],
     log: [...(state.log ?? []), entry],
   };
-  return { state: next, entry };
+}
+
+/**
+ * Resuelve el nodo actual con su texto narrativo (nodos no-combate en M1).
+ * @returns {{state: object, entry: object|null}}
+ */
+export function resolveNode(state) {
+  const node = getCurrentNode(state);
+  const next = markNodeResolved(state, node, describeNode(node));
+  return { state: next, entry: next === state ? null : next.log.at(-1) };
 }
 
 /** Avanza al siguiente nodo si el actual está resuelto y no es el último. */

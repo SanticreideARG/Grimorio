@@ -41,7 +41,8 @@ export function createNewGame(opts = {}) {
     party: opts.party ?? [], // party fija (1–4 héroes); se llena en M1+
 
     // Progreso de campaña
-    view: 'map', // vista activa en juego: map | event | combat | camp | end
+    view: 'party-select', // vista inicial: elegir party. Luego map | combat | ...
+    combat: null, // estado de combate activo (M2), o null fuera de combate
     chapterIndex: 0, // capítulo actual (0..3)
     nodeIndex: 0, // nodo actual dentro del capítulo
     visited: [], // ids de nodos ya resueltos

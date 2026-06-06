@@ -19,8 +19,6 @@ import { effectiveMaxHp } from '../../systems/progression.js';
 import { content } from '../../data/index.js';
 import BoardMap from '../components/BoardMap.jsx';
 
-const COMBAT_TYPES = new Set(['combat', 'elite', 'boss']);
-
 export default function MapScreen() {
   const game = useGameStore((s) => s.game);
   const resolveNode = useGameStore((s) => s.resolveNode);
@@ -38,7 +36,6 @@ export default function MapScreen() {
   const last = isLastNode(game);
   const complete = isChapterComplete(game);
   const atStart = game.nodeIndex === 0 && !resolved;
-  const isCombat = COMBAT_TYPES.has(node.type);
 
   // Acción al resolver el nodo según tipo.
   const RESOLVERS = {

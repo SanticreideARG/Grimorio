@@ -10,7 +10,8 @@ import { passesCheck, drawEventCard, resolveEvent } from '../src/systems/events.
 import { addPet, getDiceBonus } from '../src/systems/pets.js';
 import { content } from '../src/data/index.js';
 import {
-  initCombat, rollActiveHero, endHeroTurn, resolveEnemyPhase, isOver,
+  initCombat, rollActiveHero, heroCast, endHeroTurn, resolveEnemyPhase,
+  activeHero, isOver,
 } from '../src/systems/combat.js';
 
 const chapters = Object.values(content.chaptersById);
@@ -135,6 +136,64 @@ test('addPet añade mascota y getDiceBonus la contabiliza', () => {
   // No duplica
   g = addPet(g, 'cuervo');
   assert.equal(g.pets.length, 1);
+});
+
+test('diceBonus de mascotas añade dados al pool en combate', () => {
+  const rng = createRng(5);
+  let c = initCombat({ node: nodeOf('c1n02'), party: ['guerrera'], difficulty: 'facil', diceBonus: 1 });
+  c = rollActiveHero(c, rng);
+  // guerrera tira 4 dados + 1 del Cuervo = 5
+  assert.equal(activeHero(c).pool.faces.length, 5);
+});
+
+// ---- Efecto de maldiciones en combate (M3) ----
+test('pendingCurses se aplican a toda la party al iniciar combate', () => {
+  const c = initCombat({
+    node: nodeOf('c1n02'), party: ['guerrera', 'mago'],
+    difficulty: 'facil', pendingCurses: ['debilidad'],
+  });
+  assert.ok(c.heroes.every((h) => h.curses.some((cu) => cu.id === 'debilidad')));
+  assert.ok(c.log.some((l) => l.kind === 'curse'));
+});
+
+test('maldición diceReduce reduce el pool de dados tirado', () => {
+  const rng = createRng(5);
+  let c = initCombat({ node: nodeOf('c1n02'), party: ['guerrera'], difficulty: 'facil' });
+  // guerrera tira 4 dados; confusión (diceReduce power 2) → 2 dados
+  c.heroes[0] = applyCurse(c.heroes[0], 'confusion');
+  c = rollActiveHero(c, rng);
+  assert.equal(activeHero(c).pool.faces.length, 2);
+});
+
+test('maldición Silencio (blocksSpells) impide lanzar hechizos', () => {
+  const rng = createRng(3);
+  let c = initCombat({ node: nodeOf('c1n07'), party: ['mago'], difficulty: 'facil' });
+  c = rollActiveHero(c, rng);
+  c.heroes[0].energy = 5; // energía suficiente para Bola de Fuego (coste 2)
+  const target = c.enemies.find((e) => e.hp > 0);
+  // sin silencio: el hechizo cambia el estado (daña al objetivo)
+  const cast = heroCast(c, 'bola_fuego', target.uid);
+  assert.notDeepEqual(cast.enemies, c.enemies);
+  // con silencio: el hechizo no surte efecto
+  c.heroes[0] = applyCurse(c.heroes[0], 'silencio');
+  const blocked = heroCast(c, 'bola_fuego', target.uid);
+  assert.deepEqual(blocked.enemies, c.enemies);
+});
+
+test('maldición Sangría (onIncomingDamage) aumenta el daño recibido', () => {
+  function dmgTaken(withCurse) {
+    const rng = createRng(2);
+    let c = initCombat({ node: nodeOf('c1n02'), party: ['guerrera'], difficulty: 'facil' });
+    c.enemies = [c.enemies[0]]; // un único atacante determinista
+    c.phase = 'enemy';
+    if (withCurse) c.heroes[0] = applyCurse(c.heroes[0], 'sangria');
+    const before = c.heroes[0].hp;
+    c = resolveEnemyPhase(c, rng);
+    return before - c.heroes[0].hp;
+  }
+  const base = dmgTaken(false);
+  const cursed = dmgTaken(true);
+  assert.equal(cursed - base, 2); // power de Sangría
 });
 
 // ---- Boss behavior deck (Gulrath) ----

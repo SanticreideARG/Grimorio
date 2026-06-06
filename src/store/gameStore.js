@@ -21,7 +21,15 @@ import {
 } from '../systems/board.js';
 import { addDoom } from '../systems/doom.js';
 import { initDecks } from '../systems/decks.js';
-import { getDoomReduction } from '../systems/pets.js';
+import { getDoomReduction, getDiceBonus } from '../systems/pets.js';
+import {
+  initPartyHp,
+  combatHeroState,
+  persistCombatHp,
+  restPartyFraction,
+  buyItem,
+  buyPotion,
+} from '../systems/progression.js';
 import {
   drawEventCard,
   resolveEvent,
@@ -113,15 +121,19 @@ export const useGameStore = create((set, get) => ({
   setParty(heroIds) {
     const rng = createRng(get().game?.rngState ?? Date.now());
     const decks = initDecks(rng);
-    get().patchGame((g) => ({
-      ...g,
-      party: heroIds,
-      pets: g.pets ?? [],
-      pendingCurses: [],
-      decks,
-      rngState: rng.getState(),
-      view: 'map',
-    }));
+    get().patchGame((g) => {
+      const base = {
+        ...g,
+        party: heroIds,
+        pets: g.pets ?? [],
+        inventory: g.inventory ?? [],
+        pendingCurses: [],
+        decks,
+        rngState: rng.getState(),
+        view: 'map',
+      };
+      return initPartyHp(base); // vida persistente a tope (M4)
+    });
   },
 
   // ---------- Combate (M2) ----------
@@ -136,8 +148,19 @@ export const useGameStore = create((set, get) => ({
       node,
       party: game.party,
       difficulty: game.difficulty,
+      pendingCurses: game.pendingCurses ?? [],
+      diceBonus: getDiceBonus(game),
+      heroState: combatHeroState(game),
     });
-    get().patchGame((g) => ({ ...g, combat, view: 'combat' }));
+    // Las maldiciones pendientes ya se aplicaron a la party: se consumen.
+    // Guardamos la vida de entrada para poder reintentar el combate.
+    get().patchGame((g) => ({
+      ...g,
+      combat,
+      pendingCurses: [],
+      combatEntryHp: { ...(g.partyHp ?? {}) },
+      view: 'combat',
+    }));
     bus.emit(EVENTS.COMBAT_START, combat);
   },
 
@@ -190,21 +213,27 @@ export const useGameStore = create((set, get) => ({
       const pendingDoom = g.combat.loot?.pendingDoom ?? 0;
       const doomReduction = getDoomReduction(g);
       const doomDelta = Math.max(0, pendingDoom - doomReduction);
-      let s = markNodeResolved(g, node, `Victoria en ${node.name}. Botín: ${gold} de oro.`);
-      s = { ...s, gold: s.gold + gold, combat: null, view: 'map' };
+      let s = persistCombatHp(g, g.combat); // la vida final se mantiene en el mapa (M4)
+      s = markNodeResolved(s, node, `Victoria en ${node.name}. Botín: ${gold} de oro.`);
+      s = { ...s, gold: s.gold + gold, combat: null, combatEntryHp: null, view: 'map' };
       if (doomDelta > 0) s = addDoom(s, doomDelta, Object.values(content.chaptersById));
       return s;
     });
     bus.emit(EVENTS.COMBAT_END, { result: 'victory' });
   },
 
-  /** Derrota: reintenta el mismo combate desde cero. */
+  /** Derrota: reintenta el mismo combate restaurando la vida de entrada. */
   retryCombat() {
     const { game } = get();
     if (!game?.combat) return;
     const node = getCurrentNode(game);
-    const combat = initCombat({ node, party: game.party, difficulty: game.difficulty });
-    get().patchGame((g) => ({ ...g, combat, view: 'combat' }));
+    const restored = { ...game, partyHp: { ...(game.combatEntryHp ?? game.partyHp ?? {}) } };
+    const combat = initCombat({
+      node, party: restored.party, difficulty: restored.difficulty,
+      diceBonus: getDiceBonus(restored),
+      heroState: combatHeroState(restored),
+    });
+    get().patchGame((g) => ({ ...g, partyHp: restored.partyHp, combat, view: 'combat' }));
   },
 
   /** Abandona el combate y vuelve al mapa (el nodo queda sin resolver). */
@@ -236,6 +265,47 @@ export const useGameStore = create((set, get) => ({
   /** Expone la carta activa del evento para la UI. */
   getActiveEventCard() {
     return getActiveCard(get().game ?? {});
+  },
+
+  // ---------- Progresión y campamento (M4) ----------
+
+  /** Nodo de descanso: cura a la party y marca el nodo resuelto. */
+  rest() {
+    const { game } = get();
+    if (game == null) return;
+    const node = getCurrentNode(game);
+    if (!node) return;
+    get().patchGame((g) => {
+      // Descanso: cura el 40% de la vida máxima de cada héroe (Q-PROGRESION).
+      const healed = restPartyFraction(g, 0.4);
+      return markNodeResolved(healed, node, `Descanso en ${node.name}. La party recupera fuerzas.`);
+    });
+  },
+
+  /** Abre la tienda del nodo actual. */
+  openShop() {
+    get().patchGame((g) => ({ ...g, view: 'shop' }));
+  },
+
+  /** Compra un ítem en la tienda (mejora permanente de party). */
+  shopBuyItem(itemId) {
+    get().patchGame((g) => buyItem(g, itemId));
+  },
+
+  /** Compra y usa una poción de curación en la tienda. */
+  shopBuyPotion(potionId) {
+    get().patchGame((g) => buyPotion(g, potionId));
+  },
+
+  /** Sale de la tienda: marca el nodo resuelto y vuelve al mapa. */
+  leaveShop() {
+    const { game } = get();
+    if (game == null) return;
+    const node = getCurrentNode(game);
+    get().patchGame((g) => {
+      const s = markNodeResolved(g, node, `Visitasteis ${node?.name ?? 'la tienda'}.`);
+      return { ...s, view: 'map' };
+    });
   },
 
   /** Borra un slot (y desactiva la partida si era la activa). */

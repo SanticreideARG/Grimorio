@@ -54,7 +54,19 @@ Ver `docs/ROADMAP.md` (milestones M0–M7) y `docs/QUESTIONNAIRE.md` (decisiones
   retaguardia, hechizos, botín) + `systems/enemyAI.js` (weakest/tank/swarm/
   summon/boss). Selección de party (1–4), `CombatScreen`, enemigos del Cap.1,
   3 dificultades. Combate serializable y reanudable.
-- **M3 ◻** — Subsistemas: eventos, maldiciones, mascotas, track de Perdición.
+- **M3 ✅** — Subsistemas: `decks.js` (robo/descarte/reciclado), `curses.js`
+  (maldiciones que penalizan en combate: diceReduce, blocksSpells,
+  onIncomingDamage), `pets.js` (bono de dados y reducción de Perdición),
+  `doom.js` (track de Perdición). Eventos con elecciones y chequeos de dados
+  (`EventScreen`), mazo de comportamiento de Gulrath y Cap.1 jugable de punta a
+  punta con jefe. Tests headless de subsistemas.
+- **M4 ◐** — Progresión y campamento: `progression.js` (equipo que mejora dados/
+  vida, vida persistente entre nodos, descanso, tienda). Combate arranca desde la
+  vida persistente y la conserva al terminar (caídos reviven a 1, sin permadeath).
+  Pantalla de tienda (`ShopScreen`) y nodos de descanso. Save subido a v2 con
+  migración. Tests de progresión. *Pendiente: transición Cap.1 → Cap.2 (necesita
+  el contenido del Cap.2 de M5).*
+- **M5 ◻** — Contenido completo: capítulos 2–4, jefes, roster e ítems/cartas.
 
 ## Documentación
 

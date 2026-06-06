@@ -1359,3 +1359,223 @@ body {
     animation: none;
   }
 }
+
+/* ===== Estado de party en el mapa (M4) ===== */
+.party-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 8px 16px;
+  justify-content: center;
+  background: rgba(15, 9, 4, 0.5);
+  border-bottom: 1px solid rgba(201, 145, 63, 0.18);
+}
+.party-status__hero {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+.party-status__name {
+  color: var(--amber);
+  min-width: 56px;
+}
+.party-status__bar {
+  position: relative;
+  width: 70px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  border: 1px solid rgba(201, 145, 63, 0.25);
+}
+.party-status__fill {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #b23522, #d98a2b);
+  transition: width 0.25s ease;
+}
+.party-status__num {
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===== Tienda / campamento (M4) ===== */
+.shop-screen {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 24px clamp(16px, 5vw, 64px);
+  gap: 20px;
+}
+.shop-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.shop-header__label {
+  letter-spacing: 0.25em;
+  font-size: 12px;
+  color: var(--amber);
+}
+.shop-header__title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 30px;
+  color: var(--amber-lt);
+  margin: 0;
+  flex: 1;
+}
+.shop-header__gold {
+  font-size: 18px;
+  color: var(--amber-lt);
+}
+.shop-body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  flex: 1;
+}
+.shop-section__title {
+  font-family: 'Cinzel', serif;
+  font-size: 18px;
+  color: var(--amber);
+  margin: 0 0 12px;
+  border-bottom: 1px solid rgba(201, 145, 63, 0.2);
+  padding-bottom: 6px;
+}
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+.shop-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid rgba(201, 145, 63, 0.3);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(40, 26, 12, 0.55), rgba(15, 9, 4, 0.75));
+}
+.shop-card.is-owned {
+  opacity: 0.6;
+}
+.shop-card__icon {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid rgba(201, 145, 63, 0.3);
+}
+.shop-card__icon--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 26px;
+  color: rgba(232, 196, 131, 0.45);
+  background: rgba(20, 12, 5, 0.6);
+}
+.shop-card__name {
+  font-family: 'Cinzel', serif;
+  color: var(--amber-lt);
+}
+.shop-card__desc {
+  font-size: 13px;
+  color: var(--text-dim);
+  flex: 1;
+}
+.shop-card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.shop-card__price {
+  color: var(--amber);
+}
+.shop-actions {
+  display: flex;
+  justify-content: center;
+}
+
+/* ===== Ilustraciones de contenido (assets) ===== */
+
+/* Arte de unidad en combate (enemigo/héroe) */
+.unit__art {
+  width: 100%;
+  height: 92px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid rgba(201, 145, 63, 0.3);
+  background: rgba(0, 0, 0, 0.35);
+  display: block;
+}
+.unit--boss .unit__art {
+  height: 130px;
+}
+/* Placeholder con inicial cuando aún no hay imagen */
+.unit__art--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 34px;
+  color: rgba(232, 196, 131, 0.45);
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(40, 26, 12, 0.6),
+    rgba(40, 26, 12, 0.6) 8px,
+    rgba(20, 12, 5, 0.6) 8px,
+    rgba(20, 12, 5, 0.6) 16px
+  );
+}
+
+/* Retrato de héroe en la selección de party */
+.hero-pick__art {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid rgba(201, 145, 63, 0.3);
+  background: rgba(0, 0, 0, 0.35);
+  display: block;
+}
+.hero-pick__art--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 48px;
+  color: rgba(232, 196, 131, 0.4);
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(40, 26, 12, 0.6),
+    rgba(40, 26, 12, 0.6) 10px,
+    rgba(20, 12, 5, 0.6) 10px,
+    rgba(20, 12, 5, 0.6) 20px
+  );
+}
+
+/* Arte de la carta de evento (16:9) */
+.event-card__art {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid rgba(201, 145, 63, 0.35);
+  margin-bottom: 16px;
+  display: block;
+}
+.event-card__art--placeholder {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(40, 26, 12, 0.55),
+    rgba(40, 26, 12, 0.55) 12px,
+    rgba(20, 12, 5, 0.55) 12px,
+    rgba(20, 12, 5, 0.55) 24px
+  );
+}

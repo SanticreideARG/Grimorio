@@ -15,6 +15,7 @@ import {
   nodeActionLabel,
 } from '../../systems/board.js';
 import { getDoomRatio } from '../../systems/doom.js';
+import { effectiveMaxHp } from '../../systems/progression.js';
 import { content } from '../../data/index.js';
 import BoardMap from '../components/BoardMap.jsx';
 
@@ -26,6 +27,8 @@ export default function MapScreen() {
   const advanceNode = useGameStore((s) => s.advanceNode);
   const startCombat = useGameStore((s) => s.startCombat);
   const startEvent = useGameStore((s) => s.startEvent);
+  const rest = useGameStore((s) => s.rest);
+  const openShop = useGameStore((s) => s.openShop);
   const quitToMenu = useGameStore((s) => s.quitToMenu);
 
   const chapter = getChapter(game);
@@ -36,10 +39,13 @@ export default function MapScreen() {
   const complete = isChapterComplete(game);
   const atStart = game.nodeIndex === 0 && !resolved;
   const isCombat = COMBAT_TYPES.has(node.type);
-  const isEvent = node.type === 'event';
 
   // Acción al resolver el nodo según tipo.
-  const onResolve = isCombat ? startCombat : isEvent ? startEvent : resolveNode;
+  const RESOLVERS = {
+    combat: startCombat, elite: startCombat, boss: startCombat,
+    event: startEvent, rest, shop: openShop,
+  };
+  const onResolve = RESOLVERS[node.type] ?? resolveNode;
 
   return (
     <main className="map-screen">
@@ -67,6 +73,26 @@ export default function MapScreen() {
           <span className="hud__stat" title="Progreso">{game.nodeIndex + 1}/{nodes.length}</span>
         </div>
       </header>
+
+      {/* Estado de la party (vida persistente) */}
+      <div className="party-status">
+        {(game.party ?? []).map((id) => {
+          const hero = content.heroesById[id];
+          if (!hero) return null;
+          const maxHp = effectiveMaxHp(id, game);
+          const hp = game.partyHp?.[id] ?? maxHp;
+          const pct = maxHp > 0 ? Math.max(0, Math.min(100, (hp / maxHp) * 100)) : 0;
+          return (
+            <span key={id} className="party-status__hero" title={`${hero.name}: ${hp}/${maxHp}`}>
+              <span className="party-status__name">{hero.name.split(' ')[0]}</span>
+              <span className="party-status__bar">
+                <span className="party-status__fill" style={{ width: `${pct}%` }} />
+              </span>
+              <span className="party-status__num">{hp}/{maxHp}</span>
+            </span>
+          );
+        })}
+      </div>
 
       <div className="map-body">
         <BoardMap

@@ -58,7 +58,7 @@ function autoBattle(nodeId, party, seed, difficulty = 'normal') {
 test('initCombat construye héroes y enemigos del nodo', () => {
   const c = initCombat({ node: nodeOf('c1n02'), party: ['guerrera', 'mago'], difficulty: 'normal' });
   assert.equal(c.heroes.length, 2);
-  assert.equal(c.enemies.length, 2); // esbirro x2
+  assert.equal(c.enemies.length, 3); // esbirro x3
   assert.equal(c.phase, 'hero');
   assert.ok(c.enemies.every((e) => e.hp === e.maxHp));
 });

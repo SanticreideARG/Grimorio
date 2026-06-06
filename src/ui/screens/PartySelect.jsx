@@ -5,6 +5,7 @@
 import { useState } from 'react';
 import { useGameStore } from '../../store/gameStore.js';
 import { heroes } from '../../data/heroes.js';
+import { assetUrl } from '../assets.js';
 
 const ROW_LABEL = { front: 'Frente', back: 'Retaguardia', any: 'Cualquiera' };
 const MAX = 4;
@@ -52,6 +53,7 @@ export default function PartySelect() {
               <span className={`hero-pick__row hero-pick__row--${h.row}`}>
                 {ROW_LABEL[h.row] ?? h.row}
               </span>
+              <HeroPortrait portrait={h.portrait} name={h.name} />
               <span className="hero-pick__name">{h.name.split(' ')[0]}</span>
               <span className="hero-pick__role">{h.role}</span>
               <dl className="hero-pick__stats">
@@ -79,4 +81,10 @@ export default function PartySelect() {
       </div>
     </main>
   );
+}
+
+function HeroPortrait({ portrait, name }) {
+  const url = assetUrl(portrait);
+  if (url) return <img className="hero-pick__art" src={url} alt={name} loading="lazy" />;
+  return <span className="hero-pick__art hero-pick__art--placeholder" aria-hidden="true">{name[0]}</span>;
 }

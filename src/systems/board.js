@@ -62,11 +62,11 @@ const NODE_ACTION = {
 
 const NODE_INTRO = {
   start: 'No hay vuelta atrás. El valle os espera.',
-  combat: 'Enemigos cierran el paso. (El combate se resuelve en M2.)',
-  elite: 'Una presencia temible acecha el camino. (Combate de élite — M2.)',
-  event: 'Algo aguarda en el sendero. (Los eventos cobran vida en M3.)',
-  rest: 'Un momento de calma junto al fuego. (La curación llega en M4.)',
-  shop: 'Un mercader despliega sus mercancías. (La tienda abre en M4.)',
+  combat: 'Enemigos cierran el paso. Preparad las armas.',
+  elite: 'Una presencia temible acecha el camino.',
+  event: 'Algo aguarda en el sendero. Vuestra decisión tendrá peso.',
+  rest: 'Un momento de calma junto al fuego. La party recupera fuerzas.',
+  shop: 'Un mercader despliega sus mercancías. Es hora de gastar el oro.',
   boss: 'El señor de este capítulo se alza ante vosotros.',
 };
 

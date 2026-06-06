@@ -6,7 +6,7 @@
 import { randomSeed } from './rng.js';
 
 /** Versión del formato de save. Subir al cambiar la forma del estado. */
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 
 /** Dificultades soportadas (Q-DIFICULTAD). */
 export const DIFFICULTIES = Object.freeze(['facil', 'normal', 'dificil']);
@@ -47,6 +47,12 @@ export function createNewGame(opts = {}) {
     nodeIndex: 0, // nodo actual dentro del capítulo
     visited: [], // ids de nodos ya resueltos
 
+    // Party persistente (M3/M4)
+    pets: [], // mascotas activas (ids)
+    inventory: [], // ítems comprados (ids) — mejoras de party
+    partyHp: {}, // vida persistente por héroe (se llena al formar la party)
+    pendingCurses: [], // maldiciones de eventos a aplicar en el próximo combate
+
     // Recursos globales
     gold: 0,
     doom: 0, // track de Perdición (sube con combates/eventos)
@@ -67,8 +73,14 @@ export function createNewGame(opts = {}) {
 export function migrate(save) {
   let s = { ...save };
 
-  // Ejemplo de patrón para futuras migraciones:
-  // if (s.version < 2) { ...transformar...; s.version = 2; }
+  // v1 → v2: progresión (M4). Campos de party persistente con defaults seguros.
+  if (!(s.version >= 2)) {
+    s.pets = s.pets ?? [];
+    s.inventory = s.inventory ?? [];
+    s.partyHp = s.partyHp ?? {};
+    s.pendingCurses = s.pendingCurses ?? [];
+    s.version = 2;
+  }
 
   if (typeof s.version !== 'number') s.version = SAVE_VERSION;
   return s;

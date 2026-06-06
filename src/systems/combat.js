@@ -13,7 +13,7 @@
 
 import { content } from '../data/index.js';
 import { chooseEnemyAction } from './enemyAI.js';
-import { applyCurse, tickCurses } from './curses.js';
+import { applyCurse, tickCurses, spellsBlocked } from './curses.js';
 
 const clone = (o) => JSON.parse(JSON.stringify(o));
 
@@ -25,16 +25,36 @@ const DIFF = {
 
 // ---------- Construcción ----------
 
-function makeHeroInstance(hero) {
+// `st` = stats persistentes/efectivas de progression.js: { hp, maxHp, dice }.
+function makeHeroInstance(hero, st = {}) {
+  const maxHp = st.maxHp ?? hero.maxHp;
+  const hp = Math.max(0, Math.min(st.hp ?? maxHp, maxHp));
+  const dice = st.dice ?? hero.dice;
   return {
     id: hero.id, name: hero.name, role: hero.role,
-    maxHp: hero.maxHp, hp: hero.maxHp,
+    maxHp, hp,
     row: hero.row ?? 'front',
-    dice: hero.dice, diceFaces: hero.diceFaces,
+    dice, diceFaces: hero.diceFaces,
     spells: hero.spells ?? [],
-    block: 0, energy: 0, down: false,
+    portrait: hero.portrait ?? null,
+    block: 0, energy: 0, down: hp <= 0,
     pool: null, hasRolled: false, hasAttacked: false,
+    curses: [],
   };
+}
+
+// Penalización de dados por maldiciones diceReduce activas (no muta h.dice).
+function diceReduction(h) {
+  return (h.curses ?? [])
+    .filter((c) => c.hook === 'diceReduce')
+    .reduce((s, c) => s + (c.power ?? 0), 0);
+}
+
+// Daño adicional al ser golpeado por maldiciones onIncomingDamage (sangría/veneno).
+function incomingDamageBonus(h) {
+  return (h.curses ?? [])
+    .filter((c) => c.hook === 'onIncomingDamage')
+    .reduce((s, c) => s + (c.power ?? 0), 0);
 }
 
 function makeEnemyInstance(enemy, idx, mult) {
@@ -47,6 +67,7 @@ function makeEnemyInstance(enemy, idx, mult) {
     behavior: enemy.behavior, row: enemy.row ?? 'front',
     isElite: !!enemy.isElite, isBoss: !!enemy.isBoss,
     summons: enemy.summons ?? null,
+    art: enemy.art ?? null,
   };
 }
 
@@ -54,17 +75,38 @@ function lookupEnemy(id) {
   return content.enemiesById[id] ?? content.bossesById[id] ?? null;
 }
 
-/** Crea el estado de combate desde un nodo + party (ids de héroe) + dificultad. */
-export function initCombat({ node, party, difficulty = 'normal' }) {
+/**
+ * Crea el estado de combate desde un nodo + party (ids de héroe) + dificultad.
+ * `pendingCurses` son maldiciones acumuladas en eventos (Q-MALDICION): se aplican
+ * a toda la party al iniciar el combate.
+ * `diceBonus` son dados extra que aportan las mascotas (Q-MASCOTAS: bono pasivo);
+ * se suman al pool de cada héroe al tirar.
+ * `heroState` (de progression.js) lleva la vida persistente y stats efectivas por
+ * héroe: { [heroId]: { hp, maxHp, dice } }. Si falta, se usan las stats base.
+ */
+export function initCombat({ node, party, difficulty = 'normal', pendingCurses = [], diceBonus = 0, heroState = {} }) {
   const mult = DIFF[difficulty] ?? DIFF.normal;
   const enemies = (node.enemies ?? [])
     .map(lookupEnemy)
     .filter(Boolean)
     .map((e, i) => makeEnemyInstance(e, i, mult));
-  const heroes = (party ?? [])
+  let heroes = (party ?? [])
     .map((id) => content.heroesById[id])
     .filter(Boolean)
-    .map(makeHeroInstance);
+    .map((h) => makeHeroInstance(h, heroState[h.id]));
+
+  const log = [{ round: 1, kind: 'start', text: `¡Combate! ${node.name}` }];
+
+  // Las maldiciones traídas de eventos afligen a toda la party.
+  if (pendingCurses.length) {
+    heroes = heroes.map((h) =>
+      pendingCurses.reduce((acc, curseId) => applyCurse(acc, curseId), h),
+    );
+    const names = pendingCurses
+      .map((id) => content.cursesById[id]?.name ?? id)
+      .join(', ');
+    log.push({ round: 1, kind: 'curse', text: `La party arrastra maldiciones: ${names}.` });
+  }
 
   return {
     nodeId: node.id,
@@ -76,8 +118,9 @@ export function initCombat({ node, party, difficulty = 'normal' }) {
     heroes,
     enemies,
     summonCounter: 0,
+    diceBonus,
     loot: null,
-    log: [{ round: 1, kind: 'start', text: `¡Combate! ${node.name}` }],
+    log,
   };
 }
 
@@ -127,7 +170,9 @@ export function rollActiveHero(combat, rng) {
   const h = activeHero(c);
   if (!h || h.hasRolled || c.phase !== 'hero') return combat;
   const pool = { sword: 0, shield: 0, star: 0, faces: [] };
-  for (let i = 0; i < h.dice; i++) {
+  // mascotas diceBonus (+) vs maldición diceReduce (−)
+  const nDice = Math.max(1, h.dice + (c.diceBonus ?? 0) - diceReduction(h));
+  for (let i = 0; i < nDice; i++) {
     const f = rng.pick(h.diceFaces);
     pool.faces.push(f);
     pool.sword += f.sword ?? 0;
@@ -166,6 +211,7 @@ export function heroCast(combat, spellId, targetUid) {
   const c = clone(combat);
   const h = activeHero(c);
   if (!h || !h.hasRolled || c.phase !== 'hero') return combat;
+  if (spellsBlocked(h)) return combat; // maldición blocksSpells (Silencio)
   if (!h.spells.includes(spellId)) return combat;
   const spell = content.spellsById[spellId];
   if (!spell || h.energy < spell.cost) return combat;
@@ -330,9 +376,13 @@ function applyEnemyHit(c, enemy, target) {
   const absorbed = Math.min(target.block, dmg);
   target.block -= absorbed;
   dmg -= absorbed;
+  // Maldición onIncomingDamage (sangría/veneno): daño extra que ignora el bloqueo.
+  const bleed = incomingDamageBonus(target);
+  dmg += bleed;
   target.hp = Math.max(0, target.hp - dmg);
   const blockTxt = absorbed > 0 ? ` (🛡️${absorbed})` : '';
-  pushLog(c, 'enemyhit', `${enemy.name} ataca a ${target.name} por ${dmg}${blockTxt}.`, {
+  const bleedTxt = bleed > 0 ? ` (+${bleed}🩸)` : '';
+  pushLog(c, 'enemyhit', `${enemy.name} ataca a ${target.name} por ${dmg}${blockTxt}${bleedTxt}.`, {
     anim: hitAnim(enemy), source: enemy.uid, target: target.id,
   });
   if (target.hp <= 0 && !target.down) {

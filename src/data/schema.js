@@ -71,6 +71,7 @@
  * @property {string} name
  * @property {string} desc
  * @property {{dice?:number,maxHp?:number,maxMana?:number}} mod
+ * @property {number} [price]         coste en oro en la tienda (M4)
  * @property {string} icon
  */
 
@@ -80,6 +81,7 @@
  * @property {string} name
  * @property {'heal'|'mana'|'cleanse'} type
  * @property {number} [power]
+ * @property {number} [price]         coste en oro en la tienda (M4)
  * @property {string} desc
  * @property {string} icon
  */

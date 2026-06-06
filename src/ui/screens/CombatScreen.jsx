@@ -12,8 +12,16 @@ import {
   validAllyTargets,
 } from '../../systems/combat.js';
 import { useCombatFx } from '../combat/useCombatFx.js';
+import { assetUrl } from '../assets.js';
 
 const KIND_LABEL = { combat: 'Combate', elite: 'Combate de Élite', boss: 'Jefe' };
+
+// Retrato/arte de una unidad. Cae a una marca con inicial si no hay imagen.
+function UnitArt({ src, alt, fallback }) {
+  const url = assetUrl(src);
+  if (url) return <img className="unit__art" src={url} alt={alt} loading="lazy" />;
+  return <span className="unit__art unit__art--placeholder" aria-hidden="true">{fallback}</span>;
+}
 
 function faceToText(face) {
   const sym = [];
@@ -309,6 +317,7 @@ function EnemyCard({ e, clickable, onClick }) {
       onClick={onClick}
       disabled={!clickable}
     >
+      <UnitArt src={e.art ?? `enemies/${e.id}.png`} alt={e.name} fallback={e.name[0]} />
       <span className="unit__name">{e.name}</span>
       <HpBar hp={e.hp} maxHp={e.maxHp} kind="enemy" />
       <span className="unit__meta">{e.dmg}🗡️ · {e.row === 'back' ? 'dist.' : 'melé'}</span>
@@ -324,6 +333,7 @@ function HeroCard({ h, active, clickable, onClick }) {
       onClick={onClick}
       disabled={!clickable}
     >
+      <UnitArt src={h.portrait ?? `heroes/${h.id}.png`} alt={h.name} fallback={h.name[0]} />
       <span className="unit__name">{h.name.split(' ')[0]}</span>
       <HpBar hp={h.hp} maxHp={h.maxHp} kind="hero" />
       <span className="unit__meta">

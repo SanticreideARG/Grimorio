@@ -8,6 +8,7 @@ import { heroes as heroRoster } from '../../data/heroes.js';
 import { eventos } from '../../data/decks/index.js';
 import { createRng } from '../../core/rng.js';
 import { passesCheck } from '../../systems/events.js';
+import { assetUrl } from '../assets.js';
 
 const SYMBOL_LABEL = { sword: '🗡️', shield: '🛡️', star: '⭐' };
 
@@ -86,6 +87,7 @@ export default function EventScreen() {
       <div className="event-body">
         {/* Carta */}
         <div className="event-card">
+          <EventArt art={card.art} title={card.title} />
           <div className="event-card__title">{card.title}</div>
           <p className="event-card__text">{card.text}</p>
         </div>
@@ -153,6 +155,12 @@ export default function EventScreen() {
       </div>
     </main>
   );
+}
+
+function EventArt({ art, title }) {
+  const url = assetUrl(art);
+  if (url) return <img className="event-card__art" src={url} alt={title} loading="lazy" />;
+  return <div className="event-card__art event-card__art--placeholder" aria-hidden="true" />;
 }
 
 function describeEffect(effect) {

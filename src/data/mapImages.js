@@ -5,8 +5,8 @@
 import map1 from '../../assets/img/mapbackground/map1.jpg';
 import menuBg from '../../assets/img/mapbackground/menu background.jpg';
 
+import map2 from '../../assets/img/mapbackground/map2.jpg';
 // Cuando tengas las otras imágenes, descomentar:
-// import map2 from '../../assets/img/mapbackground/map2.jpg';
 // import map3 from '../../assets/img/mapbackground/map3.jpg';
 // import map4 from '../../assets/img/mapbackground/map4.jpg';
 
@@ -16,7 +16,8 @@ export { menuBg };
 /** Mapa de chapterId → URL de imagen de fondo (procesada por Vite). */
 export const mapImages = {
   cap1: map1,
-  // cap2: map2,
+  cap2: map2,
+  // cap3: map3,
   // cap3: map3,
   // cap4: map4,
 };

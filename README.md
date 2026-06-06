@@ -65,9 +65,12 @@ Ver `docs/ROADMAP.md` (milestones M0–M7) y `docs/QUESTIONNAIRE.md` (decisiones
   vida persistente y la conserva al terminar (caídos reviven a 1, sin permadeath).
   Pantalla de tienda (`ShopScreen`), nodos de descanso y **transición entre
   capítulos** (campamento: cura total + reset de Perdición). Save v2 con migración.
-- **M5 ◐** — Contenido completo: **Cap.2 (La Marisma de Telarañas, 18 nodos +
-  jefe La Tejedora)** jugable con sus enemigos. *Pendiente: capítulos 3–4, roster
-  completo de héroes, set completo de ítems/magias/pociones/maldiciones/mascotas.*
+- **M5 ◐** — Contenido completo: **campaña de 4 capítulos jugable de principio a
+  fin** (Valle Quemado 16 · Marisma de Telarañas 18 · Ciudadela de Ceniza 20 ·
+  La Grieta 14 = 68 nodos), con sus 4 jefes (Gulrath, La Tejedora, El Rey Ceniza,
+  El Devorado) y enemigos temáticos por región. *Pendiente: roster completo de
+  héroes, set completo de ítems/magias/pociones/maldiciones/mascotas, mapas de
+  fondo de los caps 2–4, sistema de finales (bueno/agridulce/malo).*
 
 ## Documentación
 

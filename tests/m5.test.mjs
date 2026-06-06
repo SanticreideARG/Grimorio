@@ -72,21 +72,52 @@ test('el campamento (transición) cura a tope y reinicia la Perdición', () => {
   assert.equal(s.partyHp.mago, content.heroesById.mago.maxHp);
 });
 
-// ---- Combate del jefe del Cap.2 ----
-test('La Tejedora usa su mazo de comportamiento y el combate termina', () => {
-  const rng = createRng(123);
-  const bossNode = cap2.nodes.at(-1);
-  let c = initCombat({ node: bossNode, party: ['guerrera', 'paladin', 'mago', 'sanadora'], difficulty: 'facil' });
-  assert.ok(c.enemies.some((e) => e.id === 'la_tejedora'));
-  let guard = 0;
-  while (!isOver(c) && guard++ < 300) {
-    if (c.phase === 'hero') {
-      c = rollActiveHero(c, rng);
-      c = endHeroTurn(c);
-    } else {
-      c = resolveEnemyPhase(c, rng);
+// ---- Campaña completa (caps 1–4) ----
+test('la campaña tiene 4 capítulos, cada uno con start, jefe y enemigos válidos', () => {
+  assert.equal(content.chapters.length, 4);
+  for (const ch of content.chapters) {
+    assert.equal(ch.nodes[0].type, 'start', `${ch.id}: primer nodo no es start`);
+    assert.equal(ch.nodes.at(-1).type, 'boss', `${ch.id}: último nodo no es boss`);
+    assert.ok(content.bossesById[ch.boss], `${ch.id}: jefe inexistente ${ch.boss}`);
+    for (const node of ch.nodes) {
+      for (const id of node.enemies ?? []) {
+        assert.ok(lookup(id), `${ch.id}/${node.id}: enemigo inexistente ${id}`);
+      }
     }
   }
-  assert.ok(isOver(c), 'el combate con La Tejedora no terminó');
-  assert.ok(c.log.some((l) => l.kind === 'bosscard'), 'no se usó el mazo de La Tejedora');
 });
+
+test('los recuentos de nodos siguen el GDD (16/18/20/14)', () => {
+  assert.deepEqual(content.chapters.map((c) => c.nodes.length), [16, 18, 20, 14]);
+});
+
+test('cada jefe que invoca lo hace con un enemigo existente', () => {
+  for (const boss of content.bosses) {
+    for (const card of boss.behaviorDeck ?? []) {
+      if (card.effect?.type === 'summon') {
+        assert.ok(lookup(card.effect.spawn), `${boss.id}/${card.id}: invoca ${card.effect.spawn} inexistente`);
+      }
+    }
+  }
+});
+
+// ---- Combate de los jefes (todos terminan y usan su mazo) ----
+for (const chId of ['cap1', 'cap2', 'cap3', 'cap4']) {
+  test(`el jefe de ${chId} usa su mazo de comportamiento y el combate termina`, () => {
+    const rng = createRng(123);
+    const bossNode = content.chaptersById[chId].nodes.at(-1);
+    let c = initCombat({ node: bossNode, party: ['guerrera', 'paladin', 'mago', 'sanadora'], difficulty: 'facil' });
+    assert.ok(c.enemies.some((e) => e.isBoss), `${chId}: no se cargó el jefe`);
+    let guard = 0;
+    while (!isOver(c) && guard++ < 400) {
+      if (c.phase === 'hero') {
+        c = rollActiveHero(c, rng);
+        c = endHeroTurn(c);
+      } else {
+        c = resolveEnemyPhase(c, rng);
+      }
+    }
+    assert.ok(isOver(c), `${chId}: el combate del jefe no terminó`);
+    assert.ok(c.log.some((l) => l.kind === 'bosscard'), `${chId}: no se usó el mazo del jefe`);
+  });
+}

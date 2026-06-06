@@ -60,13 +60,14 @@ Ver `docs/ROADMAP.md` (milestones M0–M7) y `docs/QUESTIONNAIRE.md` (decisiones
   `doom.js` (track de Perdición). Eventos con elecciones y chequeos de dados
   (`EventScreen`), mazo de comportamiento de Gulrath y Cap.1 jugable de punta a
   punta con jefe. Tests headless de subsistemas.
-- **M4 ◐** — Progresión y campamento: `progression.js` (equipo que mejora dados/
+- **M4 ✅** — Progresión y campamento: `progression.js` (equipo que mejora dados/
   vida, vida persistente entre nodos, descanso, tienda). Combate arranca desde la
   vida persistente y la conserva al terminar (caídos reviven a 1, sin permadeath).
-  Pantalla de tienda (`ShopScreen`) y nodos de descanso. Save subido a v2 con
-  migración. Tests de progresión. *Pendiente: transición Cap.1 → Cap.2 (necesita
-  el contenido del Cap.2 de M5).*
-- **M5 ◻** — Contenido completo: capítulos 2–4, jefes, roster e ítems/cartas.
+  Pantalla de tienda (`ShopScreen`), nodos de descanso y **transición entre
+  capítulos** (campamento: cura total + reset de Perdición). Save v2 con migración.
+- **M5 ◐** — Contenido completo: **Cap.2 (La Marisma de Telarañas, 18 nodos +
+  jefe La Tejedora)** jugable con sus enemigos. *Pendiente: capítulos 3–4, roster
+  completo de héroes, set completo de ítems/magias/pociones/maldiciones/mascotas.*
 
 ## Documentación
 

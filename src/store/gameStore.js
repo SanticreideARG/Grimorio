@@ -15,17 +15,19 @@ import { createRng } from '../core/rng.js';
 import {
   resolveNode as boardResolveNode,
   advanceNode as boardAdvanceNode,
+  advanceToNextChapter,
   markNodeResolved,
   getChapter,
   getCurrentNode,
 } from '../systems/board.js';
-import { addDoom } from '../systems/doom.js';
+import { addDoom, resetDoom } from '../systems/doom.js';
 import { initDecks } from '../systems/decks.js';
 import { getDoomReduction, getDiceBonus } from '../systems/pets.js';
 import {
   initPartyHp,
   combatHeroState,
   persistCombatHp,
+  restParty,
   restPartyFraction,
   buyItem,
   buyPotion,
@@ -305,6 +307,24 @@ export const useGameStore = create((set, get) => ({
     get().patchGame((g) => {
       const s = markNodeResolved(g, node, `Visitasteis ${node?.name ?? 'la tienda'}.`);
       return { ...s, view: 'map' };
+    });
+  },
+
+  /**
+   * Campamento entre capítulos: avanza al siguiente capítulo, cura a la party a
+   * tope y reinicia la Perdición. El equipo, las mascotas y el oro persisten.
+   */
+  advanceChapter() {
+    const { game } = get();
+    if (game == null) return;
+    get().patchGame((g) => {
+      let s = advanceToNextChapter(g);
+      if (s === g) return g; // no hay más capítulos
+      s = resetDoom(s);
+      s = restParty(s, null); // campamento: cura total
+      const ch = getChapter(s);
+      const entry = { kind: 'chapter', text: `Comienza ${ch?.title ?? 'el siguiente capítulo'}.`, at: Date.now() };
+      return { ...s, log: [...(s.log ?? []), entry], view: 'map' };
     });
   },
 

@@ -106,3 +106,18 @@ export function advanceNode(state) {
   if (!isCurrentResolved(state) || isLastNode(state)) return state;
   return { ...state, nodeIndex: state.nodeIndex + 1 };
 }
+
+/** ¿Hay un capítulo después del actual? */
+export function hasNextChapter(state) {
+  return state.chapterIndex < content.chapters.length - 1;
+}
+
+/**
+ * Pasa al siguiente capítulo: incrementa chapterIndex y vuelve al primer nodo.
+ * No-op si ya es el último capítulo. La cura de campamento y el reset de
+ * Perdición los compone la store (resetDoom + restParty).
+ */
+export function advanceToNextChapter(state) {
+  if (!hasNextChapter(state)) return state;
+  return { ...state, chapterIndex: state.chapterIndex + 1, nodeIndex: 0 };
+}

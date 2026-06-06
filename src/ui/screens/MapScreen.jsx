@@ -27,6 +27,7 @@ export default function MapScreen() {
   const startEvent = useGameStore((s) => s.startEvent);
   const rest = useGameStore((s) => s.rest);
   const openShop = useGameStore((s) => s.openShop);
+  const advanceChapter = useGameStore((s) => s.advanceChapter);
   const quitToMenu = useGameStore((s) => s.quitToMenu);
 
   const chapter = getChapter(game);
@@ -35,6 +36,7 @@ export default function MapScreen() {
   const resolved = isCurrentResolved(game);
   const last = isLastNode(game);
   const complete = isChapterComplete(game);
+  const hasNext = game.chapterIndex < content.chapters.length - 1;
   const atStart = game.nodeIndex === 0 && !resolved;
 
   // Acción al resolver el nodo según tipo.
@@ -134,15 +136,30 @@ export default function MapScreen() {
       {complete && (
         <div className="overlay">
           <div className="overlay__card">
-            <div className="overlay__sub">CAPÍTULO COMPLETADO</div>
+            <div className="overlay__sub">
+              {hasNext ? 'CAPÍTULO COMPLETADO' : 'CAMPAÑA COMPLETADA'}
+            </div>
             <h2 className="overlay__title">{chapter.title}</h2>
             <p className="overlay__text">{chapter.script.victory}</p>
-            <p className="overlay__hint">
-              La transición al Capítulo II y el campamento llegan en M4.
-            </p>
-            <button className="btn btn--primary" onClick={quitToMenu}>
-              Volver al menú
-            </button>
+            {hasNext ? (
+              <>
+                <p className="overlay__hint">
+                  La party acampa: recupera toda su vida y la Perdición se desvanece.
+                </p>
+                <button className="btn btn--primary" onClick={advanceChapter}>
+                  Avanzar al siguiente capítulo →
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="overlay__hint">
+                  Habéis llegado al final del contenido disponible. ¡Gracias por jugar!
+                </p>
+                <button className="btn btn--primary" onClick={quitToMenu}>
+                  Volver al menú
+                </button>
+              </>
+            )}
           </div>
         </div>
       )}

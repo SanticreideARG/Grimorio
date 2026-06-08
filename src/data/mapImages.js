@@ -7,7 +7,7 @@ import menuBg from '../../assets/img/mapbackground/menu background.jpg';
 
 import map2 from '../../assets/img/mapbackground/map2.jpg';
 // Cuando tengas las otras imágenes, descomentar:
-// import map3 from '../../assets/img/mapbackground/map3.jpg';
+import map3 from '../../assets/img/mapbackground/map3.jpg';
 // import map4 from '../../assets/img/mapbackground/map4.jpg';
 
 /** Imagen de fondo del menú principal. */

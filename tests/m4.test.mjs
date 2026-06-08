@@ -33,18 +33,18 @@ test('amuleto sube maxHp y partyMods lo refleja', () => {
 
 // ---- Tienda ----
 test('buyItem descuenta oro, añade al inventario y sube HP si aplica', () => {
-  let g = gameWith(['guerrera'], { gold: 20 });
+  let g = gameWith(['guerrera'], { gold: 100 });
   const baseHp = g.partyHp.guerrera;
-  g = buyItem(g, 'amuleto_vigor'); // price 16, maxHp +3
-  assert.equal(g.gold, 4);
+  g = buyItem(g, 'amuleto_vigor'); // price 64, maxHp +3
+  assert.equal(g.gold, 36);
   assert.ok(g.inventory.includes('amuleto_vigor'));
   assert.equal(g.partyHp.guerrera, baseHp + 3);
 });
 
 test('canBuyItem respeta oro y duplicados', () => {
-  const pobre = gameWith(['guerrera'], { gold: 5 });
-  assert.equal(canBuyItem(pobre, 'amuleto_vigor'), false); // poco oro
-  const rico = gameWith(['guerrera'], { gold: 50, inventory: ['amuleto_vigor'] });
+  const pobre = gameWith(['guerrera'], { gold: 50 });
+  assert.equal(canBuyItem(pobre, 'amuleto_vigor'), false); // poco oro (necesita 64)
+  const rico = gameWith(['guerrera'], { gold: 200, inventory: ['amuleto_vigor'] });
   assert.equal(canBuyItem(rico, 'amuleto_vigor'), false); // ya lo posee
   assert.equal(canBuyItem(rico, 'daga_afilada'), true);
 });

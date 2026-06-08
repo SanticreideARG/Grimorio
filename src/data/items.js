@@ -1,16 +1,17 @@
 // items.js — Equipo permanente (Q-PROGRESION: dice-building + ítems acumulables).
-// En v1 los ítems son mejoras de party (todos los héroes se benefician) y se
-// compran en la tienda (M4). `mod` ajusta stats base; `price` es el coste en oro.
+// Se compran en la tienda (M4). `mod` ajusta stats base; `price` es el coste en oro.
+// Precios calibrados para el flujo de oro post-combate (escala de botín M2).
 // Ver schema.js (typedef Item).
 
 /** @type {import('./schema.js').Item[]} */
 export const items = [
+  // ---- Originales ----
   {
     id: 'daga_afilada',
     name: 'Daga Afilada',
     desc: '+1 dado al pool de cada héroe.',
     mod: { dice: 1 },
-    price: 22,
+    price: 88,
     icon: 'items/daga_afilada.png',
   },
   {
@@ -18,7 +19,7 @@ export const items = [
     name: 'Amuleto de Vigor',
     desc: '+3 de vida máxima a cada héroe.',
     mod: { maxHp: 3 },
-    price: 16,
+    price: 64,
     icon: 'items/amuleto_vigor.png',
   },
   {
@@ -26,8 +27,42 @@ export const items = [
     name: 'Foco Arcano',
     desc: '+1 dado al pool de cada héroe.',
     mod: { dice: 1 },
-    price: 26,
+    price: 104,
     icon: 'items/foco_arcano.png',
+  },
+
+  // ---- Nuevos ----
+  {
+    id: 'escudo_runico',
+    name: 'Escudo Rúnico',
+    desc: '+6 de vida máxima a cada héroe.',
+    mod: { maxHp: 6 },
+    price: 96,
+    icon: 'items/escudo_runico.png',
+  },
+  {
+    id: 'anillo_poder',
+    name: 'Anillo de Poder',
+    desc: '+1 dado y +2 de vida máxima a cada héroe.',
+    mod: { dice: 1, maxHp: 2 },
+    price: 140,
+    icon: 'items/anillo_poder.png',
+  },
+  {
+    id: 'talisman_osadia',
+    name: 'Talismán de Osadía',
+    desc: '+2 dados al pool de cada héroe.',
+    mod: { dice: 2 },
+    price: 160,
+    icon: 'items/talisman_osadia.png',
+  },
+  {
+    id: 'corona_sombra',
+    name: 'Corona de Sombra',
+    desc: '+4 de vida máxima a cada héroe.',
+    mod: { maxHp: 4 },
+    price: 80,
+    icon: 'items/corona_sombra.png',
   },
 ];
 

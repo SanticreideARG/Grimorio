@@ -5,7 +5,7 @@
 import { useState } from 'react';
 import { useGameStore } from '../../store/gameStore.js';
 import { heroes as heroRoster } from '../../data/heroes.js';
-import { eventos } from '../../data/decks/index.js';
+import { content } from '../../data/index.js';
 import { createRng } from '../../core/rng.js';
 import { passesCheck } from '../../systems/events.js';
 import { assetUrl } from '../assets.js';
@@ -33,9 +33,14 @@ export default function EventScreen() {
   const quitToMenu = useGameStore((s) => s.quitToMenu);
 
   const card = useGameStore((s) => {
-    const id = s.game?.activeEvent?.cardId;
-    if (!id) return null;
-    return eventos.find((c) => c.id === id) ?? null;
+    const { cardId, poolId = 'eventos' } = s.game?.activeEvent ?? {};
+    if (!cardId) return null;
+    const pool = content.decks[poolId] ?? [];
+    return (
+      pool.find((c) => c.id === cardId) ??
+      Object.values(content.decks).flat().find((c) => c?.id === cardId) ??
+      null
+    );
   });
 
   const [pendingChoice, setPendingChoice] = useState(null);
@@ -91,6 +96,9 @@ export default function EventScreen() {
           <div className="event-card__title">{card.title}</div>
           <p className="event-card__text">{card.text}</p>
         </div>
+
+        {/* Leyenda de símbolos de dados */}
+        <DiceLegend />
 
         {/* Chequeo de dados en curso */}
         {pendingChoice != null && rolledPool && (
@@ -161,6 +169,45 @@ function EventArt({ art, title }) {
   const url = assetUrl(art);
   if (url) return <img className="event-card__art" src={url} alt={title} loading="lazy" />;
   return <div className="event-card__art event-card__art--placeholder" aria-hidden="true" />;
+}
+
+// ── Leyenda de símbolos de dados ────────────────────────────────────────────
+
+const DICE_LEGEND = [
+  {
+    symbol: '🗡️',
+    name: 'Espada',
+    desc: 'Fuerza y audacia. Supera obstáculos físicos y ataques directos.',
+  },
+  {
+    symbol: '🛡️',
+    name: 'Escudo',
+    desc: 'Cautela y resistencia. Protege ante trampas, venenos y daño.',
+  },
+  {
+    symbol: '⭐',
+    name: 'Estrella',
+    desc: 'Voluntad y suerte. Necesaria para magia, persuasión y lo sobrenatural.',
+  },
+];
+
+function DiceLegend() {
+  return (
+    <details className="dice-legend">
+      <summary className="dice-legend__toggle">¿Qué significan los dados?</summary>
+      <ul className="dice-legend__list">
+        {DICE_LEGEND.map((d) => (
+          <li key={d.name} className="dice-legend__item">
+            <span className="dice-legend__sym" aria-hidden="true">{d.symbol}</span>
+            <span className="dice-legend__body">
+              <span className="dice-legend__name">{d.name}</span>
+              <span className="dice-legend__desc">{d.desc}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+    </details>
+  );
 }
 
 function describeEffect(effect) {

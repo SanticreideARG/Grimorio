@@ -33,9 +33,14 @@ test('cada enemigo curse usa su maldición propia, no sangria', () => {
 // 2. Sistema de finales
 // ════════════════════════════════════════════════════════
 test('final bueno con flags positivos y doom bajo', () => {
-  const g = { flags: { altarBenediction: true, mercenaryHelped: true, travelerMet: true },
+  // cap4_voidRefused es necesario en el sistema nuevo para alcanzar el final bueno
+  const g = { flags: {
+                altarBenediction: true, mercenaryHelped: true, travelerMet: true,
+                cap4_voidRefused: true, cap2_blessed: true,
+              },
               doom: 5, totalDoom: 10,
               party: ['guerrera'], partyHp: { guerrera: 12 } };
+  // positiveScore = 2(voidRefused×2)+1+1+1+1 = 8; totalDoom 15 < 24
   assert.equal(computeEnding(g), 'good');
 });
 

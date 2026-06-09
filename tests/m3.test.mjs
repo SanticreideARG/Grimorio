@@ -120,7 +120,9 @@ test('resolveEvent aplica efecto, cierra evento y marca nodo', () => {
   assert.ok(g.activeEvent?.cardId);
   const before = g.visited.length;
   // elegir la última opción (sin chequeo)
-  const card = content.decks.eventos.find((c) => c.id === g.activeEvent.cardId);
+  const { cardId, poolId = 'eventos' } = g.activeEvent;
+  const pool = content.decks[poolId] ?? content.decks.eventos;
+  const card = pool.find((c) => c.id === cardId);
   const lastChoice = card.choices.length - 1;
   g = resolveEvent(g, lastChoice, null, chapters);
   assert.equal(g.activeEvent, null);

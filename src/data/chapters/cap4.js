@@ -28,7 +28,7 @@ export const cap4 = {
     // Fila A (izq→der)
     { id: 'c4n01', type: 'start',  name: 'El Umbral del Abismo',    pos: { x: 15, y: 16 } },
     { id: 'c4n02', type: 'combat', name: 'Caída sin Fondo',         pos: { x: 38, y: 16 }, enemies: ['larva_vacio', 'larva_vacio', 'abisal'] },
-    { id: 'c4n03', type: 'event',  name: 'Ecos de lo Perdido',      pos: { x: 62, y: 16 }, eventPool: 'eventos' },
+    { id: 'c4n03', type: 'event',  name: 'Ecos de lo Perdido',      pos: { x: 62, y: 16 }, eventPool: 'eventos_cap4' },
     { id: 'c4n04', type: 'combat', name: 'El Coro Disonante',       pos: { x: 85, y: 16 }, enemies: ['heraldo_grieta', 'larva_vacio', 'larva_vacio'] },
     // Fila B (der→izq)
     { id: 'c4n05', type: 'elite',  name: 'El Avatar del Vacío',     pos: { x: 85, y: 37 }, enemies: ['avatar_vacio', 'larva_vacio', 'larva_vacio'] },
@@ -36,7 +36,7 @@ export const cap4 = {
     { id: 'c4n07', type: 'rest',   name: 'Grieta en la Grieta',     pos: { x: 38, y: 37 } },
     { id: 'c4n08', type: 'combat', name: 'El Abismo Mira',          pos: { x: 15, y: 37 }, enemies: ['abisal', 'abisal', 'heraldo_grieta'] },
     // Fila C (izq→der)
-    { id: 'c4n09', type: 'event',  name: 'La Última Tentación',     pos: { x: 15, y: 58 }, eventPool: 'eventos' },
+    { id: 'c4n09', type: 'event',  name: 'La Última Tentación',     pos: { x: 15, y: 58 }, eventPool: 'eventos_cap4' },
     { id: 'c4n10', type: 'combat', name: 'Desgarro',                pos: { x: 38, y: 58 }, enemies: ['desgarrador', 'heraldo_grieta', 'larva_vacio'] },
     { id: 'c4n11', type: 'elite',  name: 'El Ojo del Abismo',       pos: { x: 62, y: 58 }, enemies: ['ojo_abismo', 'desgarrador', 'larva_vacio'] },
     { id: 'c4n12', type: 'combat', name: 'El Borde de la Nada',     pos: { x: 85, y: 58 }, enemies: ['desgarrador', 'abisal', 'heraldo_grieta'] },

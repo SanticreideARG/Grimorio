@@ -23,18 +23,36 @@ export function passesCheck(pool, check) {
 // ---- Robo de carta ----
 
 /**
- * Roba una carta del mazo 'eventos' y la activa en el estado.
+ * Roba una carta del mazo indicado por el nodo actual (node.eventPool).
+ * Almacena el poolId en activeEvent para que la UI y resolveEvent
+ * puedan encontrar la carta en el pool correcto sin buscar en todos.
  */
 export function drawEventCard(gameState, rng) {
-  const { decks: nextDecks, cardId } = drawCard(gameState.decks ?? {}, 'eventos', rng);
+  // Obtener el pool del nodo actual
+  const chapters = Object.values(content.chaptersById);
+  const chapter = chapters[gameState.chapterIndex];
+  const node = chapter?.nodes?.[gameState.nodeIndex];
+  const poolId = node?.eventPool ?? 'eventos';
+
+  const { decks: nextDecks, cardId } = drawCard(gameState.decks ?? {}, poolId, rng);
   if (!cardId) return gameState;
-  return { ...gameState, decks: nextDecks, activeEvent: { cardId, nodeId: gameState.nodeIndex } };
+  return {
+    ...gameState,
+    decks: nextDecks,
+    activeEvent: { cardId, poolId, nodeId: gameState.nodeIndex },
+  };
 }
 
 export function getActiveCard(gameState) {
-  const id = gameState.activeEvent?.cardId;
-  if (!id) return null;
-  return (content.decks.eventos ?? []).find((c) => c.id === id) ?? null;
+  const { cardId, poolId = 'eventos' } = gameState.activeEvent ?? {};
+  if (!cardId) return null;
+  // Buscar en el pool específico; si no está, buscar en todos como fallback
+  const pool = content.decks[poolId] ?? [];
+  return (
+    pool.find((c) => c.id === cardId) ??
+    Object.values(content.decks).flat().find((c) => c?.id === cardId) ??
+    null
+  );
 }
 
 // ---- Aplicar efecto ----
@@ -84,8 +102,9 @@ export function resolveEvent(gameState, choiceIndex, pool, chapters) {
 
   let s = applyEffect(gameState, effect, chapters);
 
-  // Descartar carta
-  s = { ...s, decks: discardCard(s.decks ?? {}, 'eventos', card.id) };
+  // Descartar carta en su pool de origen
+  const poolId = gameState.activeEvent?.poolId ?? 'eventos';
+  s = { ...s, decks: discardCard(s.decks ?? {}, poolId, card.id) };
 
   const checkTxt = choice.requires
     ? checkPassed ? ' ✓ chequeo superado' : ' ✗ chequeo fallado'

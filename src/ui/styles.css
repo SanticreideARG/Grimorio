@@ -1337,6 +1337,68 @@ body {
   font-size: 15px;
 }
 
+/* ===== Leyenda de símbolos de dados ===== */
+.dice-legend {
+  margin: 0.75rem 0;
+  border: 1px solid var(--sepia);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.dice-legend__toggle {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  list-style: none;
+  user-select: none;
+}
+
+.dice-legend__toggle::-webkit-details-marker { display: none; }
+
+.dice-legend[open] .dice-legend__toggle {
+  color: var(--amber-lt);
+  border-bottom: 1px solid var(--sepia);
+}
+
+.dice-legend__list {
+  list-style: none;
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.dice-legend__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.dice-legend__sym {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  line-height: 1.3;
+}
+
+.dice-legend__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+}
+
+.dice-legend__name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--amber);
+}
+
+.dice-legend__desc {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  line-height: 1.3;
+}
+
 /* ===== Animaciones de combate ===== */
 .fx-layer {
   position: fixed;

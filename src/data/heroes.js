@@ -7,7 +7,7 @@
 // `row` = fila de combate: 'front' protege a 'back' (Q-COMBATE-POS).
 
 // Juegos de caras por arquetipo (6 caras cada uno).
-const WARRIOR = [{ sword: 1 }, { sword: 1 }, { sword: 2 }, { shield: 1 }, { shield: 1 }, {}];
+const WARRIOR = [{ sword: 1 }, { sword: 1 }, { sword: 2 }, { shield: 1 }, { shield: 1 }, { star: 1 }];
 const MAGE = [{ star: 1 }, { star: 1 }, { star: 2 }, { sword: 1 }, { shield: 1 }, {}];
 const HEALER = [{ star: 1 }, { star: 1 }, { star: 2 }, { shield: 1 }, { shield: 1 }, {}];
 const ROGUE = [{ sword: 1 }, { sword: 2 }, { sword: 1 }, { star: 1 }, { shield: 1 }, {}];

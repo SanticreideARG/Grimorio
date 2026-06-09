@@ -34,7 +34,7 @@ export const spells = [
 
   // ---- Paladin: Sir Aldric ----
   {
-    id: 'luz_curativa', name: 'Luz Curativa', cost: 2, type: 'heal',
+    id: 'luz_curativa', name: 'Luz Curativa', cost: 1, type: 'heal',
     desc: 'Cura 5 a un aliado.',
     effect: { heal: 5, target: 'ally' },
     icon: 'spells/luz_curativa.png',

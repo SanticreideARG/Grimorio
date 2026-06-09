@@ -501,7 +501,7 @@ export function resolveEnemyPhase(combat, rng) {
 /** Aplica una carta del mazo de comportamiento del jefe. */
 function applyBossCard(c, enemy, card, rng) {
   if (!card) return;
-  pushLog(c, 'bosscard', `${enemy.name}: ${card.name} — ${card.text}`);
+  pushLog(c, 'bosscard', `${enemy.name}: ${card.name} — ${card.text}`, { source: enemy.uid });
   const fx = card.effect ?? {};
 
   if (fx.type === 'attack') {

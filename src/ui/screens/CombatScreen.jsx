@@ -12,6 +12,7 @@ import {
   validAllyTargets,
 } from '../../systems/combat.js';
 import { useCombatFx } from '../combat/useCombatFx.js';
+import { useCombatBarks } from '../combat/useCombatBarks.js';
 import { assetUrl } from '../assets.js';
 import { canControlHero, activePlayerName } from '../../systems/turn.js';
 
@@ -52,6 +53,7 @@ export default function CombatScreen() {
   const fxRef = useRef(null);
 
   useCombatFx(combat, fxRef);
+  const barks = useCombatBarks(combat);
 
   // Limpiar targeting al cambiar de héroe o de fase.
   useEffect(() => {
@@ -172,12 +174,12 @@ export default function CombatScreen() {
       <section className="side side--enemies">
         <Row label="Retaguardia">
           {back(combat.enemies).map((e) => (
-            <EnemyCard key={e.uid} e={e} clickable={clickableEnemies.has(e.uid)} onClick={() => onEnemyClick(e)} />
+            <EnemyCard key={e.uid} e={e} bark={barks[e.uid]} clickable={clickableEnemies.has(e.uid)} onClick={() => onEnemyClick(e)} />
           ))}
         </Row>
         <Row label="Frente">
           {front(combat.enemies).map((e) => (
-            <EnemyCard key={e.uid} e={e} clickable={clickableEnemies.has(e.uid)} onClick={() => onEnemyClick(e)} />
+            <EnemyCard key={e.uid} e={e} bark={barks[e.uid]} clickable={clickableEnemies.has(e.uid)} onClick={() => onEnemyClick(e)} />
           ))}
         </Row>
       </section>
@@ -269,6 +271,7 @@ export default function CombatScreen() {
             <HeroCard
               key={h.id}
               h={h}
+              bark={barks[h.id]}
               active={combat.heroes[combat.activeHeroIndex]?.id === h.id && isHeroPhase}
               clickable={allyTargetIds.has(h.id) || (canSelectHero && selectableHeroIds.has(h.id) && h.id !== hero?.id)}
               selectable={canSelectHero && selectableHeroIds.has(h.id) && h.id !== hero?.id}
@@ -281,6 +284,7 @@ export default function CombatScreen() {
             <HeroCard
               key={h.id}
               h={h}
+              bark={barks[h.id]}
               active={combat.heroes[combat.activeHeroIndex]?.id === h.id && isHeroPhase}
               clickable={allyTargetIds.has(h.id) || (canSelectHero && selectableHeroIds.has(h.id) && h.id !== hero?.id)}
               selectable={canSelectHero && selectableHeroIds.has(h.id) && h.id !== hero?.id}
@@ -379,7 +383,16 @@ function HpBar({ hp, maxHp, kind = 'hero' }) {
   );
 }
 
-function EnemyCard({ e, clickable, onClick }) {
+function SpeechBubble({ bark }) {
+  if (!bark) return null;
+  return (
+    <span key={bark.n} className={`bark bark--${bark.placement ?? 'above'}`}>
+      {bark.text}
+    </span>
+  );
+}
+
+function EnemyCard({ e, bark, clickable, onClick }) {
   const dead = e.hp <= 0;
   return (
     <button
@@ -388,6 +401,7 @@ function EnemyCard({ e, clickable, onClick }) {
       onClick={onClick}
       disabled={!clickable}
     >
+      {!dead && <SpeechBubble bark={bark} />}
       <UnitArt src={e.art ?? `enemies/${e.id}.png`} alt={e.name} fallback={e.name[0]} />
       <span className="unit__name">{e.name}</span>
       <HpBar hp={e.hp} maxHp={e.maxHp} kind="enemy" />
@@ -396,7 +410,7 @@ function EnemyCard({ e, clickable, onClick }) {
   );
 }
 
-function HeroCard({ h, active, clickable, selectable, onClick }) {
+function HeroCard({ h, bark, active, clickable, selectable, onClick }) {
   const cls = [
     'unit unit--hero',
     active ? 'is-active' : '',
@@ -413,6 +427,7 @@ function HeroCard({ h, active, clickable, selectable, onClick }) {
       onClick={onClick}
       disabled={!clickable && !selectable}
     >
+      {!h.down && <SpeechBubble bark={bark} />}
       <UnitArt src={h.portrait ?? `heroes/${h.id}.png`} alt={h.name} fallback={h.name[0]} />
       <span className="unit__name">{h.name.split(' ')[0]}</span>
       <HpBar hp={h.hp} maxHp={h.maxHp} kind="hero" />

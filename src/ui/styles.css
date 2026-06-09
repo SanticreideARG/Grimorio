@@ -850,6 +850,7 @@ body {
 
 /* unidades (cartas de combate) */
 .unit {
+  position: relative; /* ancla para la burbuja de diálogo */
   width: 150px;
   text-align: left;
   display: flex;
@@ -1526,6 +1527,87 @@ body {
   100% { box-shadow: 0 0 0 rgba(192,90,255,0); }
 }
 
+/* ===== Burbujas de diálogo (barks) estilo cómic ===== */
+.bark {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 170px;
+  background: #f4ead3;
+  color: #1a120a;
+  border: 2px solid #14100a;
+  border-radius: 12px;
+  padding: 5px 10px;
+  font-family: 'IM Fell English', serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
+  white-space: normal;
+  pointer-events: none;
+  z-index: 40;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.55);
+  animation: barkpop 2s ease forwards;
+}
+.unit--boss .bark,
+.unit--elite .bark {
+  font-size: 14px;
+  max-width: 210px;
+  background: #f7eecb;
+  border-color: #1a0a08;
+}
+
+/* Burbuja arriba de la carta (héroes): cola apuntando hacia abajo */
+.bark--above { bottom: calc(100% + 9px); }
+.bark--above::before,
+.bark--above::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  border: 8px solid transparent;
+}
+.bark--above::after { /* contorno */
+  top: 100%;
+  transform: translateX(-50%);
+  border-top-color: #14100a;
+}
+.bark--above::before { /* relleno */
+  top: calc(100% - 3px);
+  transform: translateX(-50%);
+  border-top-color: #f4ead3;
+  z-index: 1;
+}
+
+/* Burbuja abajo de la carta (enemigos): cola apuntando hacia arriba */
+.bark--below { top: calc(100% + 9px); }
+.bark--below::before,
+.bark--below::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  border: 8px solid transparent;
+}
+.bark--below::after { /* contorno */
+  bottom: 100%;
+  transform: translateX(-50%);
+  border-bottom-color: #14100a;
+}
+.bark--below::before { /* relleno */
+  bottom: calc(100% - 3px);
+  transform: translateX(-50%);
+  border-bottom-color: #f4ead3;
+  z-index: 1;
+}
+
+@keyframes barkpop {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(6px) scale(0.6); }
+  10%  { opacity: 1; transform: translateX(-50%) translateY(0) scale(1.06); }
+  18%  { transform: translateX(-50%) translateY(0) scale(1); }
+  86%  { opacity: 1; }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-4px) scale(0.95); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .unit.is-hit,
   .unit.is-healing,
@@ -1539,6 +1621,14 @@ body {
   .fx-cleanse__orb {
     animation: none;
   }
+  /* Las burbujas siguen mostrándose pero sin el "pop" */
+  .bark {
+    animation: barkfade 2s linear forwards;
+  }
+}
+@keyframes barkfade {
+  0%, 86% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 /* ===== Estado de party en el mapa (M4) ===== */

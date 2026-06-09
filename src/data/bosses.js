@@ -11,6 +11,12 @@ export const bosses = [
     behavior: 'boss', row: 'front',
     isBoss: true,
     art: 'bosses/gulrath.png',
+    deathDialogue: {
+      lastWords: '¡Imposible… GULRATH no muere… GULRATH… SIEMPRE… TIENE… HAMBRE…!',
+      narrator:
+        'El suelo deja de temblar. El valle enmudece por primera vez desde que el fuego llegó. ' +
+        'Algo enorme acaba de salir del mundo — y el mundo, aunque destrozado, respira un poco más libre.',
+    },
     behaviorDeck: [
       {
         id: 'embestida',
@@ -56,6 +62,13 @@ export const bosses = [
     behavior: 'boss', row: 'back',
     isBoss: true,
     art: 'bosses/la_tejedora.png',
+    deathDialogue: {
+      lastWords: 'Los hilos… nunca se cortan del todo… volveréis a quedar enredados… todos… siempre…',
+      narrator:
+        'La Tejedora se deshace en hebras de ceniza que el viento dispersa. ' +
+        'Pero entre los árboles muertos de la marisma, algo sigue brillando tenuemente — ' +
+        'como si los hilos de su maldición aún recordaran el camino a vuestras almas.',
+    },
     behaviorDeck: [
       {
         id: 'red_de_sombras',
@@ -101,6 +114,12 @@ export const bosses = [
     behavior: 'boss', row: 'front',
     isBoss: true,
     art: 'bosses/rey_ceniza.png',
+    deathDialogue: {
+      lastWords: 'Mi reino… es la ceniza. Y la ceniza… no muere. Vosotros tampoco… lo haréis.',
+      narrator:
+        'La corona de brasas cae apagada al suelo ennegrecido. No había ira en sus últimas palabras — ' +
+        'había certeza. Seguís adelante, pero algo en su mirada extinta os dice que él ya sabe cómo termina esto.',
+    },
     behaviorDeck: [
       {
         id: 'corona_brasa',
@@ -153,6 +172,14 @@ export const bosses = [
     behavior: 'boss', row: 'front',
     isBoss: true,
     art: 'bosses/el_devorado.png',
+    deathDialogue: {
+      lastWords: null, // El Devorado no habla — solo produce un sonido como realidad rasgándose
+      narrator:
+        'El Devorado no grita. No maldice. Simplemente… deja de ser. ' +
+        'Y en ese silencio súbito, el mundo devuelve todo lo que había tragado: ' +
+        'ecos de nombres, fragmentos de memorias, el peso de incontables vidas consumidas. ' +
+        'Por un instante, sentís el peso de todo lo que se perdió. Luego, nada.',
+    },
     behaviorDeck: [
       {
         id: 'fauces_del_vacio',

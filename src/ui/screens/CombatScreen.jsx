@@ -308,12 +308,17 @@ export default function CombatScreen() {
       {combat.phase === 'victory' && (
         <div className="overlay">
           <div className="overlay__card">
-            <div className="overlay__sub">VICTORIA</div>
-            <h2 className="overlay__title">El camino queda libre</h2>
-            <p className="overlay__text">Botín: {combat.loot?.gold ?? 0} de oro.</p>
-            <button className="btn btn--primary" onClick={finish}>
-              Reclamar botín
-            </button>
+            {combat.kind === 'boss'
+              ? <BossDefeatedDialogue combat={combat} onFinish={finish} />
+              : (
+                <>
+                  <div className="overlay__sub">VICTORIA</div>
+                  <h2 className="overlay__title">El camino queda libre</h2>
+                  <p className="overlay__text">Botín: {combat.loot?.gold ?? 0} de oro.</p>
+                  <button className="btn btn--primary" onClick={finish}>Reclamar botín</button>
+                </>
+              )
+            }
           </div>
         </div>
       )}
@@ -479,6 +484,56 @@ function EnemyPhasePanel({ combat, onNext }) {
   }
   // Cola vacía pero aún en phase enemy (no debería ocurrir, fallback)
   return <button className="btn btn--danger btn--big" onClick={onNext}>Continuar →</button>;
+}
+
+// ── Diálogo de derrota de jefe ─────────────────────────────────────────────
+
+function BossDefeatedDialogue({ combat, onFinish }) {
+  const boss    = combat.enemies.find((e) => e.isBoss);
+  const bossData = boss ? content.bossesById?.[boss.id] : null;
+  const dialogue = bossData?.deathDialogue ?? null;
+  const artUrl   = boss?.art ? assetUrl(boss.art) : null;
+
+  return (
+    <div className="boss-defeat">
+      {/* Cabecera */}
+      <div className="overlay__sub">JEFE DERROTADO</div>
+
+      {/* Retrato (imagen real o placeholder) */}
+      <div className="boss-defeat__portrait">
+        {artUrl
+          ? <img className="boss-defeat__img" src={artUrl} alt={boss?.name} />
+          : <span className="boss-defeat__placeholder" aria-hidden="true">
+              {boss?.name?.[0] ?? '?'}
+            </span>
+        }
+        <div className="boss-defeat__vignette" />
+      </div>
+
+      {/* Nombre del jefe */}
+      <h2 className="boss-defeat__name">{boss?.name ?? 'Jefe derrotado'}</h2>
+
+      {/* Últimas palabras */}
+      {dialogue?.lastWords && (
+        <p className="boss-defeat__speech">
+          <span className="boss-defeat__quote">"</span>
+          {dialogue.lastWords}
+          <span className="boss-defeat__quote">"</span>
+        </p>
+      )}
+
+      {/* Narrador */}
+      {dialogue?.narrator && (
+        <p className="boss-defeat__narrator">{dialogue.narrator}</p>
+      )}
+
+      {/* Botín y continuar */}
+      <p className="boss-defeat__loot">Botín: {combat.loot?.gold ?? 0} de oro</p>
+      <button className="btn btn--primary" onClick={onFinish}>
+        Continuar
+      </button>
+    </div>
+  );
 }
 
 function PotionBar({ potionBag, targeting, onPotion, onCancel }) {

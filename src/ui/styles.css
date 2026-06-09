@@ -1065,6 +1065,117 @@ body {
 .overlay__ending-type--bittersweet { color: var(--amber-lt); }
 .overlay__ending-type--bad         { color: #e7a89a; }
 
+/* ===== Diálogo de derrota de jefe ===== */
+.boss-defeat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+}
+
+/* Retrato */
+.boss-defeat__portrait {
+  position: relative;
+  width: 160px;
+  height: 190px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(201, 145, 63, 0.35);
+  box-shadow: 0 0 28px rgba(0, 0, 0, 0.7), inset 0 0 14px rgba(0, 0, 0, 0.5);
+  flex-shrink: 0;
+}
+.boss-defeat__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  /* look "defeated" — desaturado y oscurecido */
+  filter: grayscale(0.55) brightness(0.7) sepia(0.25);
+}
+/* Vignette encima de la imagen */
+.boss-defeat__vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 80% 60% at 50% 100%,
+    rgba(5, 3, 2, 0.85) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+/* Placeholder sin imagen: inicial del jefe en estilo gótico */
+.boss-defeat__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 72px;
+  color: rgba(201, 145, 63, 0.18);
+  background: radial-gradient(
+    140% 120% at 50% 40%,
+    #1a0f06 0%,
+    #0d0703 100%
+  );
+  user-select: none;
+}
+
+/* Nombre */
+.boss-defeat__name {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 17px;
+  color: rgba(201, 145, 63, 0.65);
+  text-align: center;
+  letter-spacing: 0.04em;
+  margin: 0;
+  /* aspecto "tachado" — título que ya no existe */
+  text-decoration: line-through;
+  text-decoration-color: rgba(201, 145, 63, 0.3);
+  text-decoration-thickness: 1px;
+}
+
+/* Últimas palabras */
+.boss-defeat__speech {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--amber-lt);
+  text-align: center;
+  max-width: 380px;
+  margin: 0;
+  padding: 10px 16px;
+  border-left: 2px solid rgba(201, 145, 63, 0.35);
+  border-right: 2px solid rgba(201, 145, 63, 0.35);
+}
+.boss-defeat__quote {
+  font-size: 20px;
+  opacity: 0.55;
+  vertical-align: -2px;
+}
+
+/* Texto del narrador */
+.boss-defeat__narrator {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--text-dim);
+  text-align: center;
+  max-width: 380px;
+  margin: 0;
+}
+
+/* Botín */
+.boss-defeat__loot {
+  font-size: 13px;
+  color: var(--amber);
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+
 /* zona central */
 .combat-mid {
   grid-area: mid;

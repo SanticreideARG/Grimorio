@@ -1,20 +1,32 @@
 // mapImages.js — Imágenes de fondo de los mapas de capítulo.
-// Se importan como módulos para que Vite las incluya en el build de producción.
-// Agregar map2, map3, map4 cuando las imágenes estén disponibles.
+// Usa import.meta.glob para incluir TODAS las imágenes de mapbackground/
+// ignorando la extensión (.jpg / .png / .webp). Así basta con reemplazar el
+// archivo por uno con el mismo nombre y diferente extensión sin tocar el código.
 
-import map1 from '../../assets/img/mapbackground/map1.jpg';
-import menuBg from '../../assets/img/mapbackground/menu background.jpg';
-import map2 from '../../assets/img/mapbackground/map2.jpg';
-import map3 from '../../assets/img/mapbackground/map3.jpg';
-// import map4 from '../../assets/img/mapbackground/map4.jpg'; // pendiente de asset
+const modules = import.meta.glob(
+  '../../assets/img/mapbackground/*.{png,jpg,jpeg,webp}',
+  { eager: true, import: 'default' },
+);
+
+// '../../assets/img/mapbackground/map1.jpg' → 'map1'
+function bgKey(fullPath) {
+  return fullPath.split('/').pop().replace(/\.[^.]+$/, '');
+}
+
+const bg = {};
+for (const [path, url] of Object.entries(modules)) {
+  const k = bgKey(path);
+  // Preferir PNG sobre JPG si ambos coexisten (el PNG sin marca de agua gana)
+  if (!bg[k] || path.endsWith('.png')) bg[k] = url;
+}
 
 /** Imagen de fondo del menú principal. */
-export { menuBg };
+export const menuBg = bg['menu background'] ?? null;
 
 /** Mapa de chapterId → URL de imagen de fondo (procesada por Vite). */
 export const mapImages = {
-  cap1: map1,
-  cap2: map2,
-  cap3: map3,
-  // cap4: map4,
+  cap1: bg['map1'] ?? null,
+  cap2: bg['map2'] ?? null,
+  cap3: bg['map3'] ?? null,
+  cap4: bg['map4'] ?? null, // se activa automáticamente cuando exista map4.png/jpg
 };

@@ -27,11 +27,20 @@ export function initDecks(rng) {
 
 /**
  * Roba una carta del mazo (toma del tope de draw; si está vacío, recicla discard).
+ * Si el mazo no existe en el estado guardado (save anterior a su creación),
+ * lo inicializa de forma lazy desde content.decks.
  * @returns {{ decks, cardId }} — cardId es null si el mazo sigue vacío tras reciclar.
  */
 export function drawCard(decks, deckId, rng) {
-  const deck = decks[deckId];
-  if (!deck) return { decks, cardId: null };
+  let deck = decks[deckId];
+
+  // Lazy-init: mazo ausente en saves anteriores a la adición del pool
+  if (!deck) {
+    const cards = content.decks[deckId];
+    if (!Array.isArray(cards) || !cards.length) return { decks, cardId: null };
+    const ids = cards.map((c) => c.id ?? c);
+    deck = { draw: rng.shuffle(ids), discard: [] };
+  }
 
   let d = { draw: [...deck.draw], discard: [...deck.discard] };
 

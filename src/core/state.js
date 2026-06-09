@@ -6,7 +6,7 @@
 import { randomSeed } from './rng.js';
 
 /** Versión del formato de save. Subir al cambiar la forma del estado. */
-export const SAVE_VERSION = 4;
+export const SAVE_VERSION = 5;
 
 /** Dificultades soportadas (Q-DIFICULTAD). */
 export const DIFFICULTIES = Object.freeze(['facil', 'normal', 'dificil']);
@@ -100,6 +100,21 @@ export function migrate(save) {
     s.totalDoom  = s.totalDoom ?? 0;
     s.heroOwners = s.heroOwners ?? {};
     s.version = 4;
+  }
+
+  // v4 → v5: pools de eventos por capítulo (Sprint B).
+  // Si el save tiene decks pero le faltan los pools nuevos, los añadimos vacíos
+  // para que drawCard pueda hacer lazy-init en la primera extracción.
+  if (!(s.version >= 5)) {
+    if (s.decks) {
+      const newPools = ['eventos_cap2', 'eventos_cap3', 'eventos_cap4'];
+      for (const pool of newPools) {
+        if (!s.decks[pool]) {
+          s.decks = { ...s.decks, [pool]: { draw: [], discard: [] } };
+        }
+      }
+    }
+    s.version = 5;
   }
 
   if (typeof s.version !== 'number') s.version = SAVE_VERSION;

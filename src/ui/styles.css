@@ -1785,6 +1785,118 @@ body {
   justify-content: center;
 }
 
+/* ===== Campamento entre capítulos ===== */
+.camp {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+.camp__state {
+  font-size: 14px;
+  color: var(--text-dim);
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  text-align: center;
+}
+.camp__options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.camp-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(201, 145, 63, 0.25);
+  border-radius: 8px;
+  background: rgba(20, 12, 5, 0.55);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+  color: var(--text);
+  font-family: 'Cinzel', serif;
+}
+.camp-option:hover {
+  border-color: rgba(201, 145, 63, 0.55);
+  background: rgba(35, 22, 8, 0.75);
+}
+.camp-option.is-chosen {
+  border-color: var(--amber);
+  background: rgba(50, 30, 8, 0.8);
+}
+.camp-option__icon {
+  font-size: 22px;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.camp-option__body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.camp-option__title {
+  font-size: 14px;
+  color: var(--amber-lt);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+.camp-option__desc {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  line-height: 1.4;
+}
+.camp-option__bonus {
+  font-size: 12px;
+  color: #8ecc6a;
+  margin-top: 2px;
+}
+.camp__confirm {
+  width: 100%;
+  margin-top: 4px;
+}
+
+/* ===== Preview de enemigos en el panel del nodo ===== */
+.enemy-preview {
+  margin: 8px 0 2px;
+  padding: 8px 10px;
+  border: 1px solid rgba(165, 38, 38, 0.35);
+  border-radius: 7px;
+  background: rgba(30, 10, 8, 0.45);
+}
+.enemy-preview__label {
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  color: var(--crimson-glow);
+  margin-bottom: 5px;
+}
+.enemy-preview__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.enemy-preview__tag {
+  font-size: 12px;
+  font-family: 'Cinzel', serif;
+  color: var(--text-dim);
+  background: rgba(20, 8, 5, 0.7);
+  border: 1px solid rgba(201, 145, 63, 0.2);
+  border-radius: 4px;
+  padding: 2px 7px;
+}
+.enemy-preview__tag.is-boss {
+  color: var(--crimson-glow);
+  border-color: rgba(165, 38, 38, 0.5);
+  font-weight: 600;
+}
+.enemy-preview__count {
+  color: var(--amber);
+}
+
 /* ===== Ilustraciones de contenido (assets) ===== */
 
 /* Arte de unidad en combate (enemigo/héroe) */

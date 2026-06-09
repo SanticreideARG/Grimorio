@@ -352,19 +352,28 @@ export const useGameStore = create((set, get) => ({
   },
 
   /**
-   * Campamento entre capítulos: avanza al siguiente capítulo, cura a la party a
-   * tope y reinicia la Perdición. El equipo, las mascotas y el oro persisten.
+   * Campamento entre capítulos: avanza al siguiente capítulo y reinicia la Perdición.
+   * @param {'full'|'half'|'explore'} healMode
+   *   full    → curación total (el grupo durmió bien)
+   *   half    → curación al 50% (vigilaron por turnos)
+   *   explore → curación al 25% + 25 de oro bonus (exploraron los alrededores)
    */
-  advanceChapter() {
+  advanceChapter(healMode = 'full') {
     const { game } = get();
     if (game == null) return;
     get().patchGame((g) => {
-      // Acumular el doom de este capítulo antes de resetearlo
       const totalDoom = (g.totalDoom ?? 0) + (g.doom ?? 0);
       let s = advanceToNextChapter({ ...g, totalDoom });
       if (s === g) return g; // no hay más capítulos
       s = resetDoom(s);
-      s = restParty(s, null); // campamento: cura total
+      if (healMode === 'half') {
+        s = restPartyFraction(s, 0.5);
+      } else if (healMode === 'explore') {
+        s = restPartyFraction(s, 0.25);
+        s = { ...s, gold: (s.gold ?? 0) + 25 };
+      } else {
+        s = restParty(s, null); // curación total (por defecto)
+      }
       const ch = getChapter(s);
       const entry = { kind: 'chapter', text: `Comienza ${ch?.title ?? 'el siguiente capítulo'}.`, at: Date.now() };
       return { ...s, log: [...(s.log ?? []), entry], view: 'map' };

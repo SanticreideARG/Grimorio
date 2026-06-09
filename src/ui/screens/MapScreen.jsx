@@ -2,6 +2,7 @@
 // HUD (capítulo, perdición, oro, progreso) + tablero + panel del nodo actual.
 // El combate/eventos reales llegan en M2/M3; aquí la resolución es narrativa.
 
+import { useState } from 'react';
 import { useGameStore } from '../../store/gameStore.js';
 import {
   getChapter,
@@ -16,7 +17,7 @@ import {
 } from '../../systems/board.js';
 import { getDoomRatio } from '../../systems/doom.js';
 import { script } from '../../data/script.js';
-import { effectiveMaxHp } from '../../systems/progression.js';
+import { effectiveMaxHp, partyHpRatio } from '../../systems/progression.js';
 import { content } from '../../data/index.js';
 import BoardMap from '../components/BoardMap.jsx';
 
@@ -119,6 +120,11 @@ export default function MapScreen() {
               : describeNode(node)}
           </p>
 
+          {/* Preview de enemigos para nodos de combate (antes de entrar) */}
+          {!resolved && ['combat', 'elite', 'boss'].includes(node.type) && node.enemies?.length > 0 && (
+            <EnemyPreview enemies={node.enemies} />
+          )}
+
           <div className="node-panel__actions">
             {!resolved && (
               <button className="btn btn--primary" onClick={onResolve}>
@@ -144,16 +150,11 @@ export default function MapScreen() {
             <h2 className="overlay__title">{chapter.title}</h2>
             <p className="overlay__text">{chapter.script.victory}</p>
             {hasNext ? (
-              <>
-                <p className="overlay__hint">
-                  La party acampa: recupera toda su vida y la Perdición se desvanece.
-                </p>
-                <button className="btn btn--primary" onClick={advanceChapter}>
-                  Avanzar al siguiente capítulo →
-                </button>
-              </>
+              <CampChoices
+                game={game}
+                onChoose={advanceChapter}
+              />
             ) : (
-              // Capítulo final completado — mostrar el final
               <EndingOverlay
                 ending={game.ending}
                 onCompute={computeAndSetEnding}
@@ -189,5 +190,104 @@ function EndingOverlay({ ending, onCompute, onQuit }) {
         Volver al menú
       </button>
     </>
+  );
+}
+
+// ── Campamento: elecciones entre capítulos ──────────────────────────────────
+
+const CAMP_OPTIONS = [
+  {
+    id: 'full',
+    icon: '🔥',
+    title: 'Descanso Largo',
+    desc: 'Acampáis junto al fuego toda la noche. La party recupera toda su vida.',
+    bonus: 'Curación total',
+    cost: null,
+  },
+  {
+    id: 'half',
+    icon: '⚔',
+    title: 'Guardia Nocturna',
+    desc: 'Dormís por turnos, vigilando. Menos descanso, pero llegáis alertas.',
+    bonus: 'Curación al 50%',
+    cost: null,
+  },
+  {
+    id: 'explore',
+    icon: '🗺',
+    title: 'Explorar los Alrededores',
+    desc: 'Registráis la zona en busca de recursos. Poco sueño, pero algo de oro.',
+    bonus: 'Curación al 25% + 25🪙',
+    cost: null,
+  },
+];
+
+function CampChoices({ game, onChoose }) {
+  const [chosen, setChosen] = useState(null);
+  const hpPct = Math.round(partyHpRatio(game) * 100);
+
+  return (
+    <div className="camp">
+      <p className="camp__state">
+        La Perdición se disipa con el amanecer.
+        Estado actual de la party: <strong>{hpPct}% de vida</strong>.
+      </p>
+      <div className="camp__options">
+        {CAMP_OPTIONS.map((opt) => (
+          <button
+            key={opt.id}
+            className={`camp-option${chosen === opt.id ? ' is-chosen' : ''}`}
+            onClick={() => setChosen(opt.id)}
+          >
+            <span className="camp-option__icon">{opt.icon}</span>
+            <div className="camp-option__body">
+              <div className="camp-option__title">{opt.title}</div>
+              <div className="camp-option__desc">{opt.desc}</div>
+              <div className="camp-option__bonus">{opt.bonus}</div>
+            </div>
+          </button>
+        ))}
+      </div>
+      <button
+        className="btn btn--primary camp__confirm"
+        disabled={!chosen}
+        onClick={() => chosen && onChoose(chosen)}
+      >
+        {chosen
+          ? `${CAMP_OPTIONS.find((o) => o.id === chosen)?.title} → Siguiente capítulo`
+          : 'Elegí cómo pasar la noche…'}
+      </button>
+    </div>
+  );
+}
+
+// ── Preview de enemigos antes del combate ───────────────────────────────────
+
+function EnemyPreview({ enemies }) {
+  // Cuenta cuántos de cada tipo hay
+  const counts = {};
+  for (const id of enemies) counts[id] = (counts[id] ?? 0) + 1;
+
+  return (
+    <div className="enemy-preview">
+      <div className="enemy-preview__label">Encuentro</div>
+      <div className="enemy-preview__list">
+        {Object.entries(counts).map(([id, n]) => {
+          const e = content.enemiesById[id] ?? content.bossesById[id];
+          if (!e) return null;
+          const isBoss = !!e.isBoss;
+          return (
+            <span
+              key={id}
+              className={`enemy-preview__tag${isBoss ? ' is-boss' : ''}`}
+              title={e.name}
+            >
+              {n > 1 && <span className="enemy-preview__count">×{n} </span>}
+              {e.name}
+            </span>
+          );
+        })}
+      </div>
+    </div>
   );
 }

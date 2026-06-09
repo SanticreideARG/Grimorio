@@ -4,11 +4,9 @@
 
 import map1 from '../../assets/img/mapbackground/map1.jpg';
 import menuBg from '../../assets/img/mapbackground/menu background.jpg';
-
 import map2 from '../../assets/img/mapbackground/map2.jpg';
-// Cuando tengas las otras imágenes, descomentar:
 import map3 from '../../assets/img/mapbackground/map3.jpg';
-// import map4 from '../../assets/img/mapbackground/map4.jpg';
+// import map4 from '../../assets/img/mapbackground/map4.jpg'; // pendiente de asset
 
 /** Imagen de fondo del menú principal. */
 export { menuBg };
@@ -17,7 +15,6 @@ export { menuBg };
 export const mapImages = {
   cap1: map1,
   cap2: map2,
-  // cap3: map3,
-  // cap3: map3,
+  cap3: map3,
   // cap4: map4,
 };

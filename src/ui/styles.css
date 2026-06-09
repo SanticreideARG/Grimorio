@@ -422,7 +422,7 @@ body {
 .node {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: 5.2%;
+  width: 7.8%;       /* +50% respecto al original 5.2% */
   aspect-ratio: 1;
   display: flex;
   align-items: center;
@@ -432,6 +432,7 @@ body {
   width: 100%;
   height: 100%;
   border-radius: 50%;
+  overflow: hidden;   /* recorta la imagen PNG en círculo */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -444,8 +445,23 @@ body {
     inset 0 2px 5px rgba(255, 238, 200, 0.55),
     inset 0 -8px 16px rgba(70, 40, 14, 0.6);
 }
+/* Arte PNG: ocupa todo el medallón con recorte circular */
+.node__art {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+  /* Sutil mezcla con el aro de bronce del medallón */
+  mix-blend-mode: multiply;
+  filter: contrast(1.08) saturate(1.1);
+}
+/* Cuando hay imagen no necesitamos el gradiente de fondo — usamos uno más neutro */
+.node__medallion:has(.node__art) {
+  background: #c8a860;
+}
 .node__icon {
-  font-size: clamp(14px, 1.7vw, 30px);
+  font-size: clamp(18px, 2.2vw, 36px);   /* también +~50% */
   line-height: 1;
   filter: saturate(0.85) contrast(1.05);
 }
@@ -470,7 +486,7 @@ body {
   background: radial-gradient(circle at 38% 32%, #e9b27e 0%, #b5602f 50%, #6e2414 100%);
 }
 .node--boss {
-  width: 8%;
+  width: 12%;   /* +50% respecto al original 8% */
 }
 .node--boss .node__medallion {
   background: radial-gradient(circle at 40% 32%, #e9b27e 0%, #c0612f 38%, #8a2a18 72%, #4d130c 100%);

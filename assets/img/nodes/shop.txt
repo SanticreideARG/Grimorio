@@ -1,0 +1,7 @@
+Circular medallion icon for a dark-fantasy board game map node. TYPE: SHOP / MERCHANT.
+Style: aged parchment illustration, ink engraving, grim medieval fantasy. Gold and leather tones.
+Content: a coin purse overflowing with gold coins, or a merchant's scale balanced with potions and swords.
+Alternatively: a leather satchel with a coin symbol stamped on it, surrounded by small trade goods.
+Feel: commerce in the dark — a hooded merchant who asks no questions, rare goods at a steep price.
+Format: 512x512 PNG, transparent background, circular composition, no text, no watermark.
+Color palette: burnished gold (#c8a010), dark leather (#4a2c10), coin copper (#b4640a), shadow (#1a1008).

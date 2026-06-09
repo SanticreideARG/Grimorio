@@ -3,7 +3,21 @@
 // El sendero SVG y los nodos se superponen sobre ella por %.
 
 import { mapImages } from '../../data/mapImages.js';
+import { assetUrl } from '../assets.js';
+import { nodeLabel } from '../../systems/board.js';
 
+// PNG art por tipo de nodo (assets/img/nodes/). Fallback a emoji si no existe.
+const NODE_ART = {
+  start:  'nodes/start.png',
+  combat: 'nodes/combat.png',
+  elite:  'nodes/elite.png',
+  event:  'nodes/event.png',
+  rest:   'nodes/rest.png',
+  shop:   'nodes/shop.png',
+  boss:   'nodes/boss.png',
+};
+
+// Emoji de fallback (sólo se usa si no hay PNG cargado)
 const ICON = {
   start: '🚩',
   combat: '⚔️',
@@ -89,9 +103,7 @@ export default function BoardMap({ chapterId, nodes, currentIndex, visited, titl
               style={{ left: `${n.pos.x}%`, top: `${n.pos.y}%` }}
               title={n.name}
             >
-              <div className="node__medallion">
-                <span className="node__icon">{ICON[n.type] ?? '•'}</span>
-              </div>
+              <NodeMedallion type={n.type} />
               <span className="node__num">{i + 1}</span>
               {isCurrent && <span className="node__pawn" aria-label="Tu posición" />}
             </div>
@@ -108,6 +120,19 @@ export default function BoardMap({ chapterId, nodes, currentIndex, visited, titl
         </div>
       </div>
 
+    </div>
+  );
+}
+
+/** Medallón de nodo: muestra el PNG de arte si existe, fallback a emoji. */
+function NodeMedallion({ type }) {
+  const url = assetUrl(NODE_ART[type]);
+  return (
+    <div className="node__medallion">
+      {url
+        ? <img className="node__art" src={url} alt={nodeLabel(type)} draggable={false} />
+        : <span className="node__icon">{ICON[type] ?? '•'}</span>
+      }
     </div>
   );
 }

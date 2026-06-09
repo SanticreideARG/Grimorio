@@ -1,0 +1,7 @@
+Circular medallion icon for a dark-fantasy board game map node. TYPE: REST / CAMPFIRE.
+Style: aged parchment illustration, ink engraving, grim medieval fantasy. Warm amber and hearth tones.
+Content: a campfire with dancing flames, surrounded by three bedrolls or simple camps. Or a cozy torch in a stone bracket.
+Alternatively: a kettle over a small fire, smoke curling upward, a shield resting against a log.
+Feel: brief respite in a dangerous world — warmth, recovery, a moment of safety before the next trial.
+Format: 512x512 PNG, transparent background, circular composition, no text, no watermark.
+Color palette: fire amber (#c8780a), warm brown (#6b3d10), dark smoke (#2a1a08), ember orange (#e05a0a).

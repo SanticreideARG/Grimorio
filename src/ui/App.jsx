@@ -20,6 +20,7 @@ export default function App() {
   const remove = useGameStore((s) => s.remove);
 
   const [difficulty, setDifficulty] = useState('normal');
+  const [playerCount, setPlayerCount] = useState(1);
 
   if (game) {
     switch (game.view) {
@@ -47,6 +48,21 @@ export default function App() {
         <p className="intro">{script.intro}</p>
 
         <section className="difficulty">
+          <span className="difficulty__label">Jugadores (hotseat)</span>
+          <div className="difficulty__options">
+            {[1, 2, 3, 4].map((n) => (
+              <button
+                key={n}
+                className={`btn btn--toggle${playerCount === n ? ' is-active' : ''}`}
+                onClick={() => setPlayerCount(n)}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section className="difficulty">
           <span className="difficulty__label">Dificultad</span>
           <div className="difficulty__options">
             {DIFFICULTIES.map((d) => (
@@ -66,7 +82,10 @@ export default function App() {
             <SlotCard
               key={s.slot}
               info={s}
-              onNew={() => newGame(s.slot, { difficulty })}
+              onNew={() => newGame(s.slot, {
+                difficulty,
+                players: Array.from({ length: playerCount }, (_, i) => `Jugador ${i + 1}`),
+              })}
               onLoad={() => load(s.slot)}
               onDelete={() => remove(s.slot)}
             />

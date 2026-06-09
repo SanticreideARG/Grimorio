@@ -25,16 +25,38 @@ export function partyMods(game) {
   return mods;
 }
 
-/** Stats efectivas de un héroe: base + ítems del inventario. */
+// Compara una cara con un patrón (subset check: el patrón debe estar en la cara).
+function faceMatchesPattern(face, pattern) {
+  const keys = Object.keys(pattern);
+  if (keys.length === 0) {
+    // Patrón vacío: solo coincide con caras completamente vacías
+    return Object.values(face).every((v) => !v);
+  }
+  return keys.every((k) => face[k] === pattern[k]);
+}
+
+/** Stats efectivas de un héroe: base + ítems del inventario (dados, vida, caras). */
 export function effectiveHero(heroId, game) {
   const base = content.heroesById[heroId];
   if (!base) return null;
   const m = partyMods(game);
+
+  // Aplicar upgrades de caras de dados (dice-building real)
+  let diceFaces = [...base.diceFaces];
+  for (const id of game.inventory ?? []) {
+    const it = content.itemsById[id];
+    if (!it?.mod?.upgradeFace) continue;
+    const { from, to } = it.mod.upgradeFace;
+    const idx = diceFaces.findIndex((f) => faceMatchesPattern(f, from));
+    if (idx >= 0) diceFaces = diceFaces.map((f, i) => (i === idx ? { ...to } : f));
+  }
+
   return {
     ...base,
     maxHp: base.maxHp + m.maxHp,
     dice: base.dice + m.dice,
     maxMana: (base.maxMana ?? 0) + m.maxMana,
+    diceFaces,
   };
 }
 
@@ -63,7 +85,12 @@ export function combatHeroState(game) {
     if (!eff) continue;
     const maxHp = eff.maxHp;
     const cur = game.partyHp?.[id] ?? maxHp;
-    out[id] = { hp: Math.max(0, Math.min(cur, maxHp)), maxHp, dice: eff.dice };
+    out[id] = {
+      hp: Math.max(0, Math.min(cur, maxHp)),
+      maxHp,
+      dice: eff.dice,
+      diceFaces: eff.diceFaces, // caras efectivas (con upgrades)
+    };
   }
   return out;
 }

@@ -6,7 +6,7 @@
 import { randomSeed } from './rng.js';
 
 /** Versión del formato de save. Subir al cambiar la forma del estado. */
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 4;
 
 /** Dificultades soportadas (Q-DIFICULTAD). */
 export const DIFFICULTIES = Object.freeze(['facil', 'normal', 'dificil']);
@@ -56,9 +56,13 @@ export function createNewGame(opts = {}) {
     // Inventario de consumibles (bolsa de pociones para combate)
     potionBag: {}, // { [potionId]: count } — se compran en tienda, se usan en combate
 
+    // Hotseat (M6): asignación de héroes a jugadores
+    heroOwners: {}, // { [heroId]: playerIndex } — se llena al formar la party
+
     // Recursos globales
     gold: 0,
-    doom: 0, // track de Perdición (sube con combates/eventos)
+    doom: 0,        // Perdición del capítulo actual
+    totalDoom: 0,   // Perdición acumulada histórica (no se resetea)
 
     // Narrativa / finales (Q-DERROTA: finales bueno/agridulce/malo)
     flags: {}, // banderas narrativas acumuladas por decisiones
@@ -89,6 +93,13 @@ export function migrate(save) {
   if (!(s.version >= 3)) {
     s.potionBag = s.potionBag ?? {};
     s.version = 3;
+  }
+
+  // v3 → v4: doom histórico + asignación hotseat.
+  if (!(s.version >= 4)) {
+    s.totalDoom  = s.totalDoom ?? 0;
+    s.heroOwners = s.heroOwners ?? {};
+    s.version = 4;
   }
 
   if (typeof s.version !== 'number') s.version = SAVE_VERSION;

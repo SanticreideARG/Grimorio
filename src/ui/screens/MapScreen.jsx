@@ -15,6 +15,7 @@ import {
   nodeActionLabel,
 } from '../../systems/board.js';
 import { getDoomRatio } from '../../systems/doom.js';
+import { script } from '../../data/script.js';
 import { effectiveMaxHp } from '../../systems/progression.js';
 import { content } from '../../data/index.js';
 import BoardMap from '../components/BoardMap.jsx';
@@ -28,6 +29,7 @@ export default function MapScreen() {
   const rest = useGameStore((s) => s.rest);
   const openShop = useGameStore((s) => s.openShop);
   const advanceChapter = useGameStore((s) => s.advanceChapter);
+  const computeAndSetEnding = useGameStore((s) => s.computeAndSetEnding);
   const quitToMenu = useGameStore((s) => s.quitToMenu);
 
   const chapter = getChapter(game);
@@ -151,18 +153,41 @@ export default function MapScreen() {
                 </button>
               </>
             ) : (
-              <>
-                <p className="overlay__hint">
-                  Habéis llegado al final del contenido disponible. ¡Gracias por jugar!
-                </p>
-                <button className="btn btn--primary" onClick={quitToMenu}>
-                  Volver al menú
-                </button>
-              </>
+              // Capítulo final completado — mostrar el final
+              <EndingOverlay
+                ending={game.ending}
+                onCompute={computeAndSetEnding}
+                onQuit={quitToMenu}
+              />
             )}
           </div>
         </div>
       )}
     </main>
+  );
+}
+
+const ENDING_TITLE = {
+  good: '✦ Un Final de Luz ✦',
+  bittersweet: '— Un Final Agridulce —',
+  bad: '☠ Un Final Oscuro ☠',
+};
+
+function EndingOverlay({ ending, onCompute, onQuit }) {
+  // Calcular el final la primera vez que se muestra este overlay
+  if (!ending) {
+    onCompute();
+    return null;
+  }
+  const title = ENDING_TITLE[ending] ?? 'FIN';
+  const text = script.endings[ending] ?? '';
+  return (
+    <>
+      <p className={`overlay__ending-type overlay__ending-type--${ending}`}>{title}</p>
+      <p className="overlay__text">{text}</p>
+      <button className="btn btn--primary" onClick={onQuit}>
+        Volver al menú
+      </button>
+    </>
   );
 }

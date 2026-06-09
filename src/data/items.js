@@ -31,7 +31,33 @@ export const items = [
     icon: 'items/foco_arcano.png',
   },
 
-  // ---- Nuevos ----
+  // ---- Dice-building: reemplazo de caras ----
+  {
+    id: 'piedra_afilar',
+    name: 'Piedra de Afilar',
+    desc: 'Convierte la primera cara en blanco del pool en [🗡️1].',
+    mod: { upgradeFace: { from: {}, to: { sword: 1 } } },
+    price: 72,
+    icon: 'items/piedra_afilar.png',
+  },
+  {
+    id: 'placa_refuerzo',
+    name: 'Placa de Refuerzo',
+    desc: 'Convierte la primera cara en blanco del pool en [🛡️1].',
+    mod: { upgradeFace: { from: {}, to: { shield: 1 } } },
+    price: 64,
+    icon: 'items/placa_refuerzo.png',
+  },
+  {
+    id: 'cristal_arcano',
+    name: 'Cristal Arcano',
+    desc: 'Convierte una cara [🗡️1] en [⭐1] (útil para magos / sanadores).',
+    mod: { upgradeFace: { from: { sword: 1 }, to: { star: 1 } } },
+    price: 96,
+    icon: 'items/cristal_arcano.png',
+  },
+
+  // ---- Equipo general ----
   {
     id: 'escudo_runico',
     name: 'Escudo Rúnico',

@@ -13,6 +13,7 @@ import {
 } from '../../systems/combat.js';
 import { useCombatFx } from '../combat/useCombatFx.js';
 import { assetUrl } from '../assets.js';
+import { canControlHero, activePlayerName } from '../../systems/turn.js';
 
 const KIND_LABEL = { combat: 'Combate', elite: 'Combate de Élite', boss: 'Jefe' };
 
@@ -34,6 +35,7 @@ function faceToText(face) {
 export default function CombatScreen() {
   const combat = useGameStore((s) => s.game.combat);
   const potionBag = useGameStore((s) => s.game.potionBag ?? {});
+  const players = useGameStore((s) => s.game?.players ?? ['Jugador 1']);
   const roll = useGameStore((s) => s.combatRoll);
   const attack = useGameStore((s) => s.combatAttack);
   const cast = useGameStore((s) => s.combatCast);
@@ -83,10 +85,19 @@ export default function CombatScreen() {
       ? new Set(validAllyTargets(combat).map((a) => a.id))
       : new Set();
 
+  // Hotseat: etiqueta del jugador activo
+  const isHotseat = Object.keys(combat.heroOwners ?? {}).length > 0;
+  const playerName = isHotseat ? activePlayerName(combat, players) : null;
+
   // Héroes que se pueden seleccionar como activo (antes de tirar dados)
   const canSelectHero = isHeroPhase && !hero?.hasRolled;
   const selectableHeroIds = canSelectHero
-    ? new Set(combat.heroes.filter((h) => !h.down && !h.hasRolled).map((h) => h.id))
+    ? new Set(combat.heroes.filter((h) => {
+        if (h.down || h.hasRolled) return false;
+        // Hotseat: solo héroes del jugador activo
+        if (!canControlHero(h.id, combat)) return false;
+        return true;
+      }).map((h) => h.id))
     : new Set();
 
   const hasPotions = Object.values(potionBag).some((n) => n > 0);
@@ -176,7 +187,8 @@ export default function CombatScreen() {
         {isHeroPhase && hero && (
           <>
             <div className="active-banner">
-              Turno de <strong>{hero.name}</strong>
+              {playerName && <span className="active-banner__player">{playerName} ·</span>}
+              {' '}Turno de <strong>{hero.name}</strong>
             </div>
 
             {!hero.hasRolled ? (
@@ -242,10 +254,10 @@ export default function CombatScreen() {
 
         {combat.phase === 'enemy' && (
           <div className="enemy-phase">
-            <p className="hint">Los enemigos se preparan…</p>
-            <button className="btn btn--danger btn--big" onClick={enemyPhase}>
-              Resolver turno enemigo →
-            </button>
+            <EnemyPhasePanel
+              combat={combat}
+              onNext={enemyPhase}
+            />
           </div>
         )}
       </section>
@@ -417,6 +429,39 @@ function HeroCard({ h, active, clickable, selectable, onClick }) {
       </span>
     </button>
   );
+}
+
+function EnemyPhasePanel({ combat, onNext }) {
+  const pending = combat.pendingEnemies;
+  // Sin inicializar todavía: mostrar "iniciar"
+  if (!pending) {
+    const total = combat.enemies.filter((e) => e.hp > 0).length;
+    return (
+      <>
+        <p className="hint">Los enemigos se preparan… ({total} activos)</p>
+        <button className="btn btn--danger btn--big" onClick={onNext}>
+          ⚔ Resolver turno enemigo
+        </button>
+      </>
+    );
+  }
+  // Cola en curso
+  if (pending.length > 0) {
+    const nextEnemy = combat.enemies.find((e) => e.uid === pending[0]);
+    return (
+      <>
+        <p className="hint enemy-hint">
+          <strong>{nextEnemy?.name ?? '?'}</strong> va a actuar
+          <span className="enemy-queue"> ({pending.length} restante{pending.length !== 1 ? 's' : ''})</span>
+        </p>
+        <button className="btn btn--danger btn--big" onClick={onNext}>
+          Ver acción →
+        </button>
+      </>
+    );
+  }
+  // Cola vacía pero aún en phase enemy (no debería ocurrir, fallback)
+  return <button className="btn btn--danger btn--big" onClick={onNext}>Continuar →</button>;
 }
 
 function PotionBar({ potionBag, targeting, onPotion, onCancel }) {

@@ -13,6 +13,7 @@ const MAX = 4;
 export default function PartySelect() {
   const setParty = useGameStore((s) => s.setParty);
   const quitToMenu = useGameStore((s) => s.quitToMenu);
+  const players = useGameStore((s) => s.game?.players ?? ['Jugador 1']);
   const [selected, setSelected] = useState([]);
 
   const toggle = (id) => {
@@ -49,7 +50,13 @@ export default function PartySelect() {
               onClick={() => toggle(h.id)}
               disabled={full}
             >
-              {isSel && <span className="hero-pick__order">{order}</span>}
+              {isSel && (
+                <span className="hero-pick__order">
+                  {players.length > 1
+                    ? players[(order - 1) % players.length]?.slice(0, 2) ?? order
+                    : order}
+                </span>
+              )}
               <span className={`hero-pick__row hero-pick__row--${h.row}`}>
                 {ROW_LABEL[h.row] ?? h.row}
               </span>

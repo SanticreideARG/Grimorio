@@ -48,7 +48,12 @@ import {
   selectHero,
   usePotionOnHero,
   resolveEnemyPhase,
+  startEnemyPhase,
+  resolveNextEnemy,
 } from '../systems/combat.js';
+import { assignHeroOwners } from '../systems/turn.js';
+import { computeEnding } from '../systems/endings.js';
+import { script } from '../data/script.js';
 
 export const useGameStore = create((set, get) => ({
   /** Estado de la partida activa, o null en el menú de título. */
@@ -127,9 +132,12 @@ export const useGameStore = create((set, get) => ({
     const rng = createRng(get().game?.rngState ?? Date.now());
     const decks = initDecks(rng);
     get().patchGame((g) => {
+      const players = g.players ?? ['Jugador 1'];
+      const heroOwners = assignHeroOwners(heroIds, players);
       const base = {
         ...g,
         party: heroIds,
+        heroOwners,
         pets: g.pets ?? [],
         inventory: g.inventory ?? [],
         potionBag: g.potionBag ?? {},
@@ -138,7 +146,7 @@ export const useGameStore = create((set, get) => ({
         rngState: rng.getState(),
         view: 'map',
       };
-      return initPartyHp(base); // vida persistente a tope (M4)
+      return initPartyHp(base);
     });
   },
 
@@ -157,6 +165,8 @@ export const useGameStore = create((set, get) => ({
       pendingCurses: game.pendingCurses ?? [],
       diceBonus: getDiceBonus(game),
       heroState: combatHeroState(game),
+      heroOwners: game.heroOwners ?? {},
+      playerCount: (game.players ?? ['Jugador 1']).length,
     });
     // Las maldiciones pendientes ya se aplicaron a la party: se consumen.
     // Guardamos la vida de entrada para poder reintentar el combate.
@@ -218,12 +228,19 @@ export const useGameStore = create((set, get) => ({
     get().patchGame((g) => ({ ...g, combat: endHeroTurn(g.combat) }));
   },
 
-  /** Resuelve la fase enemiga y arranca el siguiente round (consume RNG). */
+  /**
+   * Resuelve la acción de UN enemigo (modo paso a paso).
+   * La primera llamada inicializa la cola; las siguientes procesan de a uno.
+   */
   combatEnemyPhase() {
     const { game } = get();
-    if (!game?.combat) return;
+    if (!game?.combat || game.combat.phase !== 'enemy') return;
     const rng = createRng(game.rngState);
-    const combat = resolveEnemyPhase(game.combat, rng);
+    // Inicializar cola si todavía no está
+    const initialized = game.combat.pendingEnemies
+      ? game.combat
+      : startEnemyPhase(game.combat);
+    const combat = resolveNextEnemy(initialized, rng);
     get().patchGame((g) => ({ ...g, combat, rngState: rng.getState() }));
   },
 
@@ -256,6 +273,8 @@ export const useGameStore = create((set, get) => ({
       node, party: restored.party, difficulty: restored.difficulty,
       diceBonus: getDiceBonus(restored),
       heroState: combatHeroState(restored),
+      heroOwners: restored.heroOwners ?? {},
+      playerCount: (restored.players ?? ['Jugador 1']).length,
     });
     get().patchGame((g) => ({ ...g, partyHp: restored.partyHp, combat, view: 'combat' }));
   },
@@ -340,13 +359,26 @@ export const useGameStore = create((set, get) => ({
     const { game } = get();
     if (game == null) return;
     get().patchGame((g) => {
-      let s = advanceToNextChapter(g);
+      // Acumular el doom de este capítulo antes de resetearlo
+      const totalDoom = (g.totalDoom ?? 0) + (g.doom ?? 0);
+      let s = advanceToNextChapter({ ...g, totalDoom });
       if (s === g) return g; // no hay más capítulos
       s = resetDoom(s);
       s = restParty(s, null); // campamento: cura total
       const ch = getChapter(s);
       const entry = { kind: 'chapter', text: `Comienza ${ch?.title ?? 'el siguiente capítulo'}.`, at: Date.now() };
       return { ...s, log: [...(s.log ?? []), entry], view: 'map' };
+    });
+  },
+
+  /** Calcula y fija el tipo de final cuando se termina el Cap.4. */
+  computeAndSetEnding() {
+    get().patchGame((g) => {
+      const endingType = computeEnding({
+        ...g,
+        totalDoom: (g.totalDoom ?? 0) + (g.doom ?? 0),
+      });
+      return { ...g, ending: endingType };
     });
   },
 

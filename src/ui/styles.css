@@ -994,6 +994,44 @@ body {
 /* Conteo en la tienda */
 .shop-card__count { color: var(--amber); font-weight: 600; }
 
+/* Preview de upgrade de cara de dado en la tienda */
+.dice-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  background: rgba(0,0,0,0.25);
+  border-radius: 6px;
+  padding: 4px 8px;
+  color: var(--text-dim);
+}
+.dice-preview--none { color: rgba(200,100,80,0.7); background: none; padding: 0; }
+.dice-preview__arrow { color: var(--amber); font-size: 14px; }
+.dice-preview__who { color: var(--text-dim); font-style: italic; }
+
+/* Banner de jugador activo en combate (hotseat) */
+.active-banner__player {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: rgba(160,200,240,0.85);
+  text-transform: uppercase;
+  margin-right: 4px;
+}
+
+/* Panel de fase enemiga paso a paso */
+.enemy-hint { margin-bottom: 10px; }
+.enemy-queue { color: var(--text-dim); font-size: 13px; margin-left: 6px; }
+
+/* Finales en el overlay */
+.overlay__ending-type {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+.overlay__ending-type--good        { color: #9fdbb0; }
+.overlay__ending-type--bittersweet { color: var(--amber-lt); }
+.overlay__ending-type--bad         { color: #e7a89a; }
+
 /* zona central */
 .combat-mid {
   grid-area: mid;

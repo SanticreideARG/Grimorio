@@ -7,6 +7,7 @@ import {
   canBuyItem,
   canBuyPotion,
   potionCount,
+  effectiveHero,
 } from '../../systems/progression.js';
 import { getCurrentNode } from '../../systems/board.js';
 import { assetUrl } from '../assets.js';
@@ -40,6 +41,7 @@ export default function ShopScreen() {
                   <ShopIcon icon={it.icon} name={it.name} />
                   <div className="shop-card__name">{it.name}</div>
                   <div className="shop-card__desc">{it.desc}</div>
+                  {it.mod?.upgradeFace && <DiceFaceUpgradePreview item={it} game={game} />}
                   <div className="shop-card__foot">
                     <span className="shop-card__price">🪙 {it.price}</span>
                     <button
@@ -93,6 +95,38 @@ export default function ShopScreen() {
         </button>
       </div>
     </main>
+  );
+}
+
+function faceToText(f) {
+  if (f.sword)  return `🗡️${f.sword > 1 ? f.sword : ''}`;
+  if (f.shield) return `🛡️${f.shield > 1 ? f.shield : ''}`;
+  if (f.star)   return `⭐${f.star > 1 ? f.star : ''}`;
+  return '·';
+}
+
+function DiceFaceUpgradePreview({ item, game }) {
+  const { from, to } = item.mod.upgradeFace;
+  // Muestra qué héroe(s) se ven afectados y qué cara cambia
+  const affected = (game.party ?? []).filter((id) => {
+    const faces = effectiveHero(id, game)?.diceFaces ?? [];
+    return faces.some((f) => {
+      const keys = Object.keys(from);
+      if (keys.length === 0) return Object.values(f).every((v) => !v);
+      return keys.every((k) => f[k] === from[k]);
+    });
+  }).map((id) => content.heroesById[id]?.name?.split(' ')[0] ?? id);
+
+  if (!affected.length) return (
+    <p className="dice-preview dice-preview--none">Sin caras compatibles en la party.</p>
+  );
+  return (
+    <div className="dice-preview">
+      <span className="dice-preview__arrow">
+        {faceToText(Object.keys(from).length ? from : {})} → {faceToText(to)}
+      </span>
+      <span className="dice-preview__who">{affected.join(', ')}</span>
+    </div>
   );
 }
 

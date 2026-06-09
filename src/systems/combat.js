@@ -30,11 +30,12 @@ function makeHeroInstance(hero, st = {}) {
   const maxHp = st.maxHp ?? hero.maxHp;
   const hp = Math.max(0, Math.min(st.hp ?? maxHp, maxHp));
   const dice = st.dice ?? hero.dice;
+  const diceFaces = st.diceFaces ?? hero.diceFaces; // caras efectivas (dice-building)
   return {
     id: hero.id, name: hero.name, role: hero.role,
     maxHp, hp,
     row: hero.row ?? 'front',
-    dice, diceFaces: hero.diceFaces,
+    dice, diceFaces,
     spells: hero.spells ?? [],
     portrait: hero.portrait ?? null,
     block: 0, energy: 0, down: hp <= 0,
@@ -84,7 +85,7 @@ function lookupEnemy(id) {
  * `heroState` (de progression.js) lleva la vida persistente y stats efectivas por
  * héroe: { [heroId]: { hp, maxHp, dice } }. Si falta, se usan las stats base.
  */
-export function initCombat({ node, party, difficulty = 'normal', pendingCurses = [], diceBonus = 0, heroState = {} }) {
+export function initCombat({ node, party, difficulty = 'normal', pendingCurses = [], diceBonus = 0, heroState = {}, heroOwners = {}, playerCount = 1 }) {
   const mult = DIFF[difficulty] ?? DIFF.normal;
   const enemies = (node.enemies ?? [])
     .map(lookupEnemy)
@@ -115,10 +116,14 @@ export function initCombat({ node, party, difficulty = 'normal', pendingCurses =
     round: 1,
     phase: heroes.length && enemies.length ? 'hero' : 'victory',
     activeHeroIndex: firstLivingHero({ heroes }),
+    activePlayerIndex: 0,
     heroes,
     enemies,
     summonCounter: 0,
     diceBonus,
+    heroOwners,
+    playerCount,
+    pendingEnemies: null,
     loot: null,
     log,
   };
@@ -302,6 +307,12 @@ export function selectHero(combat, heroIndex) {
   const target = c.heroes[heroIndex];
   if (!target || target.down || target.hasRolled) return combat;
   if (heroIndex === c.activeHeroIndex) return combat;
+  // Hotseat: solo se puede seleccionar un héroe del jugador activo
+  const owners = c.heroOwners ?? {};
+  if (Object.keys(owners).length > 0) {
+    const activePlayer = c.activePlayerIndex ?? 0;
+    if ((owners[target.id] ?? 0) !== activePlayer) return combat;
+  }
   c.activeHeroIndex = heroIndex;
   return c;
 }
@@ -328,72 +339,99 @@ export function usePotionOnHero(combat, potionId, targetHeroId) {
   return c;
 }
 
-/** Termina el turno del héroe activo; busca el próximo que no haya actuado. */
+/** Termina el turno del héroe activo; busca el próximo respetando el orden hotseat. */
 export function endHeroTurn(combat) {
   const c = clone(combat);
   if (c.phase !== 'hero') return combat;
-  // Busca cualquier héroe vivo que no haya actuado aún (en orden de índice)
-  const nextIdx = c.heroes.findIndex((h) => !h.down && !h.hasRolled);
-  if (nextIdx < 0) {
+
+  const owners = c.heroOwners ?? {};
+  const playerCount = c.playerCount ?? 1;
+  const isHotseat = playerCount > 1 && Object.keys(owners).length > 0;
+
+  if (isHotseat) {
+    const activePlayer = c.activePlayerIndex ?? 0;
+    // Próximo héroe del mismo jugador sin actuar
+    const nextSame = c.heroes.findIndex(
+      (h) => !h.down && !h.hasRolled && (owners[h.id] ?? 0) === activePlayer,
+    );
+    if (nextSame >= 0) {
+      c.activeHeroIndex = nextSame;
+      return c;
+    }
+    // Todos los héroes del jugador activo terminaron → buscar próximo jugador
+    for (let p = 1; p < playerCount; p++) {
+      const nextPlayer = (activePlayer + p) % playerCount;
+      const nextIdx = c.heroes.findIndex(
+        (h) => !h.down && !h.hasRolled && (owners[h.id] ?? 0) === nextPlayer,
+      );
+      if (nextIdx >= 0) {
+        c.activePlayerIndex = nextPlayer;
+        c.activeHeroIndex = nextIdx;
+        pushLog(c, 'phase', `player_change:${nextPlayer}`);
+        return c;
+      }
+    }
+    // Todos los jugadores terminaron
     c.phase = 'enemy';
     pushLog(c, 'phase', 'Turno de los enemigos.');
   } else {
-    c.activeHeroIndex = nextIdx;
+    // Single-player: primer héroe sin actuar en orden
+    const nextIdx = c.heroes.findIndex((h) => !h.down && !h.hasRolled);
+    if (nextIdx >= 0) {
+      c.activeHeroIndex = nextIdx;
+    } else {
+      c.phase = 'enemy';
+      pushLog(c, 'phase', 'Turno de los enemigos.');
+    }
   }
   return c;
 }
 
 // ---------- Fase enemiga ----------
 
-/** Resuelve TODA la fase enemiga y arranca el siguiente round (o termina). */
-export function resolveEnemyPhase(combat, rng) {
-  let c = clone(combat);
-  if (c.phase !== 'enemy') return combat;
+// ---------- Helper compartido: acción de UN enemigo ----------
 
-  for (const enemy of c.enemies) {
-    if (enemy.hp <= 0) continue;
-    if (livingHeroes(c).length === 0) break;
-    const action = chooseEnemyAction(c, enemy, rng);
-    if (action.type === 'summon' && enemy.summons) {
-      const base = lookupEnemy(enemy.summons);
-      if (base) {
-        const mult = DIFF[c.difficulty] ?? DIFF.normal;
-        const spawn = makeEnemyInstance(base, `s${c.summonCounter++}`, mult);
-        c.enemies.push(spawn);
-        pushLog(c, 'summon', `${enemy.name} invoca a ${spawn.name}.`);
-      }
-    } else if (action.type === 'attack') {
-      const times = action.times ?? 1;
-      for (let t = 0; t < times; t++) {
-        const targets = action.ignoreRow ? livingHeroes(c) : frontFirst(c.heroes);
-        if (!targets.length) break;
-        const target = pickByBehavior(enemy.behavior, targets, action.targetId, rng);
-        applyEnemyHit(c, enemy, target);
-      }
-    } else if (action.type === 'attack_curse') {
-      // Ataca al más débil y lo maldice
-      const targets = frontFirst(c.heroes);
-      if (targets.length) {
-        const target = targets.reduce((a, b) => (b.hp < a.hp ? b : a));
-        applyEnemyHit(c, enemy, target);
-        if (action.curse) {
-          const idx = c.heroes.findIndex((h) => h.id === target.id);
-          if (idx >= 0) {
-            c.heroes[idx] = applyCurse(c.heroes[idx], action.curse);
-            pushLog(c, 'curse', `${target.name} queda maldito: ${action.curse}.`);
-          }
+/** Aplica la acción de un enemigo al estado de combate (muta c). */
+function applyOneEnemy(c, enemy, rng) {
+  if (!enemy || enemy.hp <= 0 || livingHeroes(c).length === 0) return;
+  const action = chooseEnemyAction(c, enemy, rng);
+
+  if (action.type === 'summon' && enemy.summons) {
+    const base = lookupEnemy(enemy.summons);
+    if (base) {
+      const mult = DIFF[c.difficulty] ?? DIFF.normal;
+      const spawn = makeEnemyInstance(base, `s${c.summonCounter++}`, mult);
+      c.enemies.push(spawn);
+      pushLog(c, 'summon', `${enemy.name} invoca a ${spawn.name}.`);
+    }
+  } else if (action.type === 'attack') {
+    const times = action.times ?? 1;
+    for (let t = 0; t < times; t++) {
+      const targets = action.ignoreRow ? livingHeroes(c) : frontFirst(c.heroes);
+      if (!targets.length) break;
+      const target = pickByBehavior(enemy.behavior, targets, action.targetId, rng);
+      applyEnemyHit(c, enemy, target);
+    }
+  } else if (action.type === 'attack_curse') {
+    const targets = frontFirst(c.heroes);
+    if (targets.length) {
+      const target = targets.reduce((a, b) => (b.hp < a.hp ? b : a));
+      applyEnemyHit(c, enemy, target);
+      if (action.curse) {
+        const idx = c.heroes.findIndex((h) => h.id === target.id);
+        if (idx >= 0) {
+          c.heroes[idx] = applyCurse(c.heroes[idx], action.curse);
+          pushLog(c, 'curse', `${target.name} queda maldito: ${action.curse}.`);
         }
       }
-    } else if (action.type === 'boss_card') {
-      applyBossCard(c, enemy, action.behaviorCard, rng);
     }
+  } else if (action.type === 'boss_card') {
+    applyBossCard(c, enemy, action.behaviorCard, rng);
   }
+}
 
-  // ¿Fin del combate?
-  c = checkEnd(c);
-  if (isOver(c)) return c;
-
-  // Nuevo round: resetear turno y decrementar maldiciones.
+/** Inicia un nuevo round: resetea héroes, avanza contador. */
+function startNewRound(c) {
   c.round += 1;
   for (let i = 0; i < c.heroes.length; i++) {
     const h = c.heroes[i];
@@ -402,6 +440,61 @@ export function resolveEnemyPhase(combat, rng) {
   c.phase = 'hero';
   c.activeHeroIndex = firstLivingHero(c);
   pushLog(c, 'phase', `Round ${c.round}.`);
+}
+
+// ---------- API de fase enemiga ----------
+
+/**
+ * Prepara la cola de enemigos para resolución paso a paso.
+ * Llamar al entrar en phase === 'enemy'.
+ */
+export function startEnemyPhase(combat) {
+  if (combat.phase !== 'enemy') return combat;
+  const c = clone(combat);
+  c.pendingEnemies = c.enemies.filter((e) => e.hp > 0).map((e) => e.uid);
+  return c;
+}
+
+/**
+ * Resuelve la acción de UN enemigo de la cola.
+ * Cuando la cola se vacía, inicia el siguiente round.
+ * Usar en lugar de resolveEnemyPhase para el modo paso a paso.
+ */
+export function resolveNextEnemy(combat, rng) {
+  const c = clone(combat);
+  if (c.phase !== 'enemy' || !c.pendingEnemies?.length) return combat;
+
+  const uid = c.pendingEnemies[0];
+  c.pendingEnemies = c.pendingEnemies.slice(1);
+
+  const enemy = c.enemies.find((e) => e.uid === uid && e.hp > 0);
+  applyOneEnemy(c, enemy, rng);
+
+  const after = checkEnd(c);
+  if (isOver(after)) return after;
+
+  if (!after.pendingEnemies.length) {
+    after.pendingEnemies = null;
+    startNewRound(after);
+  }
+  return after;
+}
+
+/**
+ * Resuelve TODA la fase enemiga de una vez (usado por los tests y como fallback).
+ */
+export function resolveEnemyPhase(combat, rng) {
+  let c = clone(combat);
+  if (c.phase !== 'enemy') return combat;
+
+  for (const enemy of c.enemies) {
+    if (enemy.hp <= 0) continue;
+    applyOneEnemy(c, enemy, rng);
+  }
+
+  c = checkEnd(c);
+  if (isOver(c)) return c;
+  startNewRound(c);
   return c;
 }
 

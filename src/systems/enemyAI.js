@@ -28,7 +28,8 @@ export function chooseEnemyAction(combat, enemy, rng) {
       return { type: 'attack' };
     }
     case 'curse':
-      return { type: 'attack_curse', curse: 'sangria' };
+      // Usa la maldición específica del enemigo; por defecto sangría.
+      return { type: 'attack_curse', curse: enemy.curse ?? 'sangria' };
 
     case 'boss': {
       const bossData = content.bossesById[enemy.id];

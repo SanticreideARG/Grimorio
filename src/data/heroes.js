@@ -11,7 +11,7 @@ const WARRIOR = [{ sword: 1 }, { sword: 1 }, { sword: 2 }, { shield: 1 }, { shie
 const MAGE = [{ star: 1 }, { star: 1 }, { star: 2 }, { sword: 1 }, { shield: 1 }, {}];
 const HEALER = [{ star: 1 }, { star: 1 }, { star: 2 }, { shield: 1 }, { shield: 1 }, {}];
 const ROGUE = [{ sword: 1 }, { sword: 2 }, { sword: 1 }, { star: 1 }, { shield: 1 }, {}];
-const HUNTER = [{ sword: 1 }, { sword: 1 }, { sword: 2 }, { star: 1 }, { shield: 1 }, {}];
+const HUNTER = [{ sword: 1 }, { sword: 1 }, { sword: 2 }, { star: 1 }, { star: 1 }, { shield: 1 }];
 
 /** @type {import('./schema.js').Hero[]} */
 export const heroes = [

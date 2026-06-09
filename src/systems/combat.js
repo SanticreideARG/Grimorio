@@ -248,17 +248,55 @@ export function heroCast(combat, spellId, targetUid) {
   return checkEnd(c);
 }
 
-/** Termina el turno del héroe activo; pasa al siguiente o a la fase enemiga. */
+/**
+ * Cambia el héroe activo a cualquier otro que aún no haya actuado este round.
+ * Solo funciona antes de que el héroe actual tire sus dados.
+ */
+export function selectHero(combat, heroIndex) {
+  const c = clone(combat);
+  if (c.phase !== 'hero') return combat;
+  const current = c.heroes[c.activeHeroIndex];
+  if (current?.hasRolled) return combat; // comprometido: ya tiró dados
+  const target = c.heroes[heroIndex];
+  if (!target || target.down || target.hasRolled) return combat;
+  if (heroIndex === c.activeHeroIndex) return combat;
+  c.activeHeroIndex = heroIndex;
+  return c;
+}
+
+/**
+ * Usa una poción sobre un héroe durante su turno (antes o después de rodar).
+ * No consume turno ni energía — es una acción libre.
+ */
+export function usePotionOnHero(combat, potionId, targetHeroId) {
+  const c = clone(combat);
+  if (c.phase !== 'hero') return combat;
+  const potion = content.potionsById[potionId];
+  if (!potion) return combat;
+  const idx = c.heroes.findIndex((h) => h.id === targetHeroId && !h.down);
+  if (idx < 0) return combat;
+  if (potion.type === 'heal') {
+    const healed = Math.min(c.heroes[idx].maxHp, c.heroes[idx].hp + (potion.power ?? 0));
+    const gained = healed - c.heroes[idx].hp;
+    c.heroes[idx].hp = healed;
+    pushLog(c, 'potion', `${c.heroes[idx].name} bebe ${potion.name} (+${gained} HP).`, {
+      anim: 'heal', source: c.heroes[idx].id, target: c.heroes[idx].id,
+    });
+  }
+  return c;
+}
+
+/** Termina el turno del héroe activo; busca el próximo que no haya actuado. */
 export function endHeroTurn(combat) {
   const c = clone(combat);
   if (c.phase !== 'hero') return combat;
-  let i = c.activeHeroIndex + 1;
-  while (i < c.heroes.length && c.heroes[i].down) i++;
-  if (i >= c.heroes.length) {
+  // Busca cualquier héroe vivo que no haya actuado aún (en orden de índice)
+  const nextIdx = c.heroes.findIndex((h) => !h.down && !h.hasRolled);
+  if (nextIdx < 0) {
     c.phase = 'enemy';
     pushLog(c, 'phase', 'Turno de los enemigos.');
   } else {
-    c.activeHeroIndex = i;
+    c.activeHeroIndex = nextIdx;
   }
   return c;
 }

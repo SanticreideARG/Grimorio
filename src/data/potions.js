@@ -10,7 +10,7 @@ export const potions = [
     type: 'heal',
     power: 6,
     price: 10,
-    desc: 'Restaura 6 de vida a toda la party.',
+    desc: 'Restaura 6 de vida a un héroe en combate.',
     icon: 'potions/vida_menor.png',
   },
 ];

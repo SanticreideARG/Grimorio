@@ -33,68 +33,110 @@ function faceToText(face) {
 
 export default function CombatScreen() {
   const combat = useGameStore((s) => s.game.combat);
+  const potionBag = useGameStore((s) => s.game.potionBag ?? {});
   const roll = useGameStore((s) => s.combatRoll);
   const attack = useGameStore((s) => s.combatAttack);
   const cast = useGameStore((s) => s.combatCast);
   const endTurn = useGameStore((s) => s.combatEndTurn);
+  const selectHeroAction = useGameStore((s) => s.combatSelectHero);
+  const usePotion = useGameStore((s) => s.combatUsePotion);
   const enemyPhase = useGameStore((s) => s.combatEnemyPhase);
   const finish = useGameStore((s) => s.finishCombat);
   const retry = useGameStore((s) => s.retryCombat);
   const abandon = useGameStore((s) => s.abandonCombat);
 
-  const [targetingSpell, setTargetingSpell] = useState(null);
+  // null | spell object | { type:'potion', potionId }
+  const [targeting, setTargeting] = useState(null);
   const fxRef = useRef(null);
 
-  // Reproduce animaciones de las acciones nuevas del log de combate.
   useCombatFx(combat, fxRef);
 
-  // Cancelar selección de objetivo al cambiar de héroe o de fase.
+  // Limpiar targeting al cambiar de héroe o de fase.
   useEffect(() => {
-    setTargetingSpell(null);
+    setTargeting(null);
   }, [combat.activeHeroIndex, combat.phase]);
 
   const hero = activeHero(combat);
   const isHeroPhase = combat.phase === 'hero';
+
+  const targetingSpell = targeting?.type !== 'potion' ? targeting : null;
+  const targetingPotion = targeting?.type === 'potion' ? targeting : null;
+
+  // Enemigos atacables
   const enemyTargets = (ignoreRow) =>
     new Set(validEnemyTargets(combat, ignoreRow).map((e) => e.uid));
 
-  // ¿Qué enemigos se pueden clickear ahora?
   let clickableEnemies = new Set();
   if (isHeroPhase && hero?.hasRolled) {
     if (targetingSpell?.effect?.damage) {
       clickableEnemies = enemyTargets(targetingSpell.effect.ignoreRow);
-    } else if (!targetingSpell && !hero.hasAttacked && hero.pool?.sword > 0) {
+    } else if (!targeting && !hero.hasAttacked && hero.pool?.sword > 0) {
       clickableEnemies = enemyTargets(false);
     }
   }
-  const allyTargets = targetingSpell?.effect?.heal
-    ? new Set(validAllyTargets(combat).map((a) => a.id))
+
+  // Héroes que pueden recibir un hechizo de cura o una poción
+  const allyTargetIds =
+    targetingSpell?.effect?.heal || targetingPotion
+      ? new Set(validAllyTargets(combat).map((a) => a.id))
+      : new Set();
+
+  // Héroes que se pueden seleccionar como activo (antes de tirar dados)
+  const canSelectHero = isHeroPhase && !hero?.hasRolled;
+  const selectableHeroIds = canSelectHero
+    ? new Set(combat.heroes.filter((h) => !h.down && !h.hasRolled).map((h) => h.id))
     : new Set();
+
+  const hasPotions = Object.values(potionBag).some((n) => n > 0);
 
   const onEnemyClick = (enemy) => {
     if (!clickableEnemies.has(enemy.uid)) return;
-    if (targetingSpell) {
-      cast(targetingSpell.id, enemy.uid);
-      setTargetingSpell(null);
-    } else {
-      attack(enemy.uid);
-    }
+    if (targetingSpell) { cast(targetingSpell.id, enemy.uid); setTargeting(null); }
+    else { attack(enemy.uid); }
   };
 
   const onHeroClick = (h) => {
-    if (!allyTargets.has(h.id)) return;
-    cast(targetingSpell.id, h.id);
-    setTargetingSpell(null);
+    if (targetingPotion && allyTargetIds.has(h.id)) {
+      usePotion(targetingPotion.potionId, h.id);
+      setTargeting(null);
+      return;
+    }
+    if (targetingSpell?.effect?.heal && allyTargetIds.has(h.id)) {
+      cast(targetingSpell.id, h.id);
+      setTargeting(null);
+      return;
+    }
+    if (canSelectHero && selectableHeroIds.has(h.id) && h.id !== hero?.id) {
+      const idx = combat.heroes.findIndex((x) => x.id === h.id);
+      selectHeroAction(idx);
+    }
   };
 
   const onSpellClick = (spell) => {
     if (!hero || hero.energy < spell.cost) return;
     const fx = spell.effect ?? {};
     if (fx.damage || fx.heal) {
-      setTargetingSpell((cur) => (cur?.id === spell.id ? null : spell));
+      setTargeting((cur) => (cur?.id === spell.id ? null : spell));
     } else {
-      cast(spell.id, hero.id); // hechizo sin objetivo (auto)
+      cast(spell.id, hero.id);
     }
+  };
+
+  const onPotionClick = (potionId) => {
+    setTargeting((cur) =>
+      cur?.type === 'potion' && cur.potionId === potionId
+        ? null
+        : { type: 'potion', potionId },
+    );
+  };
+
+  const hint = () => {
+    if (targetingPotion) return 'Elegí un héroe para usar la poción.';
+    if (targetingSpell?.effect?.heal) return 'Elegí un aliado a curar.';
+    if (targetingSpell?.effect?.damage) return 'Elegí un enemigo objetivo.';
+    if (!hero?.hasAttacked && hero?.pool?.sword > 0)
+      return `Elegí un enemigo para atacar (${hero.pool.sword}🗡️).`;
+    return 'Lanzá hechizos, usá pociones o terminá el turno.';
   };
 
   const back = (units) => units.filter((u) => u.row === 'back');
@@ -110,7 +152,7 @@ export default function CombatScreen() {
         </button>
       </header>
 
-      {/* Enemigos: retaguardia detrás, frente delante */}
+      {/* Enemigos */}
       <section className="side side--enemies">
         <Row label="Retaguardia">
           {back(combat.enemies).map((e) => (
@@ -133,22 +175,32 @@ export default function CombatScreen() {
             </div>
 
             {!hero.hasRolled ? (
-              <button className="btn btn--primary btn--big" onClick={roll}>
-                🎲 Tirar dados
-              </button>
+              <>
+                {hasPotions && (
+                  <PotionBar
+                    potionBag={potionBag}
+                    targeting={targetingPotion}
+                    onPotion={onPotionClick}
+                    onCancel={() => setTargeting(null)}
+                  />
+                )}
+                <button className="btn btn--primary btn--big" onClick={roll}>
+                  🎲 Tirar dados
+                </button>
+              </>
             ) : (
               <>
                 <DiceTray pool={hero.pool} attacked={hero.hasAttacked} energy={hero.energy} />
+                <div className="hint">{hint()}</div>
 
-                <div className="hint">
-                  {targetingSpell
-                    ? targetingSpell.effect?.heal
-                      ? 'Elegí un aliado a curar.'
-                      : 'Elegí un enemigo objetivo.'
-                    : !hero.hasAttacked && hero.pool?.sword > 0
-                      ? `Elegí un enemigo para atacar (${hero.pool.sword}🗡️).`
-                      : 'Lanzá hechizos o terminá el turno.'}
-                </div>
+                {hasPotions && (
+                  <PotionBar
+                    potionBag={potionBag}
+                    targeting={targetingPotion}
+                    onPotion={onPotionClick}
+                    onCancel={() => setTargeting(null)}
+                  />
+                )}
 
                 <div className="spell-bar">
                   {hero.spells.map((sid) => {
@@ -168,8 +220,8 @@ export default function CombatScreen() {
                       </button>
                     );
                   })}
-                  {targetingSpell && (
-                    <button className="btn btn--ghost" onClick={() => setTargetingSpell(null)}>
+                  {targeting && (
+                    <button className="btn btn--ghost" onClick={() => setTargeting(null)}>
                       Cancelar
                     </button>
                   )}
@@ -201,7 +253,8 @@ export default function CombatScreen() {
               key={h.id}
               h={h}
               active={combat.heroes[combat.activeHeroIndex]?.id === h.id && isHeroPhase}
-              clickable={allyTargets.has(h.id)}
+              clickable={allyTargetIds.has(h.id) || (canSelectHero && selectableHeroIds.has(h.id) && h.id !== hero?.id)}
+              selectable={canSelectHero && selectableHeroIds.has(h.id) && h.id !== hero?.id}
               onClick={() => onHeroClick(h)}
             />
           ))}
@@ -212,7 +265,8 @@ export default function CombatScreen() {
               key={h.id}
               h={h}
               active={combat.heroes[combat.activeHeroIndex]?.id === h.id && isHeroPhase}
-              clickable={allyTargets.has(h.id)}
+              clickable={allyTargetIds.has(h.id) || (canSelectHero && selectableHeroIds.has(h.id) && h.id !== hero?.id)}
+              selectable={canSelectHero && selectableHeroIds.has(h.id) && h.id !== hero?.id}
               onClick={() => onHeroClick(h)}
             />
           ))}
@@ -325,13 +379,22 @@ function EnemyCard({ e, clickable, onClick }) {
   );
 }
 
-function HeroCard({ h, active, clickable, onClick }) {
+function HeroCard({ h, active, clickable, selectable, onClick }) {
+  const cls = [
+    'unit unit--hero',
+    active ? 'is-active' : '',
+    clickable ? 'is-clickable' : '',
+    selectable ? 'is-selectable' : '',
+    h.down ? 'is-down' : '',
+    h.hasRolled && !h.down ? 'is-acted' : '',
+  ].filter(Boolean).join(' ');
+
   return (
     <button
       data-anim-key={h.id}
-      className={`unit unit--hero${active ? ' is-active' : ''}${clickable ? ' is-clickable' : ''}${h.down ? ' is-down' : ''}`}
+      className={cls}
       onClick={onClick}
-      disabled={!clickable}
+      disabled={!clickable && !selectable}
     >
       <UnitArt src={h.portrait ?? `heroes/${h.id}.png`} alt={h.name} fallback={h.name[0]} />
       <span className="unit__name">{h.name.split(' ')[0]}</span>
@@ -340,7 +403,40 @@ function HeroCard({ h, active, clickable, onClick }) {
         {h.block > 0 && <span className="chip chip--block">🛡️{h.block}</span>}
         {active && h.energy > 0 && <span className="chip chip--energy">⭐{h.energy}</span>}
         {h.down && <span className="chip chip--down">caído</span>}
+        {h.hasRolled && !h.down && !active && <span className="chip chip--done">✓</span>}
+        {(h.curses ?? []).map((c) => (
+          <span key={c.id} className="chip chip--curse" title={c.name}>
+            {c.name[0]}
+          </span>
+        ))}
       </span>
     </button>
+  );
+}
+
+function PotionBar({ potionBag, targeting, onPotion, onCancel }) {
+  const entries = Object.entries(potionBag).filter(([, n]) => n > 0);
+  if (!entries.length) return null;
+  return (
+    <div className="potion-bar">
+      {entries.map(([id, count]) => {
+        const p = content.potionsById[id];
+        if (!p) return null;
+        const active = targeting?.potionId === id;
+        return (
+          <button
+            key={id}
+            className={`btn potion-btn${active ? ' is-active' : ''}`}
+            title={p.desc}
+            onClick={() => onPotion(id)}
+          >
+            🧪 {p.name} <span className="potion-count">×{count}</span>
+          </button>
+        );
+      })}
+      {targeting && (
+        <button className="btn btn--ghost" onClick={onCancel}>Cancelar</button>
+      )}
+    </div>
   );
 }

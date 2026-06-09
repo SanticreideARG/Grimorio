@@ -906,6 +906,21 @@ body {
   opacity: 0.4;
   filter: grayscale(0.6);
 }
+/* Héroe que ya actuó este round */
+.unit.is-acted {
+  opacity: 0.72;
+  border-color: rgba(201, 145, 63, 0.2);
+}
+/* Héroe seleccionable como próximo activo */
+.unit.is-selectable {
+  cursor: pointer;
+  border-color: rgba(130, 180, 220, 0.7);
+  box-shadow: 0 0 12px rgba(130, 180, 220, 0.35);
+}
+.unit.is-selectable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 18px rgba(130, 180, 220, 0.55);
+}
 
 /* barra de vida */
 .hpbar {
@@ -942,9 +957,42 @@ body {
   border-radius: 999px;
   border: 1px solid rgba(201, 145, 63, 0.4);
 }
-.chip--block { color: #9fb0d0; }
+.chip--block  { color: #9fb0d0; }
 .chip--energy { color: var(--amber-lt); }
-.chip--down { color: #e7a89a; }
+.chip--down   { color: #e7a89a; }
+.chip--done   { color: #7dc87d; }
+.chip--curse  { color: #c07de0; border: 1px solid rgba(192,125,224,0.4); border-radius: 3px; padding: 0 3px; }
+
+/* Barra de pociones en combate */
+.potion-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  padding: 6px 0;
+}
+.potion-btn {
+  background: linear-gradient(180deg, rgba(60,30,80,0.7), rgba(30,15,50,0.85));
+  border: 1px solid rgba(192,125,224,0.45);
+  color: var(--text);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.1s, box-shadow 0.1s;
+}
+.potion-btn:hover { border-color: rgba(192,125,224,0.8); }
+.potion-btn.is-active {
+  border-color: rgba(192,125,224,1);
+  box-shadow: 0 0 12px rgba(192,125,224,0.5);
+}
+.potion-count {
+  font-weight: 700;
+  color: rgba(192,125,224,0.9);
+  margin-left: 4px;
+}
+/* Conteo en la tienda */
+.shop-card__count { color: var(--amber); font-weight: 600; }
 
 /* zona central */
 .combat-mid {

@@ -49,14 +49,16 @@ test('canBuyItem respeta oro y duplicados', () => {
   assert.equal(canBuyItem(rico, 'daga_afilada'), true);
 });
 
-test('buyPotion cura y descuenta oro; no se compra a vida llena', () => {
+test('buyPotion guarda en la bolsa y descuenta oro (ya no cura inmediatamente)', () => {
   let g = gameWith(['guerrera'], { gold: 30 });
-  assert.equal(canBuyPotion(g, 'vida_menor'), false); // party a tope
-  g = { ...g, partyHp: { guerrera: 4 } };
+  // Ahora siempre se puede comprar si hay oro (se guarda para combate)
   assert.equal(canBuyPotion(g, 'vida_menor'), true);
-  g = buyPotion(g, 'vida_menor'); // price 10, power 6
+  g = buyPotion(g, 'vida_menor'); // price 10
   assert.equal(g.gold, 20);
-  assert.equal(g.partyHp.guerrera, 10);
+  assert.equal(g.potionBag?.vida_menor, 1);
+  // La vida de la party NO cambia al comprar
+  const hpAntes = gameWith(['guerrera'], { gold: 30 }).partyHp?.guerrera;
+  assert.equal(g.partyHp?.guerrera, hpAntes);
 });
 
 // ---- Vida persistente ----

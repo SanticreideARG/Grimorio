@@ -145,18 +145,38 @@ export function buyItem(game, itemId) {
   return g;
 }
 
-/** ¿Se puede comprar esta poción de curación? */
+/** Cuántas pociones de un tipo tiene el jugador en la bolsa. */
+export function potionCount(game, potionId) {
+  return game.potionBag?.[potionId] ?? 0;
+}
+
+/** ¿Se puede comprar esta poción? Solo requiere oro suficiente. */
 export function canBuyPotion(game, potionId) {
   const p = content.potionsById[potionId];
   if (!p) return false;
-  if (partyHpRatio(game) >= 1) return false; // party a tope: no malgastar oro
   return (game.gold ?? 0) >= (p.price ?? Infinity);
 }
 
-/** Compra y usa una poción de curación: descuenta oro y cura a la party. */
+/**
+ * Compra una poción: descuenta oro y la guarda en la bolsa (potionBag).
+ * Se usa en combate, no al comprar.
+ */
 export function buyPotion(game, potionId) {
   if (!canBuyPotion(game, potionId)) return game;
   const p = content.potionsById[potionId];
-  const g = { ...game, gold: game.gold - (p.price ?? 0) };
-  return restParty(g, p.power ?? 0);
+  const bag = { ...(game.potionBag ?? {}) };
+  bag[potionId] = (bag[potionId] ?? 0) + 1;
+  return { ...game, gold: game.gold - (p.price ?? 0), potionBag: bag };
+}
+
+/**
+ * Consume una poción de la bolsa (la decrementa o elimina).
+ * Devuelve el nuevo game state; no aplica el efecto (eso lo hace combat.js).
+ */
+export function consumePotion(game, potionId) {
+  const bag = { ...(game.potionBag ?? {}) };
+  if (!bag[potionId]) return game;
+  bag[potionId] -= 1;
+  if (bag[potionId] <= 0) delete bag[potionId];
+  return { ...game, potionBag: bag };
 }

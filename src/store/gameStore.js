@@ -31,6 +31,7 @@ import {
   restPartyFraction,
   buyItem,
   buyPotion,
+  consumePotion,
 } from '../systems/progression.js';
 import {
   drawEventCard,
@@ -44,6 +45,8 @@ import {
   heroAttack,
   heroCast,
   endHeroTurn,
+  selectHero,
+  usePotionOnHero,
   resolveEnemyPhase,
 } from '../systems/combat.js';
 
@@ -129,6 +132,7 @@ export const useGameStore = create((set, get) => ({
         party: heroIds,
         pets: g.pets ?? [],
         inventory: g.inventory ?? [],
+        potionBag: g.potionBag ?? {},
         pendingCurses: [],
         decks,
         rngState: rng.getState(),
@@ -187,6 +191,24 @@ export const useGameStore = create((set, get) => ({
     const { game } = get();
     if (!game?.combat) return;
     get().patchGame((g) => ({ ...g, combat: heroCast(g.combat, spellId, targetUid) }));
+  },
+
+  /** Cambia el héroe activo (antes de que tire dados). */
+  combatSelectHero(heroIndex) {
+    const { game } = get();
+    if (!game?.combat) return;
+    get().patchGame((g) => ({ ...g, combat: selectHero(g.combat, heroIndex) }));
+  },
+
+  /** Usa una poción de la bolsa sobre un héroe durante su turno. */
+  combatUsePotion(potionId, targetHeroId) {
+    const { game } = get();
+    if (!game?.combat) return;
+    if (!(game.potionBag?.[potionId] > 0)) return;
+    get().patchGame((g) => ({
+      ...consumePotion(g, potionId),
+      combat: usePotionOnHero(g.combat, potionId, targetHeroId),
+    }));
   },
 
   /** Termina el turno del héroe activo. */

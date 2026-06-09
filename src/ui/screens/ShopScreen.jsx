@@ -6,7 +6,7 @@ import { content } from '../../data/index.js';
 import {
   canBuyItem,
   canBuyPotion,
-  partyHpRatio,
+  potionCount,
 } from '../../systems/progression.js';
 import { getCurrentNode } from '../../systems/board.js';
 import { assetUrl } from '../assets.js';
@@ -19,7 +19,6 @@ export default function ShopScreen() {
 
   const node = getCurrentNode(game);
   const owned = new Set(game.inventory ?? []);
-  const hpFull = partyHpRatio(game) >= 1;
 
   return (
     <main className="shop-screen">
@@ -58,14 +57,18 @@ export default function ShopScreen() {
         </section>
 
         <section className="shop-section">
-          <h2 className="shop-section__title">Curación</h2>
+          <h2 className="shop-section__title">Pociones (para combate)</h2>
           <div className="shop-grid">
             {content.potions.map((p) => {
               const buyable = canBuyPotion(game, p.id);
+              const count = potionCount(game, p.id);
               return (
                 <article key={p.id} className="shop-card">
                   <ShopIcon icon={p.icon} name={p.name} />
-                  <div className="shop-card__name">{p.name}</div>
+                  <div className="shop-card__name">
+                    {p.name}
+                    {count > 0 && <span className="shop-card__count"> ×{count}</span>}
+                  </div>
                   <div className="shop-card__desc">{p.desc}</div>
                   <div className="shop-card__foot">
                     <span className="shop-card__price">🪙 {p.price}</span>
@@ -73,7 +76,6 @@ export default function ShopScreen() {
                       className="btn btn--primary btn--sm"
                       disabled={!buyable}
                       onClick={() => buyPotion(p.id)}
-                      title={hpFull ? 'La party está a tope de vida' : undefined}
                     >
                       Comprar
                     </button>

@@ -6,7 +6,7 @@
 import { randomSeed } from './rng.js';
 
 /** Versión del formato de save. Subir al cambiar la forma del estado. */
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 
 /** Dificultades soportadas (Q-DIFICULTAD). */
 export const DIFFICULTIES = Object.freeze(['facil', 'normal', 'dificil']);
@@ -53,6 +53,9 @@ export function createNewGame(opts = {}) {
     partyHp: {}, // vida persistente por héroe (se llena al formar la party)
     pendingCurses: [], // maldiciones de eventos a aplicar en el próximo combate
 
+    // Inventario de consumibles (bolsa de pociones para combate)
+    potionBag: {}, // { [potionId]: count } — se compran en tienda, se usan en combate
+
     // Recursos globales
     gold: 0,
     doom: 0, // track de Perdición (sube con combates/eventos)
@@ -80,6 +83,12 @@ export function migrate(save) {
     s.partyHp = s.partyHp ?? {};
     s.pendingCurses = s.pendingCurses ?? [];
     s.version = 2;
+  }
+
+  // v2 → v3: bolsa de pociones para combate.
+  if (!(s.version >= 3)) {
+    s.potionBag = s.potionBag ?? {};
+    s.version = 3;
   }
 
   if (typeof s.version !== 'number') s.version = SAVE_VERSION;

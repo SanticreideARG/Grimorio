@@ -19,6 +19,8 @@ import { getDoomRatio } from '../../systems/doom.js';
 import { script } from '../../data/script.js';
 import { effectiveMaxHp, partyHpRatio } from '../../systems/progression.js';
 import { content } from '../../data/index.js';
+import { getNodeNarration } from '../../data/narrative.js';
+import { assetUrl } from '../assets.js';
 import BoardMap from '../components/BoardMap.jsx';
 
 export default function MapScreen() {
@@ -41,6 +43,9 @@ export default function MapScreen() {
   const complete = isChapterComplete(game);
   const hasNext = game.chapterIndex < content.chapters.length - 1;
   const atStart = game.nodeIndex === 0 && !resolved;
+
+  // Narración del nodo (lugar + comentario de party + lore), solo al llegar.
+  const narration = !resolved ? getNodeNarration(node.id, game.party ?? []) : null;
 
   // Acción al resolver el nodo según tipo.
   const RESOLVERS = {
@@ -112,13 +117,25 @@ export default function MapScreen() {
 
           <div className="node-panel__type">{nodeLabel(node.type)}</div>
           <h2 className="node-panel__name">{node.name}</h2>
+
+          {/* Narración del lugar (qué fue antes) o descripción genérica por tipo */}
           <p className="node-panel__desc">
             {resolved
               ? node.type === 'boss'
                 ? chapter.script.bossIntro
                 : 'Superado. El camino continúa.'
-              : describeNode(node)}
+              : narration?.place ?? describeNode(node)}
           </p>
+
+          {/* Goteo de lore del Rey Ceniza / El Devorado */}
+          {narration?.lore && (
+            <p className="node-panel__lore">{narration.lore}</p>
+          )}
+
+          {/* Comentario personalizado de un héroe de la party */}
+          {narration?.bark && (
+            <HeroComment heroId={narration.bark.heroId} line={narration.bark.line} />
+          )}
 
           {/* Preview de enemigos para nodos de combate (antes de entrar) */}
           {!resolved && ['combat', 'elite', 'boss'].includes(node.type) && node.enemies?.length > 0 && (
@@ -258,6 +275,27 @@ function CampChoices({ game, onChoose }) {
           : 'Elegí cómo pasar la noche…'}
       </button>
     </div>
+  );
+}
+
+// ── Comentario personalizado de un héroe en el nodo ─────────────────────────
+
+function HeroComment({ heroId, line }) {
+  const hero = content.heroesById[heroId];
+  if (!hero) return null;
+  const url = assetUrl(hero.portrait ?? `heroes/${heroId}.png`);
+  const firstName = hero.name.split(' ')[0];
+  return (
+    <figure className="hero-comment">
+      {url
+        ? <img className="hero-comment__face" src={url} alt={firstName} loading="lazy" />
+        : <span className="hero-comment__face hero-comment__face--ph" aria-hidden="true">{firstName[0]}</span>
+      }
+      <figcaption className="hero-comment__body">
+        <span className="hero-comment__name">{firstName}</span>
+        <span className="hero-comment__line">"{line}"</span>
+      </figcaption>
+    </figure>
   );
 }
 

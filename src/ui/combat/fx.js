@@ -92,6 +92,32 @@ function spawnHeal(layer, at) {
   setTimeout(() => el.remove(), 900);
 }
 
+function spawnShield(layer, at) {
+  if (!layer) return;
+  const el = document.createElement('div');
+  el.className = 'fx-shield';
+  el.style.left = `${at.x}px`;
+  el.style.top = `${at.y}px`;
+  el.innerHTML = '<div class="fx-shield__ring"></div><span class="fx-shield__icon">🛡️</span>';
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 700);
+}
+
+function spawnCleanse(layer, at) {
+  if (!layer) return;
+  const el = document.createElement('div');
+  el.className = 'fx-cleanse';
+  el.style.left = `${at.x}px`;
+  el.style.top = `${at.y}px`;
+  el.innerHTML =
+    '<div class="fx-cleanse__glow"></div>' +
+    '<span class="fx-cleanse__orb" style="--i:0">✦</span>' +
+    '<span class="fx-cleanse__orb" style="--i:1">✦</span>' +
+    '<span class="fx-cleanse__orb" style="--i:2">✦</span>';
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 850);
+}
+
 // ---------- Reproductores por tipo ----------
 
 async function playMelee(layer, from, to, sourceKey, targetKey) {
@@ -128,9 +154,63 @@ async function playHeal(layer, at, targetKey) {
   await wait(720);
 }
 
+async function playAoe(layer, from, targets) {
+  if (!from || !targets?.length) return;
+  // Dispara proyectiles a cada enemigo con un pequeño escalonado
+  for (const uid of targets) {
+    const to = getCenter(uid);
+    if (to) spawnProjectile(layer, from, to, 'arcane');
+    await wait(80);
+  }
+  await wait(300); // tiempo de viaje
+  for (const uid of targets) {
+    const to = getCenter(uid);
+    if (to) impact(layer, to, 'arcane');
+    flash(uid, 'is-hit', 340);
+    await wait(60);
+  }
+  await wait(200);
+}
+
+async function playHealAll(layer, targets) {
+  if (!targets?.length) return;
+  for (const id of targets) {
+    const at = getCenter(id);
+    if (at) spawnHeal(layer, at);
+    flash(id, 'is-healing', 820);
+    await wait(100);
+  }
+  await wait(700);
+}
+
+async function playShieldAnim(layer, at, targetKey) {
+  spawnShield(layer, at);
+  flash(targetKey, 'is-shielded', 600);
+  await wait(550);
+}
+
+async function playCleanseAnim(layer, at, targetKey) {
+  spawnCleanse(layer, at);
+  flash(targetKey, 'is-cleansed', 750);
+  await wait(700);
+}
+
 /** Reproduce una entrada de log con animación. Resuelve cuando termina. */
 export async function playEvent(layer, e) {
   if (prefersReduced()) return;
+
+  // AoE — múltiples objetivos, no usa e.target
+  if (e.anim === 'aoe') {
+    const from = e.source ? getCenter(e.source) : null;
+    await playAoe(layer, from, e.targets);
+    return;
+  }
+  if (e.anim === 'heal_all') {
+    await playHealAll(layer, e.targets);
+    return;
+  }
+
+  // Single-target — necesita e.target
   const to = getCenter(e.target);
   if (!to) return;
 
@@ -138,6 +218,15 @@ export async function playEvent(layer, e) {
     await playHeal(layer, to, e.target);
     return;
   }
+  if (e.anim === 'shield') {
+    await playShieldAnim(layer, to, e.target);
+    return;
+  }
+  if (e.anim === 'cleanse') {
+    await playCleanseAnim(layer, to, e.target);
+    return;
+  }
+
   const from = e.source ? getCenter(e.source) : null;
   if (!from) {
     flash(e.target, 'is-hit', 340);

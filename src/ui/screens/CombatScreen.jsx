@@ -75,9 +75,11 @@ export default function CombatScreen() {
     }
   }
 
-  // Héroes que pueden recibir un hechizo de cura o una poción
+  // Héroes que pueden recibir un hechizo de cura/escudo/limpieza o una poción
+  const needsAllyTarget = targetingSpell &&
+    (targetingSpell.effect?.heal || targetingSpell.effect?.shieldAlly || targetingSpell.effect?.cleanse);
   const allyTargetIds =
-    targetingSpell?.effect?.heal || targetingPotion
+    needsAllyTarget || targetingPotion
       ? new Set(validAllyTargets(combat).map((a) => a.id))
       : new Set();
 
@@ -101,7 +103,7 @@ export default function CombatScreen() {
       setTargeting(null);
       return;
     }
-    if (targetingSpell?.effect?.heal && allyTargetIds.has(h.id)) {
+    if (needsAllyTarget && allyTargetIds.has(h.id)) {
       cast(targetingSpell.id, h.id);
       setTargeting(null);
       return;
@@ -115,10 +117,11 @@ export default function CombatScreen() {
   const onSpellClick = (spell) => {
     if (!hero || hero.energy < spell.cost) return;
     const fx = spell.effect ?? {};
-    if (fx.damage || fx.heal) {
-      setTargeting((cur) => (cur?.id === spell.id ? null : spell));
+    // AoE y self-only no necesitan target → disparo inmediato
+    if (fx.damageAll || fx.healAll || (!fx.damage && !fx.heal && !fx.shieldAlly && !fx.cleanse)) {
+      cast(spell.id, hero.id); // targetUid ignorado en AoE y self
     } else {
-      cast(spell.id, hero.id);
+      setTargeting((cur) => (cur?.id === spell.id ? null : spell));
     }
   };
 
@@ -133,6 +136,8 @@ export default function CombatScreen() {
   const hint = () => {
     if (targetingPotion) return 'Elegí un héroe para usar la poción.';
     if (targetingSpell?.effect?.heal) return 'Elegí un aliado a curar.';
+    if (targetingSpell?.effect?.shieldAlly) return 'Elegí un aliado para proteger.';
+    if (targetingSpell?.effect?.cleanse) return 'Elegí un aliado a purificar.';
     if (targetingSpell?.effect?.damage) return 'Elegí un enemigo objetivo.';
     if (!hero?.hasAttacked && hero?.pool?.sword > 0)
       return `Elegí un enemigo para atacar (${hero.pool.sword}🗡️).`;

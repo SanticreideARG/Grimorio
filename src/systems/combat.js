@@ -13,7 +13,7 @@
 
 import { content } from '../data/index.js';
 import { chooseEnemyAction } from './enemyAI.js';
-import { applyCurse, tickCurses, spellsBlocked } from './curses.js';
+import { applyCurse, tickCurses, spellsBlocked, cleanseCurses } from './curses.js';
 
 const clone = (o) => JSON.parse(JSON.stringify(o));
 
@@ -217,8 +217,26 @@ export function heroCast(combat, spellId, targetUid) {
   if (!spell || h.energy < spell.cost) return combat;
   const fx = spell.effect ?? {};
 
-  // Daño a un enemigo
-  if (fx.damage) {
+  // ---- AoE: daño a todos los enemigos ----
+  if (fx.damageAll && fx.damage) {
+    const targets = c.enemies.filter((e) => e.hp > 0);
+    for (const t of targets) t.hp = Math.max(0, t.hp - fx.damage);
+    pushLog(c, 'spell', `${h.name} lanza ${spell.name} sobre todos (${fx.damage} c/u).`, {
+      anim: 'aoe', source: h.id, targets: targets.map((t) => t.uid),
+    });
+  }
+
+  // ---- AoE: cura a todos los aliados ----
+  if (fx.healAll && fx.heal) {
+    const allies = c.heroes.filter((a) => !a.down);
+    for (const a of allies) a.hp = Math.min(a.maxHp, a.hp + fx.heal);
+    pushLog(c, 'spell', `${h.name} lanza ${spell.name}: +${fx.heal} a toda la party.`, {
+      anim: 'heal_all', source: h.id, targets: allies.map((a) => a.id),
+    });
+  }
+
+  // ---- Daño a un enemigo (single-target) ----
+  if (!fx.damageAll && fx.damage) {
     const target = c.enemies.find((e) => e.uid === targetUid && e.hp > 0);
     if (!target) return combat;
     if (!validEnemyTargets(c, fx.ignoreRow).some((e) => e.uid === targetUid)) return combat;
@@ -227,15 +245,39 @@ export function heroCast(combat, spellId, targetUid) {
       anim: fx.ignoreRow ? 'ranged' : 'melee', source: h.id, target: target.uid,
     });
   }
-  // Cura a un aliado
-  if (fx.heal) {
+
+  // ---- Cura a un aliado (single-target) ----
+  if (!fx.healAll && fx.heal) {
     const ally = c.heroes.find((a) => a.id === targetUid && !a.down) ?? h;
     ally.hp = Math.min(ally.maxHp, ally.hp + fx.heal);
     pushLog(c, 'spell', `${h.name} cura a ${ally.name} (+${fx.heal}).`, {
       anim: 'heal', source: h.id, target: ally.id,
     });
   }
-  // Bloqueo / autocura al lanzador
+
+  // ---- Bloqueo al aliado objetivo ----
+  if (fx.shieldAlly) {
+    const ally = c.heroes.find((a) => a.id === targetUid && !a.down) ?? h;
+    ally.block = (ally.block ?? 0) + fx.shieldAlly;
+    pushLog(c, 'spell', `${h.name} protege a ${ally.name} (+${fx.shieldAlly} 🛡️).`, {
+      anim: 'shield', source: h.id, target: ally.id,
+    });
+  }
+
+  // ---- Limpieza de maldiciones ----
+  if (fx.cleanse) {
+    const ally = c.heroes.find((a) => a.id === targetUid && !a.down) ?? h;
+    const count = (ally.curses ?? []).length;
+    const cleaned = cleanseCurses(ally);
+    const idx = c.heroes.findIndex((a) => a.id === ally.id);
+    if (idx >= 0) c.heroes[idx] = cleaned;
+    const txt = count > 0
+      ? `${h.name} purifica a ${cleaned.name} (${count} maldición${count > 1 ? 'es' : ''} eliminada${count > 1 ? 's' : ''}).`
+      : `${h.name} purifica a ${cleaned.name}.`;
+    pushLog(c, 'spell', txt, { anim: 'cleanse', source: h.id, target: cleaned.id });
+  }
+
+  // ---- Bloqueo / autocura al lanzador ----
   if (fx.block) h.block += fx.block;
   if (fx.selfHeal) {
     h.hp = Math.min(h.maxHp, h.hp + fx.selfHeal);

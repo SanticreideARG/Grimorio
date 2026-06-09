@@ -1399,11 +1399,106 @@ body {
   100% { box-shadow: 0 0 0 rgba(90, 235, 150, 0); }
 }
 
+/* Escudo a aliado */
+.fx-shield {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+.fx-shield__ring {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 120px; height: 120px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 3px solid rgba(100, 160, 255, 0.8);
+  background: radial-gradient(circle, rgba(80, 140, 255, 0.35) 0%, transparent 65%);
+  animation: shieldring 0.65s ease-out forwards;
+}
+.fx-shield__icon {
+  position: absolute;
+  left: 50%; top: 50%;
+  font-size: 32px;
+  opacity: 0;
+  animation: shieldicon 0.65s ease-out forwards;
+}
+@keyframes shieldring {
+  0%  { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+  40% { opacity: 1; }
+  100%{ opacity: 0; transform: translate(-50%, -50%) scale(1.4); }
+}
+@keyframes shieldicon {
+  0%  { opacity: 0; transform: translate(-50%, -60%) scale(0.5); }
+  40% { opacity: 1; }
+  100%{ opacity: 0; transform: translate(-50%, -90%) scale(1.1); }
+}
+.unit.is-shielded {
+  animation: unitshield 0.6s ease;
+}
+@keyframes unitshield {
+  0%   { box-shadow: 0 0 0 rgba(100,160,255,0); }
+  35%  { box-shadow: 0 0 22px 4px rgba(100,160,255,0.75); filter: brightness(1.12); }
+  100% { box-shadow: 0 0 0 rgba(100,160,255,0); }
+}
+
+/* Purificación (cleanse) */
+.fx-cleanse {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+.fx-cleanse__glow {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 140px; height: 140px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(192, 90, 255, 0.55) 0%, rgba(140, 40, 220, 0.18) 50%, transparent 72%);
+  animation: cleanseglow 0.85s ease-out forwards;
+}
+@keyframes cleanseglow {
+  0%  { opacity: 0; transform: translate(-50%, -50%) scale(0.35); }
+  30% { opacity: 1; }
+  100%{ opacity: 0; transform: translate(-50%, -50%) scale(1.35); }
+}
+.fx-cleanse__orb {
+  position: absolute;
+  left: 50%; top: 50%;
+  color: #d07cf5;
+  font-size: 18px;
+  text-shadow: 0 0 8px rgba(192, 90, 255, 0.95);
+  opacity: 0;
+  animation: cleanseorb 0.85s ease-out forwards;
+  animation-delay: calc(var(--i) * 0.15s);
+}
+.fx-cleanse__orb:nth-child(2) { --dx:  22px; }
+.fx-cleanse__orb:nth-child(3) { --dx: -22px; }
+.fx-cleanse__orb:nth-child(4) { --dx:   6px; }
+@keyframes cleanseorb {
+  0%  { opacity: 0; transform: translate(-50%, 8px) scale(0.5); }
+  25% { opacity: 1; }
+  100%{ opacity: 0; transform: translate(calc(-50% + var(--dx,0px)), -52px) scale(1.1); }
+}
+.unit.is-cleansed {
+  animation: unitcleanse 0.75s ease;
+}
+@keyframes unitcleanse {
+  0%   { box-shadow: 0 0 0 rgba(192,90,255,0); }
+  35%  { box-shadow: 0 0 22px 4px rgba(192,90,255,0.7); filter: brightness(1.1) saturate(1.2); }
+  100% { box-shadow: 0 0 0 rgba(192,90,255,0); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .unit.is-hit,
   .unit.is-healing,
+  .unit.is-shielded,
+  .unit.is-cleansed,
   .fx-heal__glow,
-  .fx-heal__cross {
+  .fx-heal__cross,
+  .fx-shield__ring,
+  .fx-shield__icon,
+  .fx-cleanse__glow,
+  .fx-cleanse__orb {
     animation: none;
   }
 }

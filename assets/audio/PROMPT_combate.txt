@@ -1,0 +1,44 @@
+ARCHIVO DE DESTINO: combate.ogg (o combate.mp3)
+DURACIÓN OBJETIVO: 2:00 – 2:45 min, loop seamless (más corto está bien — en combate el tiempo se comprime)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PROMPT PARA SUNO / UDIO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[dark fantasy battle music, no lyrics, no vocals, instrumental only]
+[D minor, driving tempo 108 BPM, aggressive, urgent]
+[loop-ready, seamless loop]
+
+Starts immediately with driving rhythmic ostinato in low strings —
+sixteenth notes, relentless. War drums enter at bar 2, heavy downbeats
+with fast fills. A brass staccato motif (three sharp notes, descending)
+cuts through every four bars like a strike. Strings alternate between
+the driving ostinato and short aggressive slashes. A low choir stabs
+on beats 1 and 3 — wordless, guttural, just vowels. The piece has one
+brief moment of near-silence at the midpoint (one bar), then crashes
+back twice as hard. It should feel like tactics under fire: urgent but
+controlled, not chaotic. Energy never drops for more than one beat.
+
+Instruments: low string ensemble (driving ostinato), taiko/kettle war drums
+(heavy, precise), staccato brass hits, guttural low choir (wordless stabs),
+occasional high strings for tension spikes
+
+Mood: tactical urgency, brutal but focused, dark medieval battle,
+every decision matters, adrenaline mixed with dread
+
+References: Darkest Dungeon "The Cove" combat theme, Darkest Dungeon 2
+battle music, Dragon Age Origins "The Darkspawn Chronicles",
+Elden Ring Margit phase 2
+
+NO: heroic/triumphant brass fanfare, modern orchestral epic (Hans Zimmer
+trailer style), rock/metal guitars, anything that sounds like a hero
+winning — this is survival, not glory
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NOTAS DE USO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Se reproduce en combates normales y de élite (no jefes).
+- El loop no debe tener intro — tiene que sonar bien desde el segundo 0,
+  porque corta abruptamente desde el tema de mapa.
+- Transición al terminar el combate: fade-out rápido (0.5s) → silencio
+  → luego el tema de mapa retoma.

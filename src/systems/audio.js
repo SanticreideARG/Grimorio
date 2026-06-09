@@ -32,9 +32,8 @@ for (const [path, loader] of Object.entries(audioModules)) {
   availableFiles[id] = loader;
 }
 
-// ── Catálogo de sonidos del juego ─────────────────────────────────────────
-// id → volumen relativo al master (0..1). Permite que efectos impactantes
-// sean más fuertes y ambientes más suaves.
+// ── Catálogo de efectos de sonido ─────────────────────────────────────────
+// id → volumen relativo al master (0..1).
 const CATALOG = {
   dice_roll:       0.8,
   attack:          0.9,
@@ -52,6 +51,15 @@ const CATALOG = {
   event_draw:      0.65,
 };
 
+// ── Catálogo de música ────────────────────────────────────────────────────
+// id → volumen relativo al master. La música suena más baja que los SFX.
+const MUSIC_CATALOG = {
+  menu:    0.45,
+  mapa:    0.38,
+  combate: 0.50,
+  jefe:    0.60,
+};
+
 // ── Estado interno ─────────────────────────────────────────────────────────
 const LS_KEY_MUTED  = 'grimorio:audio:muted';
 const LS_KEY_VOLUME = 'grimorio:audio:volume';
@@ -61,8 +69,56 @@ let muted        = localStorage.getItem(LS_KEY_MUTED) === 'true';
 let unlocked     = false;   // true tras primer gesto del usuario (autoplay policy)
 let initialized  = false;   // true tras llamar a init()
 
-/** Cache de HTMLAudioElement ya cargados. null = falló / no existe. */
+/** Cache de HTMLAudioElement ya cargados (SFX). null = falló / no existe. */
 const cache = {};
+
+// ── Estado de música ───────────────────────────────────────────────────────
+const musicCache     = {};    // id → HTMLAudioElement o null (falló)
+let currentMusicId   = null;  // id de la pista activa
+let currentMusicEl   = null;  // HTMLAudioElement activo
+let fadeRaf          = null;  // handle de requestAnimationFrame del fade activo
+
+const FADE_OUT_MS = 700;  // duración del fade-out al cambiar pista
+const FADE_IN_MS  = 900;  // duración del fade-in de la nueva pista
+
+/** Carga (lazy) un HTMLAudioElement para música; lo pone en loop. */
+async function loadMusic(id) {
+  if (id in musicCache) return musicCache[id];
+  if (!(id in availableFiles)) { musicCache[id] = null; return null; }
+  try {
+    const url      = await availableFiles[id]();
+    const audio    = new Audio(url);
+    audio.preload  = 'auto';
+    audio.loop     = true;
+    musicCache[id] = audio;
+    return audio;
+  } catch {
+    musicCache[id] = null;
+    return null;
+  }
+}
+
+/** Hace fade-out del elemento de audio y lo pausa al terminar. Resuelve al finalizar. */
+function fadeOut(el, durationMs) {
+  return new Promise((resolve) => {
+    if (!el || el.paused) { resolve(); return; }
+    const startVol  = el.volume;
+    const startTime = performance.now();
+    function step(now) {
+      const t = Math.min((now - startTime) / durationMs, 1);
+      el.volume = startVol * (1 - t);
+      if (t < 1) {
+        fadeRaf = requestAnimationFrame(step);
+      } else {
+        el.pause();
+        el.currentTime = 0;
+        el.volume      = startVol;
+        resolve();
+      }
+    }
+    fadeRaf = requestAnimationFrame(step);
+  });
+}
 
 // ── API pública ────────────────────────────────────────────────────────────
 
@@ -71,7 +127,14 @@ const cache = {};
  * Solo es necesario la primera vez.
  */
 export function unlockAudio() {
+  if (unlocked) return;
   unlocked = true;
+  // Si hay una pista pendiente (cargada pero no reproducida por autoplay policy), iniciarla ahora.
+  if (currentMusicEl && !muted && currentMusicId) {
+    const targetVol = masterVolume * (MUSIC_CATALOG[currentMusicId] ?? 0.4);
+    currentMusicEl.volume = targetVol;
+    currentMusicEl.play().catch(() => {});
+  }
 }
 
 /**
@@ -113,16 +176,105 @@ export function isMuted()    { return muted; }
 export function setVolume(v) {
   masterVolume = Math.max(0, Math.min(1, v));
   localStorage.setItem(LS_KEY_VOLUME, String(masterVolume));
+  // Actualizar volumen de la pista en curso
+  if (currentMusicEl && currentMusicId && !currentMusicEl.paused) {
+    currentMusicEl.volume = masterVolume * (MUSIC_CATALOG[currentMusicId] ?? 0.4);
+  }
 }
 
 export function setMuted(v) {
   muted = Boolean(v);
   localStorage.setItem(LS_KEY_MUTED, String(muted));
+  if (currentMusicEl) {
+    if (muted) {
+      currentMusicEl.pause();
+    } else if (unlocked && currentMusicId) {
+      currentMusicEl.volume = masterVolume * (MUSIC_CATALOG[currentMusicId] ?? 0.4);
+      currentMusicEl.play().catch(() => {});
+    }
+  }
 }
 
 export function toggleMute() {
   setMuted(!muted);
   return muted;
+}
+
+// ── API de música ──────────────────────────────────────────────────────────
+
+/**
+ * Cambia la pista de música activa con crossfade suave.
+ * • Si id === currentMusicId, no hace nada (evita reiniciar la pista).
+ * • Si id es null, para la música sin reemplazarla.
+ * @param {string|null} id  Clave de MUSIC_CATALOG o null para parar.
+ */
+export async function playMusic(id) {
+  if (id === currentMusicId) return;
+
+  // Cancelar fade en curso para evitar conflictos de rAF
+  if (fadeRaf !== null) {
+    cancelAnimationFrame(fadeRaf);
+    fadeRaf = null;
+  }
+
+  const outgoing   = currentMusicEl;
+  currentMusicId   = id;
+  currentMusicEl   = null;
+
+  // Fade-out de la pista saliente (en paralelo con la carga de la nueva)
+  const outPromise = outgoing ? fadeOut(outgoing, FADE_OUT_MS) : Promise.resolve();
+
+  if (!id) {
+    await outPromise;
+    return;
+  }
+
+  const targetVol = masterVolume * (MUSIC_CATALOG[id] ?? 0.4);
+  const audio     = await loadMusic(id);
+
+  // Si mientras cargaba el usuario cambió de pista, abortar
+  if (currentMusicId !== id) return;
+
+  if (!audio) return; // archivo no existe: silencio silencioso
+
+  await outPromise;  // esperar a que el fade-out termine antes de arrancar
+
+  if (muted || !unlocked) {
+    // Guardar el elemento para reproducirlo en cuanto se habilite el audio
+    currentMusicEl = audio;
+    return;
+  }
+
+  try {
+    audio.currentTime = 0;
+    audio.volume      = 0;      // empieza en 0 → fade-in manual
+    await audio.play();
+    currentMusicEl = audio;
+
+    // Fade-in
+    const startTime = performance.now();
+    function fadeIn(now) {
+      if (currentMusicEl !== audio) return; // pista cambiada: abortar
+      const t = Math.min((now - startTime) / FADE_IN_MS, 1);
+      audio.volume = targetVol * t;
+      if (t < 1) {
+        fadeRaf = requestAnimationFrame(fadeIn);
+      } else {
+        audio.volume = targetVol;
+        fadeRaf = null;
+      }
+    }
+    fadeRaf = requestAnimationFrame(fadeIn);
+  } catch {
+    // Silencio: autoplay bloqueado u otro error
+  }
+}
+
+/**
+ * Para la música activa con fade-out. Equivale a playMusic(null).
+ */
+export async function stopMusic() {
+  await playMusic(null);
 }
 
 // ── Suscripción a eventos del juego ───────────────────────────────────────

@@ -1,0 +1,51 @@
+ARCHIVO DE DESTINO: jefe.ogg (o jefe.mp3)
+DURACIÓN OBJETIVO: 3:00 – 4:00 min, loop seamless
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PROMPT PARA SUNO / UDIO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[dark fantasy boss battle music, no lyrics, no vocals, instrumental only]
+[B minor, slow-heavy tempo 76 BPM, monumental, desperate, epic dark]
+[loop-ready, seamless loop, structured in two sections that loop]
+
+Opens with a massive percussion hit — a single taiko strike that reverberates
+for two full bars of near-silence. Then low brass enters in unison: a slow,
+grinding descending line like a mountain collapsing. A full low male choir
+enters with a two-note motif (minor second interval, dissonant) chanting
+wordlessly — not triumphant, but inevitable, like a funeral march for the world.
+The rhythm builds: war drums at 76 BPM with heavy syncopation, strings
+sawing in short aggressive bursts. A high screaming violin enters at the midpoint,
+a cry of desperation over the grinding machinery below. The piece has two
+distinct moods that alternate: the grinding "the world ends" brass/choir section,
+and a more frantic "last desperate stand" strings/drums section. Both loop.
+It should make the player feel they are fighting something enormous and ancient
+that does not care whether it wins — because it already has.
+
+Instruments: full low male choir (wordless, dissonant intervals), massive
+taiko drums (thunderous), low brass ensemble (trombones, tuba — grinding,
+not fanfare), screaming high violin solo, low string cluster chords (sawing,
+brutal), distant thunder/rumble sound design underneath
+
+Mood: monumental, inevitable, ancient evil, desperate last stand,
+the weight of an entire ruined world in a single fight,
+no heroism — only survival
+
+References: Bloodborne "Orphan of Kos", Elden Ring "Starscourge Radahn",
+Darkest Dungeon "Swansong" boss theme, Sekiro "Genichiro" phase 2,
+Shadow of the Colossus "Counterattack"
+
+NO: triumphant heroic brass, anything in major key, uplifting choir
+(no Carmina Burana energy), modern hybrid trailer sound (no 8dio/Two Steps
+from Hell style), electric bass or guitar, anything that resolves to tonic
+triumphantly — the ending should feel pyrrhic
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NOTAS DE USO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Se usa para los 4 jefes: Gulrath, La Tejedora, El Rey Ceniza, El Devorado.
+- El mismo tema para todos refuerza que son manifestaciones del mismo horror.
+- Empieza cuando el BOSS_ENTER event dispara (actualmente no hay música
+  ligada al evento — hay que conectarlo en audio.js cuando el archivo exista).
+- En el futuro se puede hacer una variante `jefe_final.ogg` para El Devorado
+  (Cap.4) si se quiere escalar el clímax.

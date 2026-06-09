@@ -1,0 +1,37 @@
+ARCHIVO DE DESTINO: menu.ogg (o menu.mp3)
+DURACIÓN OBJETIVO: 2:30 – 3:00 min, loop seamless
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PROMPT PARA SUNO / UDIO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[dark fantasy orchestral, no lyrics, no vocals, instrumental only]
+[Phrygian mode, E minor, slow tempo 52 BPM]
+[loop-ready, seamless loop]
+
+Opening with a single low cello drone holding for four bars, then a sparse
+plucked lute melody enters in Phrygian mode — four notes that resolve
+downward but never fully settle. Low war drums pulse every two beats,
+felt more than heard. A choir of low male voices hums a single minor chord
+distantly, like a memory. Occasional high violin harmonic screams briefly
+before fading. The piece never fully resolves — it ends on the dominant,
+leaving tension unbroken. The world described is broken and cold.
+
+Instruments: cello drone, plucked lute, war drums (taiko-style, very distant),
+low male choir (wordless hum), sparse violin harmonics, occasional bone flute
+
+Mood: grim, ancient, world-weary, the calm before catastrophe
+
+References: Darkest Dungeon main theme, Elden Ring "Margit" ambient,
+Dragon Age Origins main menu
+
+NO: electric guitar, modern synths, uplifting resolution, Celtic jig energy,
+fantasy adventure brightness, drums that sound like rock/pop
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NOTAS DE USO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Se reproduce en loop en el menú principal mientras el jugador elige dificultad
+  y slot de partida.
+- Debe poder cortarse limpiamente cuando el jugador inicia partida (fade-out 1s).
+- Si Suno genera letra, regenerar — debe ser SOLO instrumental.

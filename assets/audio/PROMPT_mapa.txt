@@ -1,0 +1,45 @@
+ARCHIVO DE DESTINO: mapa.ogg (o mapa.mp3)
+DURACIÓN OBJETIVO: 3:30 – 4:30 min, loop seamless (cuanto más largo mejor para no repetir)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PROMPT PARA SUNO / UDIO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[dark fantasy ambient, no lyrics, no vocals, instrumental only]
+[slow tempo 44 BPM, drone-based, atmospheric]
+[loop-ready, seamless loop, long form]
+
+A deep sustained string drone in D minor forms the foundation — never
+changing pitch, only slowly swelling in dynamic. Over it, an irregular
+low percussion pattern (like distant war drums or footsteps on ash)
+enters every 6-8 bars unpredictably. A solo bone flute plays a short
+melancholic four-note phrase, then silences for many bars before
+repeating — slightly varied each time. Sparse pizzicato cello notes
+mark the passing of time. Occasional gust of low brass (like a horn
+in fog) adds weight. The atmosphere is: walking through a landscape
+that used to be beautiful, now devastated. Silence is as important
+as sound. No strong melodic hook — this is texture, not song.
+
+Instruments: deep string ensemble drone, bone flute (solo, sparse),
+irregular taiko drums (very distant), pizzicato cello, distant horn,
+light wind/ambience sound design underneath
+
+Mood: foreboding, melancholy, slow dread, the weight of an ashen world,
+something terrible is inevitable
+
+References: Darkest Dungeon hamlet theme, Shadow of the Colossus ambient
+sections, Bloodborne "Hunter's Dream"
+
+NO: driving rhythm, energetic melody, bright instruments (flute too high/happy),
+modern production, electric instruments, anything that sounds like adventure
+or exploration rather than grim survival
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NOTAS DE USO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Se reproduce en loop durante TODO el recorrido del mapa (la mayor parte
+  del tiempo de juego). Es crítico que NO canse tras muchas repeticiones.
+- El loop debe ser imperceptible — ideal que empiece y termine en el mismo
+  acorde del drone.
+- Si suena demasiado "vacío" se puede agregar una segunda variante (mapa2.ogg)
+  para los capítulos 3-4 con más tensión.

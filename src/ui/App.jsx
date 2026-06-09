@@ -9,6 +9,7 @@ import PartySelect from './screens/PartySelect.jsx';
 import CombatScreen from './screens/CombatScreen.jsx';
 import EventScreen from './screens/EventScreen.jsx';
 import ShopScreen from './screens/ShopScreen.jsx';
+import { useAudio } from './hooks/useAudio.js';
 
 const DIFFICULTY_LABEL = { facil: 'Fácil', normal: 'Normal', dificil: 'Difícil' };
 
@@ -22,15 +23,30 @@ export default function App() {
   const [difficulty, setDifficulty] = useState('normal');
   const [playerCount, setPlayerCount] = useState(1);
 
+  // Audio — se inicializa una sola vez aquí para toda la app
+  const { muted, toggleMuted } = useAudio();
+
   if (game) {
-    switch (game.view) {
-      case 'party-select': return <PartySelect />;
-      case 'combat':       return <CombatScreen />;
-      case 'event':        return <EventScreen />;
-      case 'shop':         return <ShopScreen />;
-      case 'map':
-      default:             return <MapScreen />;
-    }
+    // La key cambia con cada vista → React desmonta/monta la pantalla
+    // → el CSS de .view dispara la animación de entrada automáticamente.
+    const screen = (() => {
+      switch (game.view) {
+        case 'party-select': return <PartySelect />;
+        case 'combat':       return <CombatScreen />;
+        case 'event':        return <EventScreen />;
+        case 'shop':         return <ShopScreen />;
+        case 'map':
+        default:             return <MapScreen />;
+      }
+    })();
+    return (
+      <>
+        <div key={game.view} className="view">
+          {screen}
+        </div>
+        <MuteButton muted={muted} onToggle={toggleMuted} />
+      </>
+    );
   }
 
   return (
@@ -107,5 +123,20 @@ function Header() {
         <span className="ln" />✦<span className="ln r" />
       </div>
     </header>
+  );
+}
+
+// ── Botón mute flotante ───────────────────────────────────────────────────
+
+function MuteButton({ muted, onToggle }) {
+  return (
+    <button
+      className={`mute-btn${muted ? ' is-muted' : ''}`}
+      onClick={onToggle}
+      title={muted ? 'Activar sonido' : 'Silenciar'}
+      aria-label={muted ? 'Activar sonido' : 'Silenciar'}
+    >
+      {muted ? '🔇' : '🔊'}
+    </button>
   );
 }

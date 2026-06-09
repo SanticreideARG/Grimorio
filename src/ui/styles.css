@@ -26,6 +26,22 @@ body,
   height: 100%;
 }
 
+/* ===== Transiciones de pantalla ===== */
+@keyframes viewFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* El wrapper .view que rodea cada pantalla en App.jsx */
+.view {
+  height: 100%;
+  animation: viewFadeIn 0.22s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view { animation: none; }
+}
+
 body {
   background: radial-gradient(120% 120% at 50% 30%, #181009 0%, #0a0705 70%, #050302 100%);
   color: var(--text);
@@ -1091,6 +1107,14 @@ body {
   flex-wrap: wrap;
   justify-content: center;
 }
+/* ── Animación de tirada de dados ── */
+@keyframes dieRoll {
+  0%   { transform: scale(0.4) rotate(-20deg); opacity: 0; }
+  55%  { transform: scale(1.18) rotate(8deg);  opacity: 1; }
+  80%  { transform: scale(0.94) rotate(-4deg); }
+  100% { transform: scale(1)    rotate(0deg);  opacity: 1; }
+}
+
 .die {
   min-width: 44px;
   height: 44px;
@@ -1104,6 +1128,17 @@ body {
   color: #2c1606;
   box-shadow: inset 0 2px 4px rgba(255, 245, 220, 0.6), 0 4px 10px rgba(0, 0, 0, 0.5);
   border: 1px solid #835414;
+  /* La animación se activa solo cuando el padre tiene la clase .is-rolled */
+  transform-origin: center;
+}
+
+.dice-tray__faces.is-rolled .die {
+  animation: dieRoll 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--die-i, 0) * 55ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dice-tray__faces.is-rolled .die { animation: none; }
 }
 .dice-tray__totals {
   display: flex;
@@ -2096,4 +2131,37 @@ body {
     rgba(20, 12, 5, 0.55) 12px,
     rgba(20, 12, 5, 0.55) 24px
   );
+}
+
+/* ===== Botón mute flotante ===== */
+.mute-btn {
+  position: fixed;
+  bottom: 14px;
+  right: 14px;
+  z-index: 200;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--sepia);
+  background: rgba(10, 7, 5, 0.82);
+  color: var(--amber);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, opacity 0.15s;
+  opacity: 0.7;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.mute-btn:hover {
+  opacity: 1;
+  background: rgba(30, 18, 8, 0.95);
+}
+
+.mute-btn.is-muted {
+  opacity: 0.45;
+  color: var(--text-dim);
 }

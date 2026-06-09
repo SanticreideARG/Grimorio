@@ -31,13 +31,28 @@ export const bus = createEventBus();
 
 // Catálogo de eventos conocidos (referencia; no es obligatorio usarlos todos).
 export const EVENTS = Object.freeze({
-  GAME_CREATED: 'game:created',
-  GAME_LOADED: 'game:loaded',
-  GAME_SAVED: 'game:saved',
-  NODE_ENTERED: 'board:nodeEntered',
-  COMBAT_START: 'combat:start',
-  COMBAT_END: 'combat:end',
-  DOOM_CHANGED: 'doom:changed',
-  TURN_START: 'turn:start',
-  TURN_END: 'turn:end',
+  // Motor
+  GAME_CREATED:      'game:created',
+  GAME_LOADED:       'game:loaded',
+  GAME_SAVED:        'game:saved',
+  NODE_ENTERED:      'board:nodeEntered',
+  CHAPTER_COMPLETE:  'board:chapterComplete',
+  // Combate
+  COMBAT_START:      'combat:start',
+  COMBAT_END:        'combat:end',
+  HERO_ROLL:         'combat:heroRoll',
+  HERO_ATTACK:       'combat:heroAttack',
+  HERO_SPELL:        'combat:heroSpell',
+  HERO_HEAL:         'combat:heroHeal',
+  HERO_POTION:       'combat:heroPotion',
+  ENEMY_ATTACK:      'combat:enemyAttack',
+  BOSS_ENTER:        'combat:bossEnter',
+  // Mapa
+  DOOM_CHANGED:      'doom:changed',
+  REST_TAKEN:        'map:rest',
+  SHOP_OPEN:         'map:shopOpen',
+  EVENT_DRAWN:       'map:eventDrawn',
+  // Turno
+  TURN_START:        'turn:start',
+  TURN_END:          'turn:end',
 });

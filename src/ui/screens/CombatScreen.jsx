@@ -209,7 +209,8 @@ export default function CombatScreen() {
               </>
             ) : (
               <>
-                <DiceTray pool={hero.pool} attacked={hero.hasAttacked} energy={hero.energy} />
+                {/* key cambia por héroe → el componente se monta de nuevo al tirar → animación */}
+                <DiceTray key={hero.id} pool={hero.pool} attacked={hero.hasAttacked} energy={hero.energy} />
                 <div className="hint">{hint()}</div>
 
                 {hasPotions && (
@@ -357,9 +358,10 @@ function Row({ label, children }) {
 function DiceTray({ pool, attacked, energy }) {
   return (
     <div className="dice-tray">
-      <div className="dice-tray__faces">
+      {/* is-rolled siempre activo aquí: DiceTray solo existe cuando hasRolled=true */}
+      <div className="dice-tray__faces is-rolled">
         {pool.faces.map((f, i) => (
-          <span key={i} className="die">
+          <span key={i} className="die" style={{ '--die-i': i }}>
             {faceToText(f)}
           </span>
         ))}

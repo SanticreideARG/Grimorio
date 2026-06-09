@@ -178,6 +178,7 @@ export const useGameStore = create((set, get) => ({
       view: 'combat',
     }));
     bus.emit(EVENTS.COMBAT_START, combat);
+    if (node.type === 'boss') bus.emit(EVENTS.BOSS_ENTER, { nodeId: node.id });
   },
 
   /** El héroe activo tira su pool de dados (consume RNG). */
@@ -187,6 +188,7 @@ export const useGameStore = create((set, get) => ({
     const rng = createRng(game.rngState);
     const combat = rollActiveHero(game.combat, rng);
     get().patchGame((g) => ({ ...g, combat, rngState: rng.getState() }));
+    bus.emit(EVENTS.HERO_ROLL, { heroId: game.combat.heroes[game.combat.activeHeroIndex]?.id });
   },
 
   /** El héroe activo ataca con espadas a un enemigo. */
@@ -194,13 +196,17 @@ export const useGameStore = create((set, get) => ({
     const { game } = get();
     if (!game?.combat) return;
     get().patchGame((g) => ({ ...g, combat: heroAttack(g.combat, enemyUid) }));
+    bus.emit(EVENTS.HERO_ATTACK, { heroId: game.combat.heroes[game.combat.activeHeroIndex]?.id, targetUid: enemyUid });
   },
 
   /** El héroe activo lanza un hechizo sobre un objetivo. */
   combatCast(spellId, targetUid) {
     const { game } = get();
     if (!game?.combat) return;
+    const spell = content.spellsById?.[spellId];
+    const isHeal = !!(spell?.effect?.heal || spell?.effect?.shieldAlly || spell?.effect?.cleanse);
     get().patchGame((g) => ({ ...g, combat: heroCast(g.combat, spellId, targetUid) }));
+    bus.emit(isHeal ? EVENTS.HERO_HEAL : EVENTS.HERO_SPELL, { spellId, targetUid });
   },
 
   /** Cambia el héroe activo (antes de que tire dados). */
@@ -294,6 +300,7 @@ export const useGameStore = create((set, get) => ({
     const rng = createRng(game.rngState);
     const next = drawEventCard(game, rng);
     get().patchGame(() => ({ ...next, rngState: rng.getState(), view: 'event' }));
+    bus.emit(EVENTS.EVENT_DRAWN, { cardId: next.activeEvent?.cardId });
   },
 
   /** Resuelve la elección del jugador (con pool de dados tirado para el chequeo). */
@@ -323,11 +330,13 @@ export const useGameStore = create((set, get) => ({
       const healed = restPartyFraction(g, 0.4);
       return markNodeResolved(healed, node, `Descanso en ${node.name}. La party recupera fuerzas.`);
     });
+    bus.emit(EVENTS.REST_TAKEN, {});
   },
 
   /** Abre la tienda del nodo actual. */
   openShop() {
     get().patchGame((g) => ({ ...g, view: 'shop' }));
+    bus.emit(EVENTS.SHOP_OPEN, {});
   },
 
   /** Compra un ítem en la tienda (mejora permanente de party). */
@@ -378,6 +387,7 @@ export const useGameStore = create((set, get) => ({
       const entry = { kind: 'chapter', text: `Comienza ${ch?.title ?? 'el siguiente capítulo'}.`, at: Date.now() };
       return { ...s, log: [...(s.log ?? []), entry], view: 'map' };
     });
+    bus.emit(EVENTS.CHAPTER_COMPLETE, {});
   },
 
   /** Calcula y fija el tipo de final cuando se termina el Cap.4. */

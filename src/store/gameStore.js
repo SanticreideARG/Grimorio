@@ -236,17 +236,25 @@ export const useGameStore = create((set, get) => ({
 
   /**
    * Resuelve la acción de UN enemigo (modo paso a paso).
-   * La primera llamada inicializa la cola; las siguientes procesan de a uno.
+   * Primera llamada: solo inicializa la cola (el panel pasa a mostrar
+   * "X va a actuar" para cada enemigo antes de que actúe).
+   * Siguientes llamadas: resuelven un enemigo de la cola.
    */
   combatEnemyPhase() {
     const { game } = get();
     if (!game?.combat || game.combat.phase !== 'enemy') return;
+
+    // Primera llamada: solo preparar la cola, no ejecutar todavía.
+    // Así el jugador ve "Gulrath va a actuar" antes de que golpee.
+    if (!game.combat.pendingEnemies) {
+      const initialized = startEnemyPhase(game.combat);
+      get().patchGame((g) => ({ ...g, combat: initialized }));
+      return;
+    }
+
+    // Siguientes llamadas: resolver el próximo enemigo de la cola.
     const rng = createRng(game.rngState);
-    // Inicializar cola si todavía no está
-    const initialized = game.combat.pendingEnemies
-      ? game.combat
-      : startEnemyPhase(game.combat);
-    const combat = resolveNextEnemy(initialized, rng);
+    const combat = resolveNextEnemy(game.combat, rng);
     get().patchGame((g) => ({ ...g, combat, rngState: rng.getState() }));
   },
 

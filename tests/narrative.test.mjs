@@ -8,12 +8,21 @@ test('getNodeNarration devuelve null para nodos sin entrada', () => {
   assert.equal(getNodeNarration('nodo_inexistente', ['guerrera']), null);
 });
 
-test('todo nodo del Cap.1 tiene narración de lugar', () => {
-  const cap1Nodes = content.chaptersById.cap1.nodes;
-  for (const n of cap1Nodes) {
-    const nar = getNodeNarration(n.id, []);
-    assert.ok(nar, `falta entrada narrativa para ${n.id}`);
-    assert.ok(nar.place && nar.place.length > 0, `${n.id} sin texto de lugar`);
+test('todo nodo de los 4 capítulos tiene narración de lugar', () => {
+  for (const cap of content.chapters) {
+    for (const n of cap.nodes) {
+      const nar = getNodeNarration(n.id, []);
+      assert.ok(nar, `falta entrada narrativa para ${n.id}`);
+      assert.ok(nar.place && nar.place.length > 0, `${n.id} sin texto de lugar`);
+    }
+  }
+});
+
+test('cada jefe tiene un nodo con lore del Rey/Devorado', () => {
+  for (const cap of content.chapters) {
+    const bossNode = cap.nodes.find((n) => n.type === 'boss');
+    const nar = getNodeNarration(bossNode.id, []);
+    assert.ok(nar.lore && nar.lore.length > 0, `${bossNode.id} sin lore de jefe`);
   }
 });
 

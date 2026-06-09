@@ -50,9 +50,17 @@ subraya. Nunca chistes "modernos" ni rompimiento de la cuarta pared.
 | Cap | Región | Qué era antes | Jefe | Rol en la trama |
 |-----|--------|---------------|------|-----------------|
 | 1 | El Valle Quemado | Tres comarcas de cultivo | **Gulrath**, el Devorador de Aldeas | Carroña que sigue al fuego; NO sirve al Rey. Presenta el mundo arrasado. |
-| 2 | La Marisma de Telarañas | (por definir) | **La Tejedora de Maldiciones** | (por definir) |
-| 3 | La Ciudadela de Ceniza | El antiguo trono del Rey | **El Rey Ceniza** | El origen. Clímax emocional. |
-| 4 | La Grieta | Nada — herida en el mundo | **El Devorado** | La consecuencia. El arma que el Rey no controló. |
+| 2 | La Marisma de Telarañas | El Bosque de los Mil Años: templo vivo de árboles-altar | **La Tejedora de Maldiciones** | Su guardiana mayor, **primer ser que el Rey corrompió a propósito** (ensayo de su maldición). |
+| 3 | La Ciudadela de Ceniza | La capital del reino del Rey: su trono y hogar | **El Rey Ceniza** | El origen. **El Rey quemó su propia capital con su gente dentro.** Clímax emocional. El Caballero Oscuro está "en casa". |
+| 4 | La Grieta | Nada — herida abierta por la invocación del Rey | **El Devorado** | La consecuencia. El duelo del Rey hecho infinito; el arma que no controló. |
+
+### Hilos de lore plantados (para pagar en Caps. 3-4)
+
+- El Rey trajo **lirios de plata** del pantano (Cap.2) a su **esposa** → la reina ya no está.
+- El Rey tuvo una **hija** que murió joven en la guerra (Cap.3, capilla).
+- El Rey **abrió las puertas de su capital y la quemó él mismo** (Cap.3, muralla) — el Caballero Oscuro recibió y obedeció esa orden.
+- El Rey conservó **un solo espejo** para recordar al hombre que fue, hasta dejar de reconocerlo (Cap.3).
+- La **voz/tentación del Devorado** (Cap.4) es la misma promesa que el Rey aceptó.
 
 ## Sistema (cómo se entrega la narración)
 
@@ -67,6 +75,8 @@ lineal cada nodo se pisa una vez, así que nada se repite ni satura.
 ## Estado
 
 - [x] Cap.1 — completo (16 nodos)
-- [ ] Cap.2 — pendiente
-- [ ] Cap.3 — pendiente (clímax del Rey)
-- [ ] Cap.4 — pendiente (final)
+- [x] Cap.2 — completo (18 nodos)
+- [x] Cap.3 — completo (20 nodos, clímax del Rey)
+- [x] Cap.4 — completo (14 nodos, final)
+
+**Campaña narrada completa: 68 nodos.**

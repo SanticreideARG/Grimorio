@@ -25,12 +25,31 @@ function UnitArt({ src, alt, fallback }) {
   return <span className="unit__art unit__art--placeholder" aria-hidden="true">{fallback}</span>;
 }
 
-function faceToText(face) {
-  const sym = [];
-  for (let i = 0; i < (face.sword ?? 0); i++) sym.push('🗡️');
-  for (let i = 0; i < (face.shield ?? 0); i++) sym.push('🛡️');
-  for (let i = 0; i < (face.star ?? 0); i++) sym.push('⭐');
-  return sym.length ? sym.join('') : '·';
+// Imagen de símbolo de dado (con fallback a emoji si el asset no carga)
+const DIE_IMGS = {
+  sword:  { path: 'ui/dado_espada',  fallback: '🗡️' },
+  shield: { path: 'ui/dado_escudo',  fallback: '🛡️' },
+  star:   { path: 'ui/dado_estrella', fallback: '⭐' },
+};
+
+function DieSymbol({ type, count = 1 }) {
+  const info = DIE_IMGS[type];
+  const url  = info ? assetUrl(info.path + '.png') : null;
+  if (!url) return <>{info?.fallback ?? '·'}{count > 1 ? count : ''}</>;
+  return (
+    <>
+      <img className="die-sym" src={url} alt={info.fallback} />
+      {count > 1 && <span className="die-sym__count">{count}</span>}
+    </>
+  );
+}
+
+function DieFaceContent({ face }) {
+  const parts = [];
+  if (face.sword)  parts.push(<DieSymbol key="sw" type="sword"  count={face.sword}  />);
+  if (face.shield) parts.push(<DieSymbol key="sh" type="shield" count={face.shield} />);
+  if (face.star)   parts.push(<DieSymbol key="st" type="star"   count={face.star}   />);
+  return parts.length ? <>{parts}</> : <span className="die-blank">·</span>;
 }
 
 export default function CombatScreen() {
@@ -236,6 +255,7 @@ export default function CombatScreen() {
                     if (!sp) return null;
                     const usable = hero.energy >= sp.cost;
                     const active = targetingSpell?.id === sid;
+                    const iconUrl = sp.icon ? assetUrl(sp.icon) : null;
                     return (
                       <button
                         key={sid}
@@ -244,7 +264,8 @@ export default function CombatScreen() {
                         title={sp.desc}
                         onClick={() => onSpellClick(sp)}
                       >
-                        {sp.name} <span className="spell-cost">{sp.cost}⭐</span>
+                        {iconUrl && <img className="spell-btn__icon" src={iconUrl} alt="" />}
+                        {sp.name} <span className="spell-cost">{sp.cost}<DieSymbol type="star" /></span>
                       </button>
                     );
                   })}
@@ -371,18 +392,19 @@ function Row({ label, children }) {
 function DiceTray({ pool, attacked, energy }) {
   return (
     <div className="dice-tray">
-      {/* is-rolled siempre activo aquí: DiceTray solo existe cuando hasRolled=true */}
       <div className="dice-tray__faces is-rolled">
         {pool.faces.map((f, i) => (
           <span key={i} className="die" style={{ '--die-i': i }}>
-            {faceToText(f)}
+            <DieFaceContent face={f} />
           </span>
         ))}
       </div>
       <div className="dice-tray__totals">
-        <span className={`tot${attacked ? ' is-spent' : ''}`}>🗡️ {attacked ? 0 : pool.sword}</span>
-        <span className="tot">🛡️ {pool.shield}</span>
-        <span className="tot">⭐ {energy}</span>
+        <span className={`tot${attacked ? ' is-spent' : ''}`}>
+          <DieSymbol type="sword" /> {attacked ? 0 : pool.sword}
+        </span>
+        <span className="tot"><DieSymbol type="shield" /> {pool.shield}</span>
+        <span className="tot"><DieSymbol type="star" /> {energy}</span>
       </div>
     </div>
   );
@@ -451,11 +473,18 @@ function HeroCard({ h, bark, active, clickable, selectable, onClick }) {
         {active && h.energy > 0 && <span className="chip chip--energy">⭐{h.energy}</span>}
         {h.down && <span className="chip chip--down">caído</span>}
         {h.hasRolled && !h.down && !active && <span className="chip chip--done">✓</span>}
-        {(h.curses ?? []).map((c) => (
-          <span key={c.id} className="chip chip--curse" title={c.name}>
-            {c.name[0]}
-          </span>
-        ))}
+        {(h.curses ?? []).map((c) => {
+          const curseData = content.cursesById?.[c.id];
+          const curseIconUrl = curseData?.icon ? assetUrl(curseData.icon) : null;
+          return (
+            <span key={c.id} className="chip chip--curse" title={`${c.name} (${c.duration ?? '?'} turnos)`}>
+              {curseIconUrl
+                ? <img className="chip__icon" src={curseIconUrl} alt={c.name} />
+                : c.name[0]
+              }
+            </span>
+          );
+        })}
       </span>
     </button>
   );

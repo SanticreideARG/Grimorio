@@ -12,6 +12,16 @@ import {
 import { getCurrentNode } from '../../systems/board.js';
 import { assetUrl } from '../assets.js';
 
+function SectionBanner({ cardback, title }) {
+  const url = assetUrl(cardback);
+  if (!url) return <h2 className="shop-section__title">{title}</h2>;
+  return (
+    <div className="shop-section__banner" style={{ backgroundImage: `url(${url})` }}>
+      <h2 className="shop-section__title shop-section__title--over">{title}</h2>
+    </div>
+  );
+}
+
 export default function ShopScreen() {
   const game = useGameStore((s) => s.game);
   const buyItem = useGameStore((s) => s.shopBuyItem);
@@ -39,7 +49,7 @@ export default function ShopScreen() {
 
       <div className="shop-body">
         <section className="shop-section">
-          <h2 className="shop-section__title">Equipo (mejoras permanentes)</h2>
+          <SectionBanner cardback="cardbacks/magias.png" title="Equipo (mejoras permanentes)" />
           <div className="shop-grid">
             {content.items.map((it) => {
               const has = owned.has(it.id);
@@ -67,7 +77,7 @@ export default function ShopScreen() {
         </section>
 
         <section className="shop-section">
-          <h2 className="shop-section__title">Pociones (para combate)</h2>
+          <SectionBanner cardback="cardbacks/pociones.png" title="Pociones (para combate)" />
           <div className="shop-grid">
             {content.potions.map((p) => {
               const buyable = canBuyPotion(game, p.id);
@@ -95,6 +105,32 @@ export default function ShopScreen() {
             })}
           </div>
         </section>
+
+        {(game.pets ?? []).length > 0 && (
+          <section className="shop-section">
+            <SectionBanner cardback="cardbacks/mascotas.png" title="Mascotas de la party" />
+            <div className="shop-grid shop-grid--pets">
+              {(game.pets ?? []).map((petId) => {
+                const pet = content.petsById[petId];
+                if (!pet) return null;
+                const artUrl = pet.art ? assetUrl(pet.art) : null;
+                return (
+                  <article key={petId} className="shop-card shop-card--pet">
+                    {artUrl
+                      ? <img className="shop-card__icon shop-card__icon--pet" src={artUrl} alt={pet.name} />
+                      : <span className="shop-card__icon shop-card__icon--placeholder">{pet.name[0]}</span>
+                    }
+                    <div className="shop-card__name">{pet.name}</div>
+                    <div className="shop-card__desc">{pet.desc}</div>
+                    <div className="shop-card__foot">
+                      <span className="chip chip--pet">Compañero activo</span>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        )}
       </div>
 
       <div className="shop-actions">

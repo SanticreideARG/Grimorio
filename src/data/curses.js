@@ -11,6 +11,7 @@ export const curses = [
     hook: 'onIncomingDamage',
     duration: 2,
     power: 2,
+    icon: 'curses/sangria.png',
   },
   {
     id: 'silencio',
@@ -19,6 +20,7 @@ export const curses = [
     hook: 'blocksSpells',
     duration: 1,
     power: 0,
+    icon: 'curses/silencio.png',
   },
   {
     id: 'debilidad',
@@ -27,6 +29,7 @@ export const curses = [
     hook: 'diceReduce',
     duration: 2,
     power: 1,
+    icon: 'curses/debilidad.png',
   },
   {
     id: 'veneno',
@@ -35,6 +38,7 @@ export const curses = [
     hook: 'onIncomingDamage',
     duration: 3,
     power: 1,
+    icon: 'curses/veneno.png',
   },
   {
     id: 'confusion',
@@ -43,6 +47,7 @@ export const curses = [
     hook: 'diceReduce',
     duration: 1,
     power: 2,
+    icon: 'curses/confusion.png',
   },
 ];
 

@@ -994,7 +994,9 @@ body {
 .chip--energy { color: var(--amber-lt); }
 .chip--down   { color: #e7a89a; }
 .chip--done   { color: #7dc87d; }
-.chip--curse  { color: #c07de0; border: 1px solid rgba(192,125,224,0.4); border-radius: 3px; padding: 0 3px; }
+.chip--curse  { color: #c07de0; border: 1px solid rgba(192,125,224,0.4); border-radius: 3px; padding: 0 3px; display: inline-flex; align-items: center; gap: 2px; }
+.chip--pet    { color: var(--amber); border: 1px solid rgba(201,145,63,0.4); border-radius: 3px; padding: 0 5px; font-size: 11px; }
+.chip__icon   { width: 16px; height: 16px; object-fit: contain; vertical-align: middle; }
 
 /* Barra de pociones en combate */
 .potion-bar {
@@ -1233,14 +1235,30 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 2px;
   font-size: 16px;
   border-radius: 8px;
   background: radial-gradient(circle at 38% 30%, #f1d59a, #cf9d4f 70%, #a9762f);
   color: #2c1606;
   box-shadow: inset 0 2px 4px rgba(255, 245, 220, 0.6), 0 4px 10px rgba(0, 0, 0, 0.5);
   border: 1px solid #835414;
-  /* La animación se activa solo cuando el padre tiene la clase .is-rolled */
   transform-origin: center;
+}
+.die-sym {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.die-sym__count {
+  font-size: 11px;
+  font-weight: 700;
+  color: #2c1606;
+  line-height: 1;
+}
+.die-blank {
+  color: rgba(44, 22, 6, 0.5);
+  font-size: 18px;
 }
 
 .dice-tray__faces.is-rolled .die {
@@ -1257,6 +1275,16 @@ body {
   font-size: 17px;
   color: var(--amber-lt);
 }
+.tot {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.tot .die-sym {
+  width: 18px;
+  height: 18px;
+  opacity: 0.9;
+}
 .tot.is-spent {
   opacity: 0.4;
   text-decoration: line-through;
@@ -1269,13 +1297,26 @@ body {
 }
 .spell-btn {
   flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 .spell-btn.is-active {
   border-color: var(--amber-lt);
   box-shadow: 0 0 14px rgba(232, 196, 131, 0.5);
 }
+.spell-btn__icon {
+  width: 28px;
+  height: 28px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
 .spell-cost {
   color: var(--amber);
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
 }
 .enemy-phase {
   display: flex;
@@ -1982,6 +2023,21 @@ body {
   gap: 24px;
   flex: 1;
 }
+.shop-section__banner {
+  position: relative;
+  height: 72px;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center 35%;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.shop-section__banner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(10,5,2,0.8) 0%, rgba(10,5,2,0.45) 60%, transparent 100%);
+}
 .shop-section__title {
   font-family: 'Cinzel', serif;
   font-size: 18px;
@@ -1989,6 +2045,16 @@ body {
   margin: 0 0 12px;
   border-bottom: 1px solid rgba(201, 145, 63, 0.2);
   padding-bottom: 6px;
+}
+.shop-section__title--over {
+  position: absolute;
+  z-index: 1;
+  bottom: 10px;
+  left: 16px;
+  margin: 0;
+  border: none;
+  padding: 0;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.9);
 }
 .shop-grid {
   display: grid;
@@ -2013,6 +2079,20 @@ body {
   object-fit: cover;
   border-radius: 8px;
   border: 1px solid rgba(201, 145, 63, 0.3);
+}
+.shop-card__icon--pet {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  object-position: center;
+  border: 1px solid rgba(201, 145, 63, 0.5);
+}
+.shop-card--pet {
+  border-color: rgba(201, 145, 63, 0.45);
+  background: linear-gradient(180deg, rgba(40, 32, 8, 0.6), rgba(15, 10, 2, 0.8));
+}
+.shop-grid--pets {
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
 }
 .shop-card__icon--placeholder {
   display: flex;

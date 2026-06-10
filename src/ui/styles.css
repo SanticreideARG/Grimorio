@@ -713,6 +713,115 @@ body {
   letter-spacing: 0.2em;
   color: var(--text-dim);
   opacity: 0.6;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.about-btn {
+  font-size: 11px;
+  padding: 3px 10px;
+  opacity: 0.7;
+  letter-spacing: 0.05em;
+}
+.about-btn:hover { opacity: 1; }
+
+/* ── Pantalla Acerca de ─────────────────────────────────────────────── */
+.about-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.about-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+}
+.about-overlay__dark {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 3, 2, 0.72);
+}
+.about-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  max-width: 480px;
+  width: 90%;
+  text-align: center;
+  padding: 48px 40px;
+  background: rgba(12, 7, 3, 0.55);
+  border: 1px solid rgba(201, 145, 63, 0.25);
+  border-radius: 4px;
+  backdrop-filter: blur(4px);
+}
+.about-orn {
+  font-size: 22px;
+  color: var(--amber);
+  opacity: 0.7;
+}
+.about-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 36px;
+  color: var(--amber-lt);
+  margin: 0;
+  letter-spacing: 0.12em;
+}
+.about-subtitle {
+  font-size: 13px;
+  color: var(--text-dim);
+  font-style: italic;
+  margin: 0;
+  line-height: 1.5;
+}
+.about-divider {
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201,145,63,0.5), transparent);
+}
+.about-data {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 20px;
+  text-align: left;
+  width: 100%;
+  max-width: 280px;
+  font-size: 14px;
+}
+.about-data dt {
+  color: var(--text-dim);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding-top: 2px;
+}
+.about-data dd {
+  color: var(--amber-lt);
+  margin: 0;
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+}
+.about-link {
+  color: var(--amber);
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(201,145,63,0.35);
+  padding-bottom: 1px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.about-link:hover {
+  color: var(--amber-lt);
+  border-color: var(--amber-lt);
+}
+.about-back {
+  margin-top: 8px;
 }
 
 @media (max-width: 720px) {
@@ -759,6 +868,19 @@ body {
 .hero-pick.is-disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+.hero-pick.is-locked {
+  opacity: 0.55;
+  cursor: not-allowed;
+  border-color: rgba(100, 80, 60, 0.4);
+}
+.hero-pick__locked {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 20px;
+  filter: drop-shadow(0 0 4px rgba(0,0,0,0.8));
+  pointer-events: none;
 }
 .hero-pick__order {
   position: absolute;
@@ -1627,6 +1749,13 @@ body {
   background: radial-gradient(circle at 40% 35%, #ffe9b0 0%, #e8852f 55%, #b23522 100%);
   box-shadow: 0 0 18px 5px rgba(226, 120, 40, 0.8), 0 0 6px #ffd089;
 }
+.fx-proj--laser {
+  width: 48px;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.2), #ffffff 40%, #c0e0ff);
+  box-shadow: 0 0 10px 3px rgba(200, 230, 255, 0.9), 0 0 24px rgba(180, 210, 255, 0.6);
+}
 
 /* Impactos */
 .fx-impact {
@@ -1638,6 +1767,44 @@ body {
 }
 .fx-impact--arcane {
   background: radial-gradient(circle, rgba(255, 225, 170, 0.95) 0%, rgba(178, 53, 34, 0.6) 45%, transparent 72%);
+}
+
+/* Explosión arcana (Azalie) */
+.fx-explosion {
+  position: absolute;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+.fx-explosion__flash {
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,220,0.95) 0%, rgba(220,160,60,0.55) 45%, transparent 70%);
+  animation: explosion-flash 0.35s ease-out forwards;
+}
+.fx-explosion__ring {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 3px solid rgba(220, 160, 60, 0.85);
+  box-shadow: 0 0 14px rgba(255, 200, 80, 0.6);
+  transform: translate(-50%, -50%) scale(0.1);
+  animation: explosion-ring 0.75s ease-out forwards;
+  animation-delay: calc(var(--i) * 90ms);
+}
+@keyframes explosion-flash {
+  0%   { opacity: 1; transform: translate(-50%, -50%) scale(0.3); }
+  40%  { opacity: 0.9; transform: translate(-50%, -50%) scale(1.1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
+}
+@keyframes explosion-ring {
+  0%   { opacity: 0.95; transform: translate(-50%, -50%) scale(0.1); }
+  70%  { opacity: 0.6; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(2.8); }
 }
 
 /* Canalización arcana (estrella sobre el lanzador) */

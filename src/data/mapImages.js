@@ -23,6 +23,9 @@ for (const [path, url] of Object.entries(modules)) {
 /** Imagen de fondo del menú principal. */
 export const menuBg = bg['menu background'] ?? null;
 
+/** Imagen de fondo de la pantalla Acerca de. */
+export const aboutBg = bg['About'] ?? null;
+
 /** Mapa de chapterId → URL de imagen de fondo (procesada por Vite). */
 export const mapImages = {
   cap1: bg['map1'] ?? null,

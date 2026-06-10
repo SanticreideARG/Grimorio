@@ -1,7 +1,0 @@
-Circular medallion icon for a dark-fantasy board game map node. TYPE: RANDOM EVENT / ENCOUNTER CARD.
-Style: aged parchment illustration, ink engraving, grim medieval fantasy. Deep purple and candlelight tones.
-Content: an open tome or a tarot card with an eye symbol, arcane runes surrounding it.
-Alternatively: a lantern casting rays in the dark, or a scroll sealed with a wax skull-stamp.
-Feel: uncertainty, mystery — could be good or bad, fate is in the hands of the gods (or dice).
-Format: 512x512 PNG, transparent background, circular composition, no text, no watermark.
-Color palette: deep violet (#5a1d8c), candlelight amber (#c8960a), aged parchment (#c8b48a), shadow (#1a0a28).

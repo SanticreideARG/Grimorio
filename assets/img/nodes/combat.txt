@@ -1,7 +1,0 @@
-Circular medallion icon for a dark-fantasy board game map node. TYPE: COMBAT / BATTLE.
-Style: aged parchment illustration, ink engraving, grim medieval fantasy. Blood-red and iron tones.
-Content: two crossed swords or battle-axes, blades chipped and battle-worn, with drops of blood on the steel.
-Alternatively: a gauntleted fist gripping a broadsword, cracks in the armor, sparks flying.
-Feel: immediate danger, clash of steel, desperate fighting.
-Format: 512x512 PNG, transparent background, circular composition, no text, no watermark.
-Color palette: dried blood red (#8c1a1a), dark iron (#3a3028), aged bone (#c8b48a).

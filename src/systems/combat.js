@@ -229,7 +229,7 @@ export function heroCast(combat, spellId, targetUid) {
     const targets = c.enemies.filter((e) => e.hp > 0);
     for (const t of targets) t.hp = Math.max(0, t.hp - fx.damage);
     pushLog(c, 'spell', `${h.name} lanza ${spell.name} sobre todos (${fx.damage} c/u).`, {
-      anim: 'aoe', source: h.id, targets: targets.map((t) => t.uid),
+      anim: fx.explosion ? 'explosion' : 'aoe', source: h.id, targets: targets.map((t) => t.uid),
     });
   }
 
@@ -248,9 +248,21 @@ export function heroCast(combat, spellId, targetUid) {
     if (!target) return combat;
     if (!validEnemyTargets(c, fx.ignoreRow).some((e) => e.uid === targetUid)) return combat;
     target.hp = Math.max(0, target.hp - fx.damage);
+    const singleAnim = fx.pierce ? 'laser' : (fx.ignoreRow ? 'ranged' : 'melee');
     pushLog(c, 'spell', `${h.name} lanza ${spell.name} sobre ${target.name} (${fx.damage}).`, {
-      anim: fx.ignoreRow ? 'ranged' : 'melee', source: h.id, target: target.uid,
+      anim: singleAnim, source: h.id, target: target.uid,
     });
+    // Pierce: also hits the next alive enemy behind the target
+    if (fx.pierce) {
+      const targetIdx = c.enemies.findIndex((e) => e.uid === target.uid);
+      const behind = c.enemies.slice(targetIdx + 1).find((e) => e.hp > 0);
+      if (behind) {
+        behind.hp = Math.max(0, behind.hp - fx.damage);
+        pushLog(c, 'spell', `El rayo traspasa y golpea a ${behind.name} (${fx.damage}).`, {
+          anim: 'laser', source: h.id, target: behind.uid,
+        });
+      }
+    }
   }
 
   // ---- Cura a un aliado (single-target) ----

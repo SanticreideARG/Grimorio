@@ -1,7 +1,0 @@
-Circular medallion icon for a dark-fantasy board game map node. TYPE: ELITE ENEMY / DANGEROUS ENCOUNTER.
-Style: aged parchment illustration, ink engraving, grim medieval fantasy. Burnt-orange and shadow tones.
-Content: a horned skull with a broken crown, or a demonic face with glowing eyes carved in stone.
-Alternatively: a sword piercing a skull, dark smoke rising, runes carved into bone.
-Feel: more dangerous than a regular fight — a champion, a monster, something that should make the player hesitate.
-Format: 512x512 PNG, transparent background, circular composition, no text, no watermark.
-Color palette: burnt orange (#8c3d10), ash grey (#5a5040), bone white (#d4c4a0), shadow black (#1a1008).

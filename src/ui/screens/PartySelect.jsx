@@ -10,6 +10,11 @@ import { assetUrl } from '../assets.js';
 const ROW_LABEL = { front: 'Frente', back: 'Retaguardia', any: 'Cualquiera' };
 const MAX = 4;
 
+function isHeroLocked(h) {
+  if (!h.unlockKey) return false;
+  return !localStorage.getItem(h.unlockKey);
+}
+
 export default function PartySelect() {
   const setParty = useGameStore((s) => s.setParty);
   const quitToMenu = useGameStore((s) => s.quitToMenu);
@@ -40,16 +45,19 @@ export default function PartySelect() {
 
       <section className="roster">
         {heroes.map((h) => {
+          const locked = isHeroLocked(h);
           const isSel = selected.includes(h.id);
           const order = selected.indexOf(h.id) + 1;
           const full = !isSel && selected.length >= MAX;
           return (
             <button
               key={h.id}
-              className={`hero-pick${isSel ? ' is-selected' : ''}${full ? ' is-disabled' : ''}`}
-              onClick={() => toggle(h.id)}
-              disabled={full}
+              className={`hero-pick${isSel ? ' is-selected' : ''}${(full || locked) ? ' is-disabled' : ''}${locked ? ' is-locked' : ''}`}
+              onClick={() => !locked && toggle(h.id)}
+              disabled={full || locked}
+              title={locked ? 'Completá la campaña en Difícil para desbloquear' : undefined}
             >
+              {locked && <span className="hero-pick__locked">🔒</span>}
               {isSel && (
                 <span className="hero-pick__order">
                   {players.length > 1

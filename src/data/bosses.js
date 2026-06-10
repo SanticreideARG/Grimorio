@@ -7,7 +7,7 @@ export const bosses = [
   {
     id: 'gulrath',
     name: 'Gulrath, el Devorador',
-    maxHp: 40, dmg: 6,
+    maxHp: 50, dmg: 6,
     behavior: 'boss', row: 'front',
     isBoss: true,
     art: 'bosses/gulrath.png',
@@ -58,7 +58,7 @@ export const bosses = [
   {
     id: 'la_tejedora',
     name: 'La Tejedora de Maldiciones',
-    maxHp: 46, dmg: 5,
+    maxHp: 56, dmg: 5,
     behavior: 'boss', row: 'back',
     isBoss: true,
     art: 'bosses/la_tejedora.png',
@@ -110,7 +110,7 @@ export const bosses = [
   {
     id: 'rey_ceniza',
     name: 'El Rey Ceniza',
-    maxHp: 56, dmg: 6,
+    maxHp: 66, dmg: 6,
     behavior: 'boss', row: 'front',
     isBoss: true,
     art: 'bosses/rey_ceniza.png',
@@ -168,7 +168,7 @@ export const bosses = [
   {
     id: 'el_devorado',
     name: 'El Devorado',
-    maxHp: 70, dmg: 7,
+    maxHp: 80, dmg: 7,
     behavior: 'boss', row: 'front',
     isBoss: true,
     art: 'bosses/el_devorado.png',

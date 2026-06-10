@@ -135,6 +135,26 @@ export const spells = [
     effect: { damage: 6, target: 'enemy', ignoreRow: true },
     icon: 'spells/flecha_pesada.png',
   },
+
+  // ---- Orphen: El Mago Oscuro ----
+  {
+    id: 'espada_luz', name: 'Espada de Luz', cost: 2, type: 'attack',
+    desc: 'Un rayo de luz atraviesa a un enemigo e impacta al que está justo detrás.',
+    effect: { damage: 5, target: 'enemy', ignoreRow: true, pierce: true },
+    icon: 'spells/espada_luz.png',
+  },
+  {
+    id: 'espada_oscura', name: 'Espada Oscura', cost: 1, type: 'attack',
+    desc: 'Golpe físico directo. Daño oscuro puro sin magia.',
+    effect: { damage: 6, target: 'enemy', ignoreRow: false },
+    icon: 'spells/espada_oscura.png',
+  },
+  {
+    id: 'azalie', name: 'Azalie', cost: 3, type: 'attack_all',
+    desc: 'Explosión arcana devastadora. 4 de daño a todos los enemigos.',
+    effect: { damage: 4, damageAll: true, ignoreRow: true, explosion: true },
+    icon: 'spells/azalie.png',
+  },
 ];
 
 export const spellsById = Object.fromEntries(spells.map((s) => [s.id, s]));

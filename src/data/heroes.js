@@ -7,11 +7,13 @@
 // `row` = fila de combate: 'front' protege a 'back' (Q-COMBATE-POS).
 
 // Juegos de caras por arquetipo (6 caras cada uno).
-const WARRIOR = [{ sword: 1 }, { sword: 1 }, { sword: 2 }, { shield: 1 }, { shield: 1 }, { star: 1 }];
-const MAGE = [{ star: 1 }, { star: 1 }, { star: 2 }, { sword: 1 }, { shield: 1 }, {}];
-const HEALER = [{ star: 1 }, { star: 1 }, { star: 2 }, { shield: 1 }, { shield: 1 }, {}];
-const ROGUE = [{ sword: 1 }, { sword: 2 }, { sword: 1 }, { star: 1 }, { shield: 1 }, {}];
-const HUNTER = [{ sword: 1 }, { sword: 1 }, { sword: 2 }, { star: 1 }, { star: 1 }, { shield: 1 }];
+const WARRIOR  = [{ sword: 1 }, { sword: 1 }, { sword: 2 }, { shield: 1 }, { shield: 1 }, { star: 1 }];
+const MAGE     = [{ star: 1 }, { star: 1 }, { star: 2 }, { sword: 1 }, { shield: 1 }, {}];
+const HEALER   = [{ star: 1 }, { star: 1 }, { star: 2 }, { shield: 1 }, { shield: 1 }, {}];
+const ROGUE    = [{ sword: 1 }, { sword: 2 }, { sword: 1 }, { star: 1 }, { shield: 1 }, {}];
+const HUNTER   = [{ sword: 1 }, { sword: 1 }, { sword: 2 }, { star: 1 }, { star: 1 }, { shield: 1 }];
+// Mago oscuro de primera línea: mezcla de espada y estrella, sin blancos.
+const DARKMAGE = [{ sword: 1 }, { sword: 2 }, { star: 1 }, { star: 1 }, { star: 2 }, {}];
 
 /** @type {import('./schema.js').Hero[]} */
 export const heroes = [
@@ -77,6 +79,17 @@ export const heroes = [
     row: 'back', spells: ['disparo_certero', 'lluvia_flechas', 'flecha_pesada'],
     passive: { id: 'ojo', text: 'Nunca falla el tiro.', hook: 'onTurnStart' },
     portrait: 'heroes/cazador.png',
+  },
+  {
+    id: 'orphen',
+    name: 'Orphen',
+    role: 'Mago Oscuro / Vanguardia',
+    maxHp: 12, maxMana: 0, dice: 3, diceFaces: DARKMAGE,
+    row: 'front', attackAnim: 'arcane',
+    spells: ['espada_luz', 'espada_oscura', 'azalie'],
+    passive: { id: 'sombra', text: 'El poder oscuro lo empuja hacia adelante.', hook: 'onTurnStart' },
+    portrait: 'heroes/orphen.png',
+    unlockKey: 'grimorio_orphen_unlocked',
   },
 ];
 

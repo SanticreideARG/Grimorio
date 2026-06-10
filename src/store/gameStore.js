@@ -432,6 +432,9 @@ export const useGameStore = create((set, get) => ({
         ...g,
         totalDoom: (g.totalDoom ?? 0) + (g.doom ?? 0),
       });
+      if (g.difficulty === 'dificil') {
+        localStorage.setItem('grimorio_orphen_unlocked', '1');
+      }
       return { ...g, ending: endingType };
     });
   },

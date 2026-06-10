@@ -118,6 +118,21 @@ function spawnCleanse(layer, at) {
   setTimeout(() => el.remove(), 850);
 }
 
+function spawnExplosion(layer, at) {
+  if (!layer) return;
+  const el = document.createElement('div');
+  el.className = 'fx-explosion';
+  el.style.left = `${at.x}px`;
+  el.style.top = `${at.y}px`;
+  el.innerHTML =
+    '<div class="fx-explosion__flash"></div>' +
+    '<div class="fx-explosion__ring" style="--i:0"></div>' +
+    '<div class="fx-explosion__ring" style="--i:1"></div>' +
+    '<div class="fx-explosion__ring" style="--i:2"></div>';
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 900);
+}
+
 function spawnArcaneCast(layer, at) {
   if (!layer) return;
   const el = document.createElement('div');
@@ -167,6 +182,17 @@ async function playHeal(layer, at, targetKey) {
   spawnHeal(layer, at);
   flash(targetKey, 'is-healing', 820);
   await wait(720);
+}
+
+async function playExplosion(layer, targets) {
+  if (!targets?.length) return;
+  for (const uid of targets) {
+    const at = getCenter(uid);
+    if (at) spawnExplosion(layer, at);
+    flash(uid, 'is-hit', 500);
+    await wait(50);
+  }
+  await wait(850);
 }
 
 async function playAoe(layer, from, targets) {
@@ -221,6 +247,10 @@ export async function playEvent(layer, e) {
   }
 
   // AoE — múltiples objetivos, no usa e.target
+  if (e.anim === 'explosion') {
+    await playExplosion(layer, e.targets);
+    return;
+  }
   if (e.anim === 'aoe') {
     const from = e.source ? getCenter(e.source) : null;
     await playAoe(layer, from, e.targets);
@@ -253,7 +283,9 @@ export async function playEvent(layer, e) {
     flash(e.target, 'is-hit', 340);
     return;
   }
-  if (e.anim === 'ranged') {
+  if (e.anim === 'laser') {
+    await playRanged(layer, from, to, e.target, 'laser');
+  } else if (e.anim === 'ranged') {
     const variant = (e.kind === 'spell' || e.arcane) ? 'arcane' : 'arrow';
     await playRanged(layer, from, to, e.target, variant);
   } else {

@@ -1,7 +1,0 @@
-Circular medallion icon for a dark-fantasy board game map node. TYPE: START / BEGINNING.
-Style: aged parchment illustration, ink engraving, grim medieval fantasy. Warm sepia and forest-green tones.
-Content: a weathered wooden signpost or a raised banner with a fleur-de-lis, crossed by two worn roads.
-Alternatively: a compass rose etched in bronze on dark stone, surrounded by carved runes.
-Feel: hopeful but ominous — the journey begins, but darkness awaits.
-Format: 512x512 PNG, transparent background, circular composition, no text, no watermark.
-Color palette: deep forest green (#2a5c2a), aged bone (#c8b48a), dark iron (#3a3028).

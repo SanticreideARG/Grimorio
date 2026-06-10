@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useGameStore } from '../store/gameStore.js';
 import { DIFFICULTIES } from '../core/state.js';
 import { script } from '../data/script.js';
-import { menuBg } from '../data/mapImages.js';
+import { menuBg, aboutBg } from '../data/mapImages.js';
 import SlotCard from './components/SlotCard.jsx';
 import MapScreen from './screens/MapScreen.jsx';
 import PartySelect from './screens/PartySelect.jsx';
@@ -22,6 +22,7 @@ export default function App() {
 
   const [difficulty, setDifficulty] = useState('normal');
   const [playerCount, setPlayerCount] = useState(1);
+  const [showAbout, setShowAbout] = useState(false);
 
   // Audio — se inicializa una sola vez aquí para toda la app
   const { muted, toggleMuted } = useAudio();
@@ -108,8 +109,15 @@ export default function App() {
           ))}
         </section>
 
-        <footer className="footnote">GRIMORIO · v0.1.0</footer>
+        <footer className="footnote">
+          <span>GRIMORIO · v1.0</span>
+          <button className="btn btn--ghost btn--xs about-btn" onClick={() => setShowAbout(true)}>
+            Acerca de este juego
+          </button>
+        </footer>
       </div>
+
+      {showAbout && <AboutScreen onClose={() => setShowAbout(false)} />}
     </main>
   );
 }
@@ -123,6 +131,43 @@ function Header() {
         <span className="ln" />✦<span className="ln r" />
       </div>
     </header>
+  );
+}
+
+// ── Pantalla "Acerca de" ─────────────────────────────────────────────────
+
+function AboutScreen({ onClose }) {
+  return (
+    <div className="about-overlay">
+      {aboutBg && <div className="about-bg" style={{ backgroundImage: `url(${aboutBg})` }} />}
+      <div className="about-overlay__dark" />
+      <div className="about-content">
+        <div className="about-orn">✦</div>
+        <h2 className="about-title">GRIMORIO</h2>
+        <p className="about-subtitle">Un juego cooperativo de rol y fantasía oscura por turnos</p>
+        <div className="about-divider" />
+        <dl className="about-data">
+          <dt>Autor</dt>
+          <dd>Santiago Creide</dd>
+          <dt>Finalización</dt>
+          <dd>Junio de 2026</dd>
+          <dt>Versión</dt>
+          <dd>1.0</dd>
+        </dl>
+        <div className="about-divider" />
+        <a
+          className="about-link"
+          href="https://santiagocreide.netlify.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          santiagocreide.netlify.app ↗
+        </a>
+        <button className="btn btn--ghost about-back" onClick={onClose}>
+          ← Volver al menú
+        </button>
+      </div>
+    </div>
   );
 }
 

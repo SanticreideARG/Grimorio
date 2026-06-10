@@ -6,7 +6,7 @@
 // .png faltante sin tocar los datos (el id es lo que importa, no la extensión).
 
 const modules = import.meta.glob(
-  '../../assets/img/**/*.{png,jpg,jpeg,webp,gif}',
+  '../../assets/img/**/*.{png,jpg,jpeg,webp,gif,svg}',
   { eager: true, import: 'default' },
 );
 

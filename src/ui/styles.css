@@ -1599,6 +1599,43 @@ body {
   background: radial-gradient(circle, rgba(255, 225, 170, 0.95) 0%, rgba(178, 53, 34, 0.6) 45%, transparent 72%);
 }
 
+/* Canalización arcana (estrella sobre el lanzador) */
+.fx-arcane-cast {
+  position: absolute;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+.fx-arcane-cast__star {
+  position: absolute;
+  font-size: 16px;
+  color: #f5d06e;
+  text-shadow: 0 0 6px #ffd700, 0 0 14px rgba(255, 200, 0, 0.8);
+  transform: translate(-50%, -50%);
+  animation: arcane-cast-star 0.65s ease-out forwards;
+  animation-delay: calc(var(--i) * 90ms);
+  opacity: 0;
+}
+.fx-arcane-cast__ring {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid rgba(245, 208, 110, 0.85);
+  box-shadow: 0 0 10px rgba(245, 208, 110, 0.5);
+  transform: translate(-50%, -50%) scale(0.2);
+  animation: arcane-cast-ring 0.5s ease-out forwards;
+}
+@keyframes arcane-cast-star {
+  0%   { transform: translate(-50%, -50%) scale(0.4); opacity: 0.9; }
+  55%  { transform: translate(-50%, calc(-50% - 18px)) scale(1.1); opacity: 1; }
+  100% { transform: translate(-50%, calc(-50% - 32px)) scale(0.5); opacity: 0; }
+}
+@keyframes arcane-cast-ring {
+  0%   { transform: translate(-50%, -50%) scale(0.2); opacity: 0.9; }
+  100% { transform: translate(-50%, -50%) scale(2.2); opacity: 0; }
+}
+
 /* Curación */
 .fx-heal {
   position: absolute;

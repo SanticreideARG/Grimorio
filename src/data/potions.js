@@ -13,6 +13,23 @@ export const potions = [
     desc: 'Restaura 6 de vida a un héroe en combate.',
     icon: 'potions/vida_menor.png',
   },
+  {
+    id: 'pocion_mana',
+    name: 'Poción de Maná',
+    type: 'energy',
+    power: 1,
+    price: 10,
+    desc: 'Restaura 1⭐ de energía a un héroe en combate.',
+    icon: 'potions/pocion_mana.png',
+  },
+  {
+    id: 'antidoto',
+    name: 'Antídoto',
+    type: 'cleanse',
+    price: 10,
+    desc: 'Elimina todos los estados alterados de un héroe.',
+    icon: 'potions/antidoto.png',
+  },
 ];
 
 export const potionsById = Object.fromEntries(potions.map((p) => [p.id, p]));

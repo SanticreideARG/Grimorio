@@ -36,6 +36,7 @@ function faceToText(face) {
 export default function CombatScreen() {
   const combat = useGameStore((s) => s.game.combat);
   const potionBag = useGameStore((s) => s.game.potionBag ?? {});
+  const chapterIndex = useGameStore((s) => s.game?.chapterIndex ?? 0);
   const players = useGameStore((s) => s.game?.players ?? ['Jugador 1']);
   const roll = useGameStore((s) => s.combatRoll);
   const attack = useGameStore((s) => s.combatAttack);
@@ -146,8 +147,15 @@ export default function CombatScreen() {
     );
   };
 
+  const maxSpells = chapterIndex === 0 ? 1 : chapterIndex === 1 ? 2 : Infinity;
+
   const hint = () => {
-    if (targetingPotion) return 'Elegí un héroe para usar la poción.';
+    if (targetingPotion) {
+      const pot = content.potionsById?.[targetingPotion.potionId];
+      if (pot?.type === 'cleanse') return 'Elegí un aliado a purificar.';
+      if (pot?.type === 'energy') return 'Elegí un aliado para restaurar energía.';
+      return 'Elegí un héroe para usar la poción.';
+    }
     if (targetingSpell?.effect?.heal) return 'Elegí un aliado a curar.';
     if (targetingSpell?.effect?.shieldAlly) return 'Elegí un aliado para proteger.';
     if (targetingSpell?.effect?.cleanse) return 'Elegí un aliado a purificar.';
@@ -223,7 +231,7 @@ export default function CombatScreen() {
                 )}
 
                 <div className="spell-bar">
-                  {hero.spells.map((sid) => {
+                  {hero.spells.slice(0, maxSpells).map((sid) => {
                     const sp = content.spellsById[sid];
                     if (!sp) return null;
                     const usable = hero.energy >= sp.cost;

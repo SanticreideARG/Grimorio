@@ -18,9 +18,9 @@ import { applyCurse, tickCurses, spellsBlocked, cleanseCurses } from './curses.j
 const clone = (o) => JSON.parse(JSON.stringify(o));
 
 const DIFF = {
-  facil: { hp: 0.85, dmg: 0.85, loot: 0.85 },
-  normal: { hp: 1, dmg: 1, loot: 1 },
-  dificil: { hp: 1.2, dmg: 1.2, loot: 1.3 },
+  facil:   { hp: 1.105, dmg: 0.85, loot: 0.85 },
+  normal:  { hp: 1.3,   dmg: 1,    loot: 1    },
+  dificil: { hp: 1.56,  dmg: 1.2,  loot: 1.3  },
 };
 
 // ---------- Construcción ----------
@@ -35,6 +35,7 @@ function makeHeroInstance(hero, st = {}) {
     id: hero.id, name: hero.name, role: hero.role,
     maxHp, hp,
     row: hero.row ?? 'front',
+    attackAnim: hero.attackAnim ?? null,
     dice, diceFaces,
     spells: hero.spells ?? [],
     portrait: hero.portrait ?? null,
@@ -207,6 +208,7 @@ export function heroAttack(combat, enemyUid) {
   h.pool.sword = 0;
   pushLog(c, 'attack', `${h.name} golpea a ${target.name} por ${dmg}.`, {
     anim: hitAnim(h), source: h.id, target: target.uid,
+    ...(h.attackAnim === 'arcane' && { arcane: true }),
   });
   return checkEnd(c);
 }
@@ -335,6 +337,22 @@ export function usePotionOnHero(combat, potionId, targetHeroId) {
     pushLog(c, 'potion', `${c.heroes[idx].name} bebe ${potion.name} (+${gained} HP).`, {
       anim: 'heal', source: c.heroes[idx].id, target: c.heroes[idx].id,
     });
+  }
+  if (potion.type === 'energy') {
+    const gain = potion.power ?? 1;
+    c.heroes[idx].energy += gain;
+    pushLog(c, 'potion', `${c.heroes[idx].name} bebe ${potion.name} (+${gain}⭐).`, {
+      anim: 'shield', source: c.heroes[idx].id, target: c.heroes[idx].id,
+    });
+  }
+  if (potion.type === 'cleanse') {
+    const count = (c.heroes[idx].curses ?? []).length;
+    const cleaned = cleanseCurses(c.heroes[idx]);
+    c.heroes[idx] = cleaned;
+    const txt = count > 0
+      ? `${cleaned.name} bebe ${potion.name}: ${count} maldición${count > 1 ? 'es' : ''} eliminada${count > 1 ? 's' : ''}.`
+      : `${cleaned.name} bebe ${potion.name} (sin estados alterados).`;
+    pushLog(c, 'potion', txt, { anim: 'cleanse', source: cleaned.id, target: cleaned.id });
   }
   return c;
 }

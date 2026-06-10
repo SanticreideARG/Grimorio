@@ -42,6 +42,7 @@ export const cap4 = {
     { id: 'c4n12', type: 'combat', name: 'El Borde de la Nada',     pos: { x: 85, y: 58 }, enemies: ['desgarrador', 'abisal', 'heraldo_grieta'] },
     // Fila D (der→izq)
     { id: 'c4n13', type: 'rest',   name: 'El Silencio Final',       pos: { x: 85, y: 80 } },
+    { id: 'c4n15', type: 'shop',   name: 'El Último Mercader',      pos: { x: 50, y: 80 } },
     { id: 'c4n14', type: 'boss',   name: 'EL DEVORADO',             pos: { x: 15, y: 80 }, enemies: ['el_devorado', 'desgarrador', 'heraldo_grieta'] },
   ],
 };

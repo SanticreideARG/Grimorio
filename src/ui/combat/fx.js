@@ -118,6 +118,21 @@ function spawnCleanse(layer, at) {
   setTimeout(() => el.remove(), 850);
 }
 
+function spawnArcaneCast(layer, at) {
+  if (!layer) return;
+  const el = document.createElement('div');
+  el.className = 'fx-arcane-cast';
+  el.style.left = `${at.x}px`;
+  el.style.top = `${at.y}px`;
+  el.innerHTML =
+    '<span class="fx-arcane-cast__star" style="--i:0">✦</span>' +
+    '<span class="fx-arcane-cast__star" style="--i:1">★</span>' +
+    '<span class="fx-arcane-cast__star" style="--i:2">✦</span>' +
+    '<div class="fx-arcane-cast__ring"></div>';
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 750);
+}
+
 // ---------- Reproductores por tipo ----------
 
 async function playMelee(layer, from, to, sourceKey, targetKey) {
@@ -199,6 +214,12 @@ async function playCleanseAnim(layer, at, targetKey) {
 export async function playEvent(layer, e) {
   if (prefersReduced()) return;
 
+  // Efecto de canalización arcana sobre el lanzador (no bloqueante)
+  if (e.kind === 'spell' && e.source) {
+    const srcAt = getCenter(e.source);
+    if (srcAt) spawnArcaneCast(layer, srcAt);
+  }
+
   // AoE — múltiples objetivos, no usa e.target
   if (e.anim === 'aoe') {
     const from = e.source ? getCenter(e.source) : null;
@@ -233,7 +254,7 @@ export async function playEvent(layer, e) {
     return;
   }
   if (e.anim === 'ranged') {
-    const variant = e.kind === 'spell' ? 'arcane' : 'arrow';
+    const variant = (e.kind === 'spell' || e.arcane) ? 'arcane' : 'arrow';
     await playRanged(layer, from, to, e.target, variant);
   } else {
     await playMelee(layer, from, to, e.source, e.target);

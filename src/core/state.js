@@ -6,7 +6,7 @@
 import { randomSeed } from './rng.js';
 
 /** Versión del formato de save. Subir al cambiar la forma del estado. */
-export const SAVE_VERSION = 5;
+export const SAVE_VERSION = 6;
 
 /** Dificultades soportadas (Q-DIFICULTAD). */
 export const DIFFICULTIES = Object.freeze(['facil', 'normal', 'dificil']);
@@ -45,6 +45,7 @@ export function createNewGame(opts = {}) {
     combat: null, // estado de combate activo (M2), o null fuera de combate
     chapterIndex: 0, // capítulo actual (0..3)
     nodeIndex: 0, // nodo actual dentro del capítulo
+    checkpointNodeIndex: null, // último nodo de descanso resuelto (null = inicio)
     visited: [], // ids de nodos ya resueltos
 
     // Party persistente (M3/M4)
@@ -115,6 +116,12 @@ export function migrate(save) {
       }
     }
     s.version = 5;
+  }
+
+  // v5 → v6: campo checkpointNodeIndex para sistema de puntos de reaparición.
+  if (!(s.version >= 6)) {
+    s.checkpointNodeIndex = s.checkpointNodeIndex ?? null;
+    s.version = 6;
   }
 
   if (typeof s.version !== 'number') s.version = SAVE_VERSION;

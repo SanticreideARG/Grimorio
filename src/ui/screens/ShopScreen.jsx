@@ -29,6 +29,14 @@ export default function ShopScreen() {
         <span className="shop-header__gold">🪙 {game.gold}</span>
       </header>
 
+      {node?.greeting && (
+        <blockquote className="shop-greeting">
+          {node.greeting.split('\n\n').map((para, i) => (
+            <p key={i}>{para}</p>
+          ))}
+        </blockquote>
+      )}
+
       <div className="shop-body">
         <section className="shop-section">
           <h2 className="shop-section__title">Equipo (mejoras permanentes)</h2>

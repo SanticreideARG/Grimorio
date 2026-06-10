@@ -277,10 +277,32 @@ export const useGameStore = create((set, get) => ({
     bus.emit(EVENTS.COMBAT_END, { result: 'victory' });
   },
 
-  /** Derrota: reintenta el mismo combate restaurando la vida de entrada. */
+  /** Derrota: respawnea en el último checkpoint con penalización de oro. */
   retryCombat() {
     const { game } = get();
     if (!game?.combat) return;
+
+    if (game.combat.phase === 'defeat') {
+      const GOLD_LOSS = { facil: 0.15, normal: 0.25, dificil: 0.35 };
+      const lossFrac = GOLD_LOSS[game.difficulty] ?? 0.25;
+      const goldLost = Math.floor((game.gold ?? 0) * lossFrac);
+      const checkpointIdx = game.checkpointNodeIndex ?? 0;
+      get().patchGame((g) => {
+        const healed = restParty(g, null);
+        return {
+          ...healed,
+          gold: Math.max(0, (healed.gold ?? 0) - goldLost),
+          nodeIndex: checkpointIdx,
+          combat: null,
+          combatEntryHp: null,
+          view: 'map',
+        };
+      });
+      bus.emit(EVENTS.COMBAT_END, { result: 'defeat' });
+      return;
+    }
+
+    // Fuera de derrota: reintenta el mismo combate (no debería ocurrir normalmente)
     const node = getCurrentNode(game);
     const restored = { ...game, partyHp: { ...(game.combatEntryHp ?? game.partyHp ?? {}) } };
     const combat = initCombat({
@@ -295,6 +317,11 @@ export const useGameStore = create((set, get) => ({
 
   /** Abandona el combate y vuelve al mapa (el nodo queda sin resolver). */
   abandonCombat() {
+    const { game } = get();
+    if (game?.combat?.phase === 'defeat') {
+      get().retryCombat();
+      return;
+    }
     get().patchGame((g) => ({ ...g, combat: null, view: 'map' }));
     bus.emit(EVENTS.COMBAT_END, { result: 'abandon' });
   },
@@ -327,16 +354,16 @@ export const useGameStore = create((set, get) => ({
 
   // ---------- Progresión y campamento (M4) ----------
 
-  /** Nodo de descanso: cura a la party y marca el nodo resuelto. */
+  /** Nodo de descanso: cura la party, guarda checkpoint y marca el nodo resuelto. */
   rest() {
     const { game } = get();
     if (game == null) return;
     const node = getCurrentNode(game);
     if (!node) return;
     get().patchGame((g) => {
-      // Descanso: cura el 40% de la vida máxima de cada héroe (Q-PROGRESION).
       const healed = restPartyFraction(g, 0.4);
-      return markNodeResolved(healed, node, `Descanso en ${node.name}. La party recupera fuerzas.`);
+      const withCheckpoint = { ...healed, checkpointNodeIndex: g.nodeIndex };
+      return markNodeResolved(withCheckpoint, node, `Descanso en ${node.name}. La party recupera fuerzas.`);
     });
     bus.emit(EVENTS.REST_TAKEN, {});
   },

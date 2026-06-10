@@ -1961,6 +1961,21 @@ body {
   font-size: 18px;
   color: var(--amber-lt);
 }
+.shop-greeting {
+  margin: 0 0 4px;
+  padding: 14px 20px;
+  border-left: 3px solid var(--amber);
+  background: rgba(201, 145, 63, 0.06);
+  font-style: italic;
+  color: var(--amber-lt);
+  line-height: 1.65;
+}
+.shop-greeting p {
+  margin: 0 0 8px;
+}
+.shop-greeting p:last-child {
+  margin: 0;
+}
 .shop-body {
   display: flex;
   flex-direction: column;

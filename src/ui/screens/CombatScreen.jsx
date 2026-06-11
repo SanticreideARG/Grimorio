@@ -475,6 +475,27 @@ function EnemyCard({ e, bark, clickable, onClick, onOpenDetail }) {
   );
 }
 
+function CurseIcons({ curses }) {
+  if (!curses?.length) return null;
+  return (
+    <div className="unit__curses">
+      {curses.map((c) => {
+        const def = content.cursesById?.[c.id];
+        const iconUrl = def?.icon ? assetUrl(def.icon) : null;
+        return (
+          <span key={`${c.id}-${c.turnsLeft}`} className="unit__curse-icon"
+            title={`${c.name} (${c.turnsLeft} turno${c.turnsLeft !== 1 ? 's' : ''})`}>
+            {iconUrl
+              ? <img src={iconUrl} alt={c.name} />
+              : <span>{c.name[0]}</span>
+            }
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
 function HeroCard({ h, bark, active, clickable, selectable, onClick, onOpenDetail }) {
   const cls = [
     'unit unit--hero',
@@ -494,7 +515,10 @@ function HeroCard({ h, bark, active, clickable, selectable, onClick, onOpenDetai
         disabled={!clickable && !selectable}
       >
         {!h.down && <SpeechBubble bark={bark} />}
-        <UnitArt src={h.portrait ?? `heroes/${h.id}.png`} alt={h.name} fallback={h.name[0]} />
+        <div className="unit__art-wrap">
+          <UnitArt src={h.portrait ?? `heroes/${h.id}.png`} alt={h.name} fallback={h.name[0]} />
+          <CurseIcons curses={h.curses} />
+        </div>
         <span className="unit__name">{h.name.split(' ')[0]}</span>
         <HpBar hp={h.hp} maxHp={h.maxHp} kind="hero" />
         <span className="unit__meta">
@@ -502,18 +526,6 @@ function HeroCard({ h, bark, active, clickable, selectable, onClick, onOpenDetai
           {active && h.energy > 0 && <span className="chip chip--energy">⭐{h.energy}</span>}
           {h.down && <span className="chip chip--down">caído</span>}
           {h.hasRolled && !h.down && !active && <span className="chip chip--done">✓</span>}
-          {(h.curses ?? []).map((c) => {
-            const curseData = content.cursesById?.[c.id];
-            const curseIconUrl = curseData?.icon ? assetUrl(curseData.icon) : null;
-            return (
-              <span key={c.id} className="chip chip--curse" title={`${c.name} (${c.duration ?? '?'} turnos)`}>
-                {curseIconUrl
-                  ? <img className="chip__icon" src={curseIconUrl} alt={c.name} />
-                  : c.name[0]
-                }
-              </span>
-            );
-          })}
         </span>
       </button>
       <button className="unit__info-btn" tabIndex={-1} aria-label="Ver detalles" onClick={(ev) => { ev.stopPropagation(); onOpenDetail?.(h); }}>ⓘ</button>

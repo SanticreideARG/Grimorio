@@ -191,11 +191,13 @@ export const useGameStore = create((set, get) => ({
     bus.emit(EVENTS.HERO_ROLL, { heroId: game.combat.heroes[game.combat.activeHeroIndex]?.id });
   },
 
-  /** El héroe activo ataca con espadas a un enemigo. */
+  /** El héroe activo ataca con espadas a un enemigo (consume RNG para miss/crit). */
   combatAttack(enemyUid) {
     const { game } = get();
     if (!game?.combat) return;
-    get().patchGame((g) => ({ ...g, combat: heroAttack(g.combat, enemyUid) }));
+    const rng = createRng(game.rngState);
+    const combat = heroAttack(game.combat, enemyUid, rng);
+    get().patchGame((g) => ({ ...g, combat, rngState: rng.getState() }));
     bus.emit(EVENTS.HERO_ATTACK, { heroId: game.combat.heroes[game.combat.activeHeroIndex]?.id, targetUid: enemyUid });
   },
 

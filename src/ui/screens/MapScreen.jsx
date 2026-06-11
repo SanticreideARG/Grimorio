@@ -23,9 +23,11 @@ import { getNodeNarration } from '../../data/narrative.js';
 import { assetUrl } from '../assets.js';
 import BoardMap from '../components/BoardMap.jsx';
 import Coin from '../components/Coin.jsx';
+import CardDetailModal from '../components/CardDetailModal.jsx';
 
 export default function MapScreen() {
   const game = useGameStore((s) => s.game);
+  const [detailPet, setDetailPet] = useState(null);
   const resolveNode = useGameStore((s) => s.resolveNode);
   const advanceNode = useGameStore((s) => s.advanceNode);
   const startCombat = useGameStore((s) => s.startCombat);
@@ -82,7 +84,7 @@ export default function MapScreen() {
         </div>
       </header>
 
-      {/* Estado de la party (vida persistente) */}
+      {/* Estado de la party (vida persistente) + mascotas */}
       <div className="party-status">
         {(game.party ?? []).map((id) => {
           const hero = content.heroesById[id];
@@ -100,6 +102,28 @@ export default function MapScreen() {
             </span>
           );
         })}
+        {(game.pets ?? []).length > 0 && (
+          <div className="party-status__pets">
+            {(game.pets ?? []).map((petId) => {
+              const pet = content.petsById[petId];
+              if (!pet) return null;
+              const artUrl = pet.art ? assetUrl(pet.art) : null;
+              return (
+                <button
+                  key={petId}
+                  className="party-status__pet"
+                  title={pet.name}
+                  onClick={() => setDetailPet(pet)}
+                >
+                  {artUrl
+                    ? <img className="party-status__pet-art" src={artUrl} alt={pet.name} />
+                    : <span className="party-status__pet-label">{pet.name[0]}</span>
+                  }
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       <div className="map-body">
@@ -157,6 +181,10 @@ export default function MapScreen() {
           </div>
         </aside>
       </div>
+
+      {detailPet && (
+        <CardDetailModal unit={detailPet} type="pet" onClose={() => setDetailPet(null)} />
+      )}
 
       {/* Final de capítulo */}
       {complete && (

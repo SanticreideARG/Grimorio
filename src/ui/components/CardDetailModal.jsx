@@ -11,6 +11,25 @@ const BEHAVIOR_LABEL = {
   boss:    'Jefe',
 };
 
+function getCardbackPath(type, unit) {
+  if (type === 'enemy') return unit?.isBoss ? 'cardbacks/bosses.png' : 'cardbacks/enemies.png';
+  const MAP = {
+    hero:   'cardbacks/heroes.png',
+    item:   'cardbacks/botin.png',
+    potion: 'cardbacks/botin.png',
+    pet:    'cardbacks/mascotas.png',
+  };
+  return MAP[type] ?? 'cardbacks/heroes.png';
+}
+
+function faceLabel(f) {
+  if (!f || !Object.keys(f).length) return '·';
+  if (f.sword)  return `🗡️${f.sword > 1 ? f.sword : ''}`;
+  if (f.shield) return `🛡️${f.shield > 1 ? f.shield : ''}`;
+  if (f.star)   return `⭐${f.star > 1 ? f.star : ''}`;
+  return '·';
+}
+
 export default function CardDetailModal({ unit, type, onClose }) {
   const [flipped, setFlipped] = useState(false);
 
@@ -25,7 +44,7 @@ export default function CardDetailModal({ unit, type, onClose }) {
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
 
-  const cardbackUrl = assetUrl('cardbacks/heroes.png');
+  const cardbackUrl = assetUrl(getCardbackPath(type, unit));
 
   return (
     <div className="card-detail-overlay" onClick={onClose}>
@@ -42,16 +61,18 @@ export default function CardDetailModal({ unit, type, onClose }) {
           </div>
           <div className="card-detail-flip__back">
             <button className="card-detail__close" onClick={onClose} aria-label="Cerrar">✕</button>
-            {type === 'hero'
-              ? <HeroDetail unit={unit} />
-              : <EnemyDetail unit={unit} />
-            }
+            {type === 'hero'   && <HeroDetail unit={unit} />}
+            {type === 'enemy'  && <EnemyDetail unit={unit} />}
+            {(type === 'item' || type === 'potion') && <LootDetail unit={unit} />}
+            {type === 'pet'    && <PetDetail unit={unit} />}
           </div>
         </div>
       </div>
     </div>
   );
 }
+
+// ── Hero ────────────────────────────────────────────────────────────────────
 
 function HeroDetail({ unit }) {
   const hero = content.heroesById[unit.id] ?? unit;
@@ -119,8 +140,10 @@ function HeroDetail({ unit }) {
   );
 }
 
+// ── Enemy ───────────────────────────────────────────────────────────────────
+
 function EnemyDetail({ unit }) {
-  const base = content.enemiesById[unit.id] ?? unit;
+  const base = content.enemiesById[unit.id] ?? content.bossesById?.[unit.id] ?? unit;
   const isBoss = unit.isBoss ?? false;
   const artUrl = assetUrl(unit.art ?? `enemies/${unit.id}.png`);
   const summonedName = base.summons ? (content.enemiesById[base.summons]?.name ?? base.summons) : null;
@@ -175,6 +198,83 @@ function EnemyDetail({ unit }) {
             )}
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+// ── Loot (items & potions) ──────────────────────────────────────────────────
+
+function LootDetail({ unit }) {
+  const iconUrl = unit.icon ? assetUrl(unit.icon) : null;
+
+  return (
+    <div className="card-detail__content card-detail__content--loot">
+      <div className="card-detail__loot-icon">
+        {iconUrl
+          ? <img src={iconUrl} alt={unit.name} />
+          : <span className="card-detail__portrait-fallback">{unit.name[0]}</span>
+        }
+      </div>
+      <div className="card-detail__loot-name">{unit.name}</div>
+      {unit.price != null && (
+        <span className="card-detail__price">💰 {unit.price} de oro</span>
+      )}
+
+      <div className="card-detail__body card-detail__body--loot">
+        <p className="card-detail__lore">{unit.desc}</p>
+
+        {unit.mod?.upgradeFace && (
+          <div className="card-detail__passive">
+            <span className="card-detail__section-label">Mejora de dado</span>
+            <span className="card-detail__passive-text">
+              {faceLabel(unit.mod.upgradeFace.from)} → {faceLabel(unit.mod.upgradeFace.to)}
+            </span>
+          </div>
+        )}
+        {unit.mod?.dice && (
+          <div className="card-detail__passive">
+            <span className="card-detail__passive-text">
+              +{unit.mod.dice} dado{unit.mod.dice > 1 ? 's' : ''} al pool
+            </span>
+          </div>
+        )}
+        {unit.mod?.maxHp && (
+          <div className="card-detail__passive">
+            <span className="card-detail__passive-text">+{unit.mod.maxHp} HP máximo</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Pet ─────────────────────────────────────────────────────────────────────
+
+function PetDetail({ unit: pet }) {
+  const artUrl = pet.art ? assetUrl(pet.art) : null;
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <div className={`card-detail__content${hovered ? ' is-portrait-hover' : ''}`}>
+      <div
+        className="card-detail__portrait"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        {artUrl
+          ? <img src={artUrl} alt={pet.name} className="card-detail__portrait-img" />
+          : <span className="card-detail__portrait-fallback">{pet.name[0]}</span>
+        }
+        <div className="card-detail__portrait-vignette" />
+        <div className="card-detail__portrait-name">
+          <span className="card-detail__name">{pet.name}</span>
+          <span className="card-detail__badge card-detail__badge--pet">Compañero</span>
+        </div>
+      </div>
+
+      <div className="card-detail__body">
+        <p className="card-detail__lore">{pet.desc}</p>
       </div>
     </div>
   );

@@ -14,7 +14,7 @@
 export const spells = [
   // ---- Guerrera: Brenna la Quebrantahuesos ----
   {
-    id: 'golpe_escudo', name: 'Golpe de Escudo', cost: 1, type: 'attack',
+    id: 'golpe_escudo', name: 'Golpe de Escudo', cost: 2, type: 'attack',
     desc: '2 de daño a un enemigo y ganás 2 de bloqueo.',
     effect: { damage: 2, block: 2, target: 'enemy' },
     icon: 'spells/golpe_escudo.png',
@@ -69,8 +69,8 @@ export const spells = [
   // ---- Mago: Veyra de la Llama ----
   {
     id: 'bola_fuego', name: 'Bola de Fuego', cost: 2, type: 'attack',
-    desc: '5 de daño a un enemigo (alcance arcano).',
-    effect: { damage: 5, target: 'enemy', ignoreRow: true },
+    desc: '3 de daño a un enemigo (alcance arcano).',
+    effect: { damage: 3, target: 'enemy', ignoreRow: true },
     icon: 'spells/bola_fuego.png',
   },
   {
@@ -98,7 +98,7 @@ export const spells = [
 
   // ---- Pícara: Nix ----
   {
-    id: 'golpe_furtivo', name: 'Golpe Furtivo', cost: 1, type: 'attack',
+    id: 'golpe_furtivo', name: 'Golpe Furtivo', cost: 2, type: 'attack',
     desc: '3 de daño a cualquier enemigo (ataca la retaguardia).',
     effect: { damage: 3, target: 'enemy', ignoreRow: true },
     icon: 'spells/golpe_furtivo.png',
@@ -131,8 +131,8 @@ export const spells = [
   },
   {
     id: 'flecha_pesada', name: 'Flecha Pesada', cost: 2, type: 'attack',
-    desc: '6 de daño a un enemigo a distancia.',
-    effect: { damage: 6, target: 'enemy', ignoreRow: true },
+    desc: '4 de daño a un enemigo a distancia.',
+    effect: { damage: 4, target: 'enemy', ignoreRow: true },
     icon: 'spells/flecha_pesada.png',
   },
 
@@ -146,7 +146,7 @@ export const spells = [
   {
     id: 'espada_oscura', name: 'Espada Oscura', cost: 1, type: 'attack',
     desc: 'Golpe físico directo. Daño oscuro puro sin magia.',
-    effect: { damage: 6, target: 'enemy', ignoreRow: false },
+    effect: { damage: 4, target: 'enemy', ignoreRow: false },
     icon: 'spells/espada_oscura.png',
   },
   {

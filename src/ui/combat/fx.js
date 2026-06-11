@@ -236,9 +236,82 @@ async function playCleanseAnim(layer, at, targetKey) {
   await wait(700);
 }
 
+// ---------- Texto flotante (miss / crit / dot) ----------
+
+function spawnFloatingText(layer, at, text, cls) {
+  if (!layer) return;
+  const el = document.createElement('div');
+  el.className = `fx-float ${cls}`;
+  el.style.left = `${at.x}px`;
+  el.style.top  = `${at.y}px`;
+  el.textContent = text;
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 950);
+}
+
+function spawnCritBurst(layer, at) {
+  if (!layer) return;
+  const el = document.createElement('div');
+  el.className = 'fx-crit-burst';
+  el.style.left = `${at.x}px`;
+  el.style.top  = `${at.y}px`;
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 650);
+}
+
+async function playMissAnim(layer, at, targetKey) {
+  spawnFloatingText(layer, at, 'FALLA', 'fx-float--miss');
+  flash(targetKey, 'is-miss', 420);
+  await wait(520);
+}
+
+async function playCritAnim(layer, e) {
+  const to   = getCenter(e.target);
+  const from = e.source ? getCenter(e.source) : null;
+  if (!to) return;
+  if (from) {
+    if (e.variant === 'melee') {
+      await playMelee(layer, from, to, e.source, e.target);
+    } else {
+      const variant = e.arcane ? 'arcane' : 'arrow';
+      await playRanged(layer, from, to, e.target, variant);
+    }
+  }
+  spawnFloatingText(layer, to, '¡CRÍTICO!', 'fx-float--crit');
+  spawnCritBurst(layer, to);
+  flash(e.target, 'is-crit', 500);
+  await wait(500);
+}
+
+async function playDotAnim(layer, at, targetKey) {
+  spawnFloatingText(layer, at, '🩸', 'fx-float--dot');
+  flash(targetKey, 'is-dot', 380);
+  await wait(480);
+}
+
 /** Reproduce una entrada de log con animación. Resuelve cuando termina. */
 export async function playEvent(layer, e) {
   if (prefersReduced()) return;
+
+  // Miss
+  if (e.anim === 'miss') {
+    const to = getCenter(e.target);
+    if (to) await playMissAnim(layer, to, e.target);
+    return;
+  }
+
+  // Crítico
+  if (e.anim === 'crit') {
+    await playCritAnim(layer, e);
+    return;
+  }
+
+  // Daño por turno (dotDamage: sangría / veneno)
+  if (e.anim === 'dot') {
+    const at = getCenter(e.target);
+    if (at) await playDotAnim(layer, at, e.target);
+    return;
+  }
 
   // Efecto de canalización arcana sobre el lanzador (no bloqueante)
   if (e.kind === 'spell' && e.source) {

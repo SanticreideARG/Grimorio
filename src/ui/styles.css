@@ -3047,3 +3047,105 @@ body {
   border-top: 1px solid rgba(201, 145, 63, 0.1);
   border-bottom: 1px solid rgba(201, 145, 63, 0.1);
 }
+
+/* Pet badge */
+.card-detail__badge--pet {
+  background: rgba(40, 150, 80, 0.25);
+  color: #80ffaa;
+  border: 1px solid rgba(40, 150, 80, 0.4);
+}
+
+/* ===== Loot card detail (items / potions) ===== */
+.card-detail__content--loot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 28px 16px 16px;
+  gap: 10px;
+  height: 100%;
+}
+
+.card-detail__loot-icon {
+  width: 88px;
+  height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: radial-gradient(circle at 40% 30%, rgba(60, 40, 10, 0.8), rgba(20, 10, 5, 0.9));
+  border: 2px solid rgba(201, 145, 63, 0.35);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 220, 100, 0.1);
+  flex-shrink: 0;
+}
+
+.card-detail__loot-icon img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.6));
+}
+
+.card-detail__loot-name {
+  font-size: 17px;
+  font-weight: bold;
+  color: var(--amber-lt, #e8c060);
+  font-family: var(--font-title, 'MedievalSharp', serif);
+  line-height: 1.2;
+}
+
+.card-detail__price {
+  font-size: 13px;
+  color: #e8c060;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 3px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(201, 145, 63, 0.25);
+}
+
+.card-detail__body--loot {
+  width: 100%;
+  text-align: left;
+}
+
+/* ===== Mascotas en party-status (mapa) ===== */
+.party-status__pets {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-left: 12px;
+  margin-left: 4px;
+  border-left: 1px solid rgba(201, 145, 63, 0.2);
+}
+
+.party-status__pet {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  padding: 0;
+  overflow: hidden;
+  background: rgba(20, 10, 5, 0.5);
+  border: 1px solid rgba(201, 145, 63, 0.45);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  flex-shrink: 0;
+}
+
+.party-status__pet:hover {
+  border-color: var(--amber-lt, #e8c060);
+  box-shadow: 0 0 8px rgba(232, 192, 96, 0.45);
+}
+
+.party-status__pet-art {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.party-status__pet-label {
+  font-size: 14px;
+  color: var(--amber, #c9913f);
+}

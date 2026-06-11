@@ -1,7 +1,9 @@
 // ShopScreen.jsx — Tienda / campamento (M4). Gastar oro en mejoras permanentes
 // de party (ítems) y en curación (pociones). Al salir, el nodo queda resuelto.
 
+import { useState } from 'react';
 import { useGameStore } from '../../store/gameStore.js';
+import CardDetailModal from '../components/CardDetailModal.jsx';
 import { content } from '../../data/index.js';
 import {
   canBuyItem,
@@ -28,6 +30,7 @@ export default function ShopScreen() {
   const buyItem = useGameStore((s) => s.shopBuyItem);
   const buyPotion = useGameStore((s) => s.shopBuyPotion);
   const leave = useGameStore((s) => s.leaveShop);
+  const [detailCard, setDetailCard] = useState(null);
 
   const node = getCurrentNode(game);
   const owned = new Set(game.inventory ?? []);
@@ -56,22 +59,34 @@ export default function ShopScreen() {
               const has = owned.has(it.id);
               const buyable = canBuyItem(game, it.id);
               return (
-                <article key={it.id} className={`shop-card${has ? ' is-owned' : ''}`}>
-                  <ShopIcon icon={it.icon} name={it.name} />
-                  <div className="shop-card__name">{it.name}</div>
-                  <div className="shop-card__desc">{it.desc}</div>
-                  {it.mod?.upgradeFace && <DiceFaceUpgradePreview item={it} game={game} />}
-                  <div className="shop-card__foot">
-                    <span className="shop-card__price"><Coin /> {it.price}</span>
-                    <button
-                      className="btn btn--primary btn--sm"
-                      disabled={!buyable}
-                      onClick={() => buyItem(it.id)}
-                    >
-                      {has ? 'En posesión' : 'Comprar'}
-                    </button>
-                  </div>
-                </article>
+                <div
+                  key={it.id}
+                  className="unit-wrap"
+                  onContextMenu={(ev) => { ev.preventDefault(); setDetailCard({ unit: it, type: 'item' }); }}
+                >
+                  <article className={`shop-card${has ? ' is-owned' : ''}`}>
+                    <ShopIcon icon={it.icon} name={it.name} />
+                    <div className="shop-card__name">{it.name}</div>
+                    <div className="shop-card__desc">{it.desc}</div>
+                    {it.mod?.upgradeFace && <DiceFaceUpgradePreview item={it} game={game} />}
+                    <div className="shop-card__foot">
+                      <span className="shop-card__price"><Coin /> {it.price}</span>
+                      <button
+                        className="btn btn--primary btn--sm"
+                        disabled={!buyable}
+                        onClick={() => buyItem(it.id)}
+                      >
+                        {has ? 'En posesión' : 'Comprar'}
+                      </button>
+                    </div>
+                  </article>
+                  <button
+                    className="unit__info-btn"
+                    tabIndex={-1}
+                    aria-label="Ver detalles"
+                    onClick={() => setDetailCard({ unit: it, type: 'item' })}
+                  >ⓘ</button>
+                </div>
               );
             })}
           </div>
@@ -84,24 +99,36 @@ export default function ShopScreen() {
               const buyable = canBuyPotion(game, p.id);
               const count = potionCount(game, p.id);
               return (
-                <article key={p.id} className="shop-card">
-                  <ShopIcon icon={p.icon} name={p.name} />
-                  <div className="shop-card__name">
-                    {p.name}
-                    {count > 0 && <span className="shop-card__count"> ×{count}</span>}
-                  </div>
-                  <div className="shop-card__desc">{p.desc}</div>
-                  <div className="shop-card__foot">
-                    <span className="shop-card__price"><Coin /> {p.price}</span>
-                    <button
-                      className="btn btn--primary btn--sm"
-                      disabled={!buyable}
-                      onClick={() => buyPotion(p.id)}
-                    >
-                      Comprar
-                    </button>
-                  </div>
-                </article>
+                <div
+                  key={p.id}
+                  className="unit-wrap"
+                  onContextMenu={(ev) => { ev.preventDefault(); setDetailCard({ unit: p, type: 'potion' }); }}
+                >
+                  <article className="shop-card">
+                    <ShopIcon icon={p.icon} name={p.name} />
+                    <div className="shop-card__name">
+                      {p.name}
+                      {count > 0 && <span className="shop-card__count"> ×{count}</span>}
+                    </div>
+                    <div className="shop-card__desc">{p.desc}</div>
+                    <div className="shop-card__foot">
+                      <span className="shop-card__price"><Coin /> {p.price}</span>
+                      <button
+                        className="btn btn--primary btn--sm"
+                        disabled={!buyable}
+                        onClick={() => buyPotion(p.id)}
+                      >
+                        Comprar
+                      </button>
+                    </div>
+                  </article>
+                  <button
+                    className="unit__info-btn"
+                    tabIndex={-1}
+                    aria-label="Ver detalles"
+                    onClick={() => setDetailCard({ unit: p, type: 'potion' })}
+                  >ⓘ</button>
+                </div>
               );
             })}
           </div>
@@ -116,17 +143,29 @@ export default function ShopScreen() {
                 if (!pet) return null;
                 const artUrl = pet.art ? assetUrl(pet.art) : null;
                 return (
-                  <article key={petId} className="shop-card shop-card--pet">
-                    {artUrl
-                      ? <img className="shop-card__icon shop-card__icon--pet" src={artUrl} alt={pet.name} />
-                      : <span className="shop-card__icon shop-card__icon--placeholder">{pet.name[0]}</span>
-                    }
-                    <div className="shop-card__name">{pet.name}</div>
-                    <div className="shop-card__desc">{pet.desc}</div>
-                    <div className="shop-card__foot">
-                      <span className="chip chip--pet">Compañero activo</span>
-                    </div>
-                  </article>
+                  <div
+                    key={petId}
+                    className="unit-wrap"
+                    onContextMenu={(ev) => { ev.preventDefault(); setDetailCard({ unit: pet, type: 'pet' }); }}
+                  >
+                    <article className="shop-card shop-card--pet">
+                      {artUrl
+                        ? <img className="shop-card__icon shop-card__icon--pet" src={artUrl} alt={pet.name} />
+                        : <span className="shop-card__icon shop-card__icon--placeholder">{pet.name[0]}</span>
+                      }
+                      <div className="shop-card__name">{pet.name}</div>
+                      <div className="shop-card__desc">{pet.desc}</div>
+                      <div className="shop-card__foot">
+                        <span className="chip chip--pet">Compañero activo</span>
+                      </div>
+                    </article>
+                    <button
+                      className="unit__info-btn"
+                      tabIndex={-1}
+                      aria-label="Ver detalles"
+                      onClick={() => setDetailCard({ unit: pet, type: 'pet' })}
+                    >ⓘ</button>
+                  </div>
                 );
               })}
             </div>
@@ -139,6 +178,14 @@ export default function ShopScreen() {
           Continuar el viaje →
         </button>
       </div>
+
+      {detailCard && (
+        <CardDetailModal
+          unit={detailCard.unit}
+          type={detailCard.type}
+          onClose={() => setDetailCard(null)}
+        />
+      )}
     </main>
   );
 }

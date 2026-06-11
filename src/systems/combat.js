@@ -13,7 +13,7 @@
 
 import { content } from '../data/index.js';
 import { chooseEnemyAction } from './enemyAI.js';
-import { applyCurse, tickCurses, spellsBlocked, cleanseCurses } from './curses.js';
+import { applyCurse, tickCurses, spellsBlocked, cleanseCurses, applyDotDamage, postRollReduction, diceReduction } from './curses.js';
 
 const clone = (o) => JSON.parse(JSON.stringify(o));
 
@@ -45,19 +45,9 @@ function makeHeroInstance(hero, st = {}) {
   };
 }
 
-// Penalización de dados por maldiciones diceReduce activas (no muta h.dice).
-function diceReduction(h) {
-  return (h.curses ?? [])
-    .filter((c) => c.hook === 'diceReduce')
-    .reduce((s, c) => s + (c.power ?? 0), 0);
-}
-
-// Daño adicional al ser golpeado por maldiciones onIncomingDamage (sangría/veneno).
-function incomingDamageBonus(h) {
-  return (h.curses ?? [])
-    .filter((c) => c.hook === 'onIncomingDamage')
-    .reduce((s, c) => s + (c.power ?? 0), 0);
-}
+// Probabilidad de fallo y crítico en ataques físicos.
+const MISS_CHANCE = 0.02;
+const CRIT_CHANCE = 0.02;
 
 function makeEnemyInstance(enemy, idx, mult) {
   const maxHp = Math.max(1, Math.round(enemy.maxHp * mult.hp));
@@ -173,18 +163,41 @@ const hitAnim = (unit) => (unit.row === 'back' ? 'ranged' : 'melee');
 /** El héroe activo tira su pool de dados. */
 export function rollActiveHero(combat, rng) {
   const c = clone(combat);
-  const h = activeHero(c);
+  let h = activeHero(c);
   if (!h || h.hasRolled || c.phase !== 'hero') return combat;
+
+  // dotDamage (sangría / veneno) al inicio del turno del héroe
+  const dotResult = applyDotDamage(h);
+  if (dotResult.damage > 0) {
+    c.heroes[c.activeHeroIndex] = dotResult.hero;
+    h = c.heroes[c.activeHeroIndex];
+    pushLog(c, 'dot',
+      `${h.name} sufre ${dotResult.damage} de ${dotResult.names.join(' + ')}.`,
+      { anim: 'dot', target: h.id });
+    if (h.hp <= 0 && !h.down) {
+      c.heroes[c.activeHeroIndex].down = true;
+      pushLog(c, 'down', `${h.name} cae.`);
+      return checkEnd(c);
+    }
+  }
+
   const pool = { sword: 0, shield: 0, star: 0, faces: [] };
-  // mascotas diceBonus (+) vs maldición diceReduce (−)
+  // mascotas diceBonus (+) vs maldición diceReduce (−, legado)
   const nDice = Math.max(1, h.dice + (c.diceBonus ?? 0) - diceReduction(h));
   for (let i = 0; i < nDice; i++) {
     const f = rng.pick(h.diceFaces);
+    if (!f) continue;
     pool.faces.push(f);
     pool.sword += f.sword ?? 0;
     pool.shield += f.shield ?? 0;
     pool.star += f.star ?? 0;
   }
+
+  // Aplicar penalizaciones post-tirada de maldiciones específicas
+  pool.sword  = Math.max(0, pool.sword  - postRollReduction(h, 'reduceSword'));
+  pool.shield = Math.max(0, pool.shield - postRollReduction(h, 'reduceShield'));
+  pool.star   = Math.max(0, pool.star   - postRollReduction(h, 'reduceStar'));
+
   h.pool = pool;
   h.block += pool.shield;
   h.energy += pool.star;
@@ -194,22 +207,42 @@ export function rollActiveHero(combat, rng) {
 }
 
 /** El héroe activo ataca con sus espadas a un enemigo válido. */
-export function heroAttack(combat, enemyUid) {
+export function heroAttack(combat, enemyUid, rng) {
   const c = clone(combat);
   const h = activeHero(c);
   if (!h || !h.hasRolled || h.hasAttacked || c.phase !== 'hero') return combat;
   if (!h.pool || h.pool.sword <= 0) return combat;
   const target = c.enemies.find((e) => e.uid === enemyUid && e.hp > 0);
   if (!target) return combat;
-  if (!validEnemyTargets(c, false).some((e) => e.uid === enemyUid)) return combat; // regla de fila
-  const dmg = h.pool.sword;
-  target.hp = Math.max(0, target.hp - dmg);
+  if (!validEnemyTargets(c, false).some((e) => e.uid === enemyUid)) return combat;
+
+  const baseDmg = h.pool.sword; // guardar antes de zerear
   h.hasAttacked = true;
   h.pool.sword = 0;
-  pushLog(c, 'attack', `${h.name} golpea a ${target.name} por ${dmg}.`, {
-    anim: hitAnim(h), source: h.id, target: target.uid,
-    ...(h.attackAnim === 'arcane' && { arcane: true }),
-  });
+
+  const isMiss = rng && rng.next() < MISS_CHANCE;
+  if (isMiss) {
+    pushLog(c, 'miss', `${h.name} FALLA el ataque a ${target.name}.`, {
+      anim: 'miss', source: h.id, target: target.uid,
+    });
+    return c;
+  }
+
+  const isCrit = rng && rng.next() < CRIT_CHANCE;
+  const dmg = isCrit ? baseDmg * 2 : baseDmg;
+  target.hp = Math.max(0, target.hp - dmg);
+
+  if (isCrit) {
+    pushLog(c, 'crit', `${h.name} ¡CRÍTICO! a ${target.name} por ${dmg}.`, {
+      anim: 'crit', source: h.id, target: target.uid, variant: hitAnim(h),
+      ...(h.attackAnim === 'arcane' && { arcane: true }),
+    });
+  } else {
+    pushLog(c, 'attack', `${h.name} golpea a ${target.name} por ${dmg}.`, {
+      anim: hitAnim(h), source: h.id, target: target.uid,
+      ...(h.attackAnim === 'arcane' && { arcane: true }),
+    });
+  }
   return checkEnd(c);
 }
 
@@ -440,13 +473,13 @@ function applyOneEnemy(c, enemy, rng) {
       const targets = action.ignoreRow ? livingHeroes(c) : frontFirst(c.heroes);
       if (!targets.length) break;
       const target = pickByBehavior(enemy.behavior, targets, action.targetId, rng);
-      applyEnemyHit(c, enemy, target);
+      applyEnemyHit(c, enemy, target, rng);
     }
   } else if (action.type === 'attack_curse') {
     const targets = frontFirst(c.heroes);
     if (targets.length) {
       const target = targets.reduce((a, b) => (b.hp < a.hp ? b : a));
-      applyEnemyHit(c, enemy, target);
+      applyEnemyHit(c, enemy, target, rng);
       if (action.curse) {
         const idx = c.heroes.findIndex((h) => h.id === target.id);
         if (idx >= 0) {
@@ -543,7 +576,7 @@ function applyBossCard(c, enemy, card, rng) {
     if (target) {
       const dmgMult = fx.multiplier ?? 1;
       const boosted = { ...enemy, dmg: Math.round(enemy.dmg * dmgMult) };
-      applyEnemyHit(c, boosted, c.heroes.find((h) => h.id === target.id));
+      applyEnemyHit(c, boosted, c.heroes.find((h) => h.id === target.id), rng);
       if (fx.onKill && c.heroes.find((h) => h.id === target.id)?.down) {
         c._pendingDoom = (c._pendingDoom ?? 0) + (fx.onKill.doom ?? 0);
       }
@@ -573,21 +606,34 @@ function applyBossCard(c, enemy, card, rng) {
   }
 }
 
-function applyEnemyHit(c, enemy, target) {
+function applyEnemyHit(c, enemy, target, rng) {
   if (!target) return;
-  let dmg = enemy.dmg;
-  const absorbed = Math.min(target.block, dmg);
-  target.block -= absorbed;
+
+  const isMiss = rng && rng.next() < MISS_CHANCE;
+  if (isMiss) {
+    pushLog(c, 'miss', `${enemy.name} FALLA el ataque a ${target.name}.`, {
+      anim: 'miss', source: enemy.uid, target: target.id,
+    });
+    return;
+  }
+
+  const isCrit = rng && rng.next() < CRIT_CHANCE;
+  let dmg = isCrit ? enemy.dmg * 2 : enemy.dmg;
+  const absorbed = Math.min(target.block ?? 0, dmg);
+  target.block = (target.block ?? 0) - absorbed;
   dmg -= absorbed;
-  // Maldición onIncomingDamage (sangría/veneno): daño extra que ignora el bloqueo.
-  const bleed = incomingDamageBonus(target);
-  dmg += bleed;
   target.hp = Math.max(0, target.hp - dmg);
+
   const blockTxt = absorbed > 0 ? ` (🛡️${absorbed})` : '';
-  const bleedTxt = bleed > 0 ? ` (+${bleed}🩸)` : '';
-  pushLog(c, 'enemyhit', `${enemy.name} ataca a ${target.name} por ${dmg}${blockTxt}${bleedTxt}.`, {
-    anim: hitAnim(enemy), source: enemy.uid, target: target.id,
-  });
+  if (isCrit) {
+    pushLog(c, 'crit', `${enemy.name} ¡CRÍTICO! a ${target.name} por ${dmg}${blockTxt}.`, {
+      anim: 'crit', source: enemy.uid, target: target.id, variant: hitAnim(enemy),
+    });
+  } else {
+    pushLog(c, 'enemyhit', `${enemy.name} ataca a ${target.name} por ${dmg}${blockTxt}.`, {
+      anim: hitAnim(enemy), source: enemy.uid, target: target.id,
+    });
+  }
   if (target.hp <= 0 && !target.down) {
     target.down = true;
     pushLog(c, 'down', `${target.name} cae.`);

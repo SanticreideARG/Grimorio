@@ -1,7 +1,6 @@
 // curses.js — Aplicación y limpieza de maldiciones (Q-MALDICION: 1–3 turnos).
 // Las maldiciones son debuffs persistentes en combat.heroes[i].curses[].
-// Se aplican durante la fase enemiga; se decrementan al inicio de cada round.
-// En M3 solo penalizan (no transforman al héroe — eso es M5+).
+// Se aplican durante la fase enemiga; se decrementan al inicio del turno de cada héroe.
 //
 // Estructura de una maldición activa en el héroe:
 //   { id, name, hook, turnsLeft, power }
@@ -43,32 +42,44 @@ export function tickCurses(hero) {
   return { ...hero, curses };
 }
 
-/** Limpia todas las maldiciones de un héroe (hechizo de limpieza). */
+/** Limpia todas las maldiciones de un héroe (hechizo/poción de limpieza). */
 export function cleanseCurses(hero) {
   return { ...hero, curses: [] };
 }
 
-// ---- Aplicar efectos por hook ----
+// ---- Efectos por hook ----
 
 /**
- * Aplica penalizaciones de maldiciones con el hook dado al héroe.
- * Devuelve { hero, penalties } — penalties es lista de textos descriptivos.
- * Hooks soportados en M3:
- *   onIncomingDamage → damage extra al recibir golpe (power = daño adicional)
- *   blocksSpells     → el héroe no puede lanzar hechizos este turno
- *   diceReduce       → reduce el pool de dados del héroe en `power` dados
+ * Aplica daño de maldiciones dotDamage al inicio del turno del héroe.
+ * Retorna { hero: heroActualizado, damage: total, names: [nombres] }.
  */
-export function applyHookPenalty(hero, hook) {
-  const active = (hero.curses ?? []).filter((c) => c.hook === hook);
-  if (!active.length) return { hero, penalties: [] };
-  const penalties = active.map((c) => c.name);
-  let h = { ...hero };
-  for (const c of active) {
-    if (hook === 'diceReduce') {
-      h = { ...h, dice: Math.max(1, (h.dice ?? 1) - (c.power ?? 1)) };
-    }
-  }
-  return { hero: h, penalties };
+export function applyDotDamage(hero) {
+  const active = (hero.curses ?? []).filter((c) => c.hook === 'dotDamage');
+  if (!active.length) return { hero, damage: 0, names: [] };
+  const totalDmg = active.reduce((s, c) => s + (c.power ?? 0), 0);
+  const names = active.map((c) => c.name);
+  const newHp = Math.max(0, hero.hp - totalDmg);
+  return { hero: { ...hero, hp: newHp }, damage: totalDmg, names };
+}
+
+/**
+ * Calcula cuánto restar de un símbolo concreto después de tirar dados.
+ * hook = 'reduceSword' | 'reduceShield' | 'reduceStar'
+ */
+export function postRollReduction(hero, hook) {
+  return (hero.curses ?? [])
+    .filter((c) => c.hook === hook)
+    .reduce((s, c) => s + (c.power ?? 0), 0);
+}
+
+/**
+ * Reducción TOTAL de dados por maldición (hook: diceReduce, legado).
+ * Mantenido por compatibilidad; actualmente ninguna maldición lo usa.
+ */
+export function diceReduction(hero) {
+  return (hero.curses ?? [])
+    .filter((c) => c.hook === 'diceReduce')
+    .reduce((s, c) => s + (c.power ?? 0), 0);
 }
 
 /** Devuelve true si el héroe tiene una maldición que bloquea sus hechizos. */

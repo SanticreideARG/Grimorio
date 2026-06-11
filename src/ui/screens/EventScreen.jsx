@@ -19,6 +19,7 @@ function rollPool(heroId, rngState) {
   const pool = { sword: 0, shield: 0, star: 0, faces: [] };
   for (let i = 0; i < hero.dice; i++) {
     const f = rng.pick(hero.diceFaces);
+    if (!f) continue;
     pool.faces.push(f);
     pool.sword += f.sword ?? 0;
     pool.shield += f.shield ?? 0;
@@ -107,7 +108,11 @@ export default function EventScreen() {
             <div className="check-panel__faces">
               {rolledPool.faces.map((f, i) => {
                 const sym = f.sword ? '🗡️' : f.shield ? '🛡️' : f.star ? '⭐' : '·';
-                return <span key={i} className="die">{sym}</span>;
+                return (
+                  <div key={i} className="die">
+                    <span className="die-face__emoji">{sym}</span>
+                  </div>
+                );
               })}
             </div>
             <div className="check-panel__result">

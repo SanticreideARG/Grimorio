@@ -28,8 +28,11 @@ export function chooseEnemyAction(combat, enemy, rng) {
       return { type: 'attack' };
     }
     case 'curse':
-      // Usa la maldición específica del enemigo; por defecto sangría.
-      return { type: 'attack_curse', curse: enemy.curse ?? 'sangria' };
+      // 35% de probabilidad de aplicar maldición; el resto es ataque normal.
+      if (rng.chance(0.35)) {
+        return { type: 'attack_curse', curse: enemy.curse ?? 'sangria' };
+      }
+      return { type: 'attack' };
 
     case 'boss': {
       const bossData = content.bossesById[enemy.id];

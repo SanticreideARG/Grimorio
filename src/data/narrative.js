@@ -593,6 +593,15 @@ const cap4 = {
       caballero_oscuro: ['Detuvimos al Rey. Queda su pecado. Terminemos lo que él empezó y no supo parar.'],
     },
   },
+  c4n15: {
+    place:
+      'Un mercader solitario ha llegado hasta aquí. No hay nada heroico en ello, dice: solo un hombre que apostó ' +
+      'por vosotros con todo lo que tenía. Su carreta huele a aceite de lámpara y cera. Una normalidad extraña al borde del fin.',
+    heroBarks: {
+      picara: ['¿Cómo diablos llegaste aquí antes que nosotros? Y… ¿me cobras igual que siempre?'],
+      guerrera: ['Guardaste tu puesto hasta el último momento. Eso es más valor del que tienen muchos soldados.'],
+    },
+  },
   c4n14: {
     place:
       'Aquí está el final de todo: el arma que el Rey forjó con su dolor y no supo enfundar. No odia, no piensa. ' +

@@ -207,7 +207,8 @@ export const useGameStore = create((set, get) => ({
     if (!game?.combat) return;
     const spell = content.spellsById?.[spellId];
     const isHeal = !!(spell?.effect?.heal || spell?.effect?.shieldAlly || spell?.effect?.cleanse);
-    get().patchGame((g) => ({ ...g, combat: heroCast(g.combat, spellId, targetUid) }));
+    const rng = createRng(game.rngState);
+    get().patchGame((g) => ({ ...g, combat: heroCast(g.combat, spellId, targetUid, rng), rngState: rng.getState() }));
     bus.emit(isHeal ? EVENTS.HERO_HEAL : EVENTS.HERO_SPELL, { spellId, targetUid });
   },
 
@@ -352,6 +353,23 @@ export const useGameStore = create((set, get) => ({
   /** Expone la carta activa del evento para la UI. */
   getActiveEventCard() {
     return getActiveCard(get().game ?? {});
+  },
+
+  // ---------- Mascotas ----------
+
+  /**
+   * Asigna (o desasigna) una mascota a un héroe. Es cosmético/de sabor: el bono
+   * de la mascota sigue siendo global; esto solo marca con qué héroe "acompaña"
+   * para mostrar su icono en la card del héroe. Volver a elegir el mismo héroe la
+   * quita.
+   */
+  assignPet(petId, heroId) {
+    get().patchGame((g) => {
+      const current = { ...(g.petAssignments ?? {}) };
+      if (current[petId] === heroId) delete current[petId];
+      else current[petId] = heroId;
+      return { ...g, petAssignments: current };
+    });
   },
 
   // ---------- Progresión y campamento (M4) ----------

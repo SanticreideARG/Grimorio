@@ -70,13 +70,15 @@ export default function ShopScreen() {
                     <div className="shop-card__desc">{it.desc}</div>
                     {it.mod?.upgradeFace && <DiceFaceUpgradePreview item={it} game={game} />}
                     <div className="shop-card__foot">
-                      <span className="shop-card__price"><Coin /> {it.price}</span>
                       <button
-                        className="btn btn--primary btn--sm"
+                        className="btn btn--primary btn--sm shop-card__buy"
                         disabled={!buyable}
                         onClick={() => buyItem(it.id)}
                       >
-                        {has ? 'En posesión' : 'Comprar'}
+                        {has
+                          ? 'En posesión'
+                          : <>Comprar <span className="shop-card__buy-price"><Coin /> {it.price}</span></>
+                        }
                       </button>
                     </div>
                   </article>
@@ -112,13 +114,12 @@ export default function ShopScreen() {
                     </div>
                     <div className="shop-card__desc">{p.desc}</div>
                     <div className="shop-card__foot">
-                      <span className="shop-card__price"><Coin /> {p.price}</span>
                       <button
-                        className="btn btn--primary btn--sm"
+                        className="btn btn--primary btn--sm shop-card__buy"
                         disabled={!buyable}
                         onClick={() => buyPotion(p.id)}
                       >
-                        Comprar
+                        Comprar <span className="shop-card__buy-price"><Coin /> {p.price}</span>
                       </button>
                     </div>
                   </article>
@@ -134,43 +135,7 @@ export default function ShopScreen() {
           </div>
         </section>
 
-        {(game.pets ?? []).length > 0 && (
-          <section className="shop-section">
-            <SectionBanner cardback="cardbacks/mascotas.png" title="Mascotas de la party" />
-            <div className="shop-grid shop-grid--pets">
-              {(game.pets ?? []).map((petId) => {
-                const pet = content.petsById[petId];
-                if (!pet) return null;
-                const artUrl = pet.art ? assetUrl(pet.art) : null;
-                return (
-                  <div
-                    key={petId}
-                    className="unit-wrap"
-                    onContextMenu={(ev) => { ev.preventDefault(); setDetailCard({ unit: pet, type: 'pet' }); }}
-                  >
-                    <article className="shop-card shop-card--pet">
-                      {artUrl
-                        ? <img className="shop-card__icon shop-card__icon--pet" src={artUrl} alt={pet.name} />
-                        : <span className="shop-card__icon shop-card__icon--placeholder">{pet.name[0]}</span>
-                      }
-                      <div className="shop-card__name">{pet.name}</div>
-                      <div className="shop-card__desc">{pet.desc}</div>
-                      <div className="shop-card__foot">
-                        <span className="chip chip--pet">Compañero activo</span>
-                      </div>
-                    </article>
-                    <button
-                      className="unit__info-btn"
-                      tabIndex={-1}
-                      aria-label="Ver detalles"
-                      onClick={() => setDetailCard({ unit: pet, type: 'pet' })}
-                    >ⓘ</button>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-        )}
+        {/* Sección de mascotas oculta temporalmente en la tienda. */}
       </div>
 
       <div className="shop-actions">

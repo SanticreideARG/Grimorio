@@ -157,11 +157,12 @@ test('nextActivePlayer encuentra el siguiente jugador con héroes sin actuar', (
 // 5. Dice-building real
 // ════════════════════════════════════════════════════════
 test('piedra_afilar convierte una cara en blanco en espada', () => {
-  const base = content.heroesById.guerrera;
+  // picara tiene 1 cara en blanco — candidata natural para mejorar su filo
+  const base = content.heroesById.picara;
   const blanks = base.diceFaces.filter((f) => Object.values(f).every((v) => !v)).length;
-  const g = { inventory: ['piedra_afilar'], party: ['guerrera'],
+  const g = { inventory: ['piedra_afilar'], party: ['picara'],
               partyHp: {}, potionBag: {}, gold: 0, heroOwners: {} };
-  const eff = effectiveHero('guerrera', g);
+  const eff = effectiveHero('picara', g);
   const blanksAfter = eff.diceFaces.filter((f) => Object.values(f).every((v) => !v)).length;
   assert.equal(blanksAfter, blanks - 1);
   const swordsAfter = eff.diceFaces.filter((f) => f.sword === 1).length;

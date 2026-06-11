@@ -6,7 +6,7 @@
 import { randomSeed } from './rng.js';
 
 /** Versión del formato de save. Subir al cambiar la forma del estado. */
-export const SAVE_VERSION = 6;
+export const SAVE_VERSION = 7;
 
 /** Dificultades soportadas (Q-DIFICULTAD). */
 export const DIFFICULTIES = Object.freeze(['facil', 'normal', 'dificil']);
@@ -50,6 +50,7 @@ export function createNewGame(opts = {}) {
 
     // Party persistente (M3/M4)
     pets: [], // mascotas activas (ids)
+    petAssignments: {}, // { [petId]: heroId } — con qué héroe acompaña (cosmético)
     inventory: [], // ítems comprados (ids) — mejoras de party
     partyHp: {}, // vida persistente por héroe (se llena al formar la party)
     pendingCurses: [], // maldiciones de eventos a aplicar en el próximo combate
@@ -122,6 +123,12 @@ export function migrate(save) {
   if (!(s.version >= 6)) {
     s.checkpointNodeIndex = s.checkpointNodeIndex ?? null;
     s.version = 6;
+  }
+
+  // v6 → v7: asignación cosmética de mascotas a héroes.
+  if (!(s.version >= 7)) {
+    s.petAssignments = s.petAssignments ?? {};
+    s.version = 7;
   }
 
   if (typeof s.version !== 'number') s.version = SAVE_VERSION;

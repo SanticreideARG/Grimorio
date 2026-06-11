@@ -2,22 +2,25 @@
 // Si una elección requiere chequeo, el jugador tira su pool de dados y el
 // resultado determina si el efecto o el efecto de fallo se aplica.
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useGameStore } from '../../store/gameStore.js';
 import { heroes as heroRoster } from '../../data/heroes.js';
 import { content } from '../../data/index.js';
 import { createRng } from '../../core/rng.js';
 import { passesCheck } from '../../systems/events.js';
 import { assetUrl } from '../assets.js';
+import { DieFace, DieSymbol } from '../components/Dice.jsx';
 
-const SYMBOL_LABEL = { sword: '🗡️', shield: '🛡️', star: '⭐' };
+// +1 dado de gracia en los chequeos de evento: sube un poco la tasa de éxito.
+const CHECK_DICE_BONUS = 1;
 
 function rollPool(heroId, rngState) {
   const hero = heroRoster.find((h) => h.id === heroId);
   if (!hero) return { sword: 0, shield: 0, star: 0, faces: [] };
   const rng = createRng(rngState);
   const pool = { sword: 0, shield: 0, star: 0, faces: [] };
-  for (let i = 0; i < hero.dice; i++) {
+  const nDice = hero.dice + CHECK_DICE_BONUS;
+  for (let i = 0; i < nDice; i++) {
     const f = rng.pick(hero.diceFaces);
     if (!f) continue;
     pool.faces.push(f);
@@ -46,6 +49,16 @@ export default function EventScreen() {
 
   const [pendingChoice, setPendingChoice] = useState(null);
   const [rolledPool, setRolledPool] = useState(null);
+
+  // Flip de entrada: la carta aparece mostrando su cardback y voltea a la cara real.
+  const [flipped, setFlipped] = useState(false);
+  useEffect(() => {
+    setFlipped(false);
+    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) { setFlipped(true); return undefined; }
+    const t = setTimeout(() => setFlipped(true), 440);
+    return () => clearTimeout(t);
+  }, [card?.id]);
 
   if (!card) {
     return (
@@ -91,11 +104,20 @@ export default function EventScreen() {
       </header>
 
       <div className="event-body">
-        {/* Carta */}
-        <div className="event-card">
-          <EventArt art={card.art} title={card.title} />
-          <div className="event-card__title">{card.title}</div>
-          <p className="event-card__text">{card.text}</p>
+        {/* Carta con flip de entrada desde el cardback de eventos */}
+        <div className={`event-flip${flipped ? ' is-flipped' : ''}`}>
+          <div className="event-flip__inner">
+            <div className="event-flip__face event-flip__front">
+              <EventCardback />
+            </div>
+            <div className="event-flip__face event-flip__back">
+              <div className="event-card">
+                <EventArt art={card.art} title={card.title} />
+                <div className="event-card__title">{card.title}</div>
+                <p className="event-card__text">{card.text}</p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Leyenda de símbolos de dados */}
@@ -106,19 +128,15 @@ export default function EventScreen() {
           <div className="check-panel">
             <div className="check-panel__title">Chequeo de dados</div>
             <div className="check-panel__faces">
-              {rolledPool.faces.map((f, i) => {
-                const sym = f.sword ? '🗡️' : f.shield ? '🛡️' : f.star ? '⭐' : '·';
-                return (
-                  <div key={i} className="die">
-                    <span className="die-face__emoji">{sym}</span>
-                  </div>
-                );
-              })}
+              {rolledPool.faces.map((f, i) => (
+                <span key={i} className="die" style={{ '--die-i': i }}>
+                  <DieFace face={f} />
+                </span>
+              ))}
             </div>
             <div className="check-panel__result">
               {(() => {
                 const req = card.choices[pendingChoice]?.requires;
-                const sym = SYMBOL_LABEL[req?.symbol] ?? '';
                 const got = rolledPool[req?.symbol] ?? 0;
                 return (
                   <>
@@ -126,7 +144,7 @@ export default function EventScreen() {
                       {checkResult ? '✓ Superado' : '✗ Fallado'}
                     </span>
                     <span className="check-detail">
-                      ({sym} necesario: {req?.threshold} · obtenido: {got})
+                      (<DieSymbol type={req?.symbol} /> necesario: {req?.threshold} · obtenido: {got})
                     </span>
                   </>
                 );
@@ -157,7 +175,7 @@ export default function EventScreen() {
                 <span className="event-choice__label">{ch.label}</span>
                 {ch.requires && (
                   <span className="event-choice__check">
-                    Chequeo: {SYMBOL_LABEL[ch.requires.symbol]} ×{ch.requires.threshold}
+                    Chequeo: <DieSymbol type={ch.requires.symbol} /> ×{ch.requires.threshold}
                   </span>
                 )}
                 <span className="event-choice__effect">{describeEffect(ch.effect)}</span>
@@ -176,21 +194,28 @@ function EventArt({ art, title }) {
   return <div className="event-card__art event-card__art--placeholder" aria-hidden="true" />;
 }
 
+// Cara trasera de la carta de evento (cardback) para el flip de entrada.
+function EventCardback() {
+  const url = assetUrl('cardbacks/eventos.png');
+  if (url) return <img className="event-cardback" src={url} alt="" aria-hidden="true" />;
+  return <div className="event-cardback event-cardback--fallback" aria-hidden="true" />;
+}
+
 // ── Leyenda de símbolos de dados ────────────────────────────────────────────
 
 const DICE_LEGEND = [
   {
-    symbol: '🗡️',
+    type: 'sword',
     name: 'Espada',
     desc: 'Fuerza y audacia. Supera obstáculos físicos y ataques directos.',
   },
   {
-    symbol: '🛡️',
+    type: 'shield',
     name: 'Escudo',
     desc: 'Cautela y resistencia. Protege ante trampas, venenos y daño.',
   },
   {
-    symbol: '⭐',
+    type: 'star',
     name: 'Estrella',
     desc: 'Voluntad y suerte. Necesaria para magia, persuasión y lo sobrenatural.',
   },
@@ -203,7 +228,7 @@ function DiceLegend() {
       <ul className="dice-legend__list">
         {DICE_LEGEND.map((d) => (
           <li key={d.name} className="dice-legend__item">
-            <span className="dice-legend__sym" aria-hidden="true">{d.symbol}</span>
+            <span className="dice-legend__sym" aria-hidden="true"><DieSymbol type={d.type} /></span>
             <span className="dice-legend__body">
               <span className="dice-legend__name">{d.name}</span>
               <span className="dice-legend__desc">{d.desc}</span>

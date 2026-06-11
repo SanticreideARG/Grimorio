@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { createRng } from '../src/core/rng.js';
 import { createNewGame } from '../src/core/state.js';
 import { addDoom, isOverflow, resetDoom } from '../src/systems/doom.js';
-import { applyCurse, tickCurses, cleanseCurses, spellsBlocked } from '../src/systems/curses.js';
+import { applyCurse, tickCurses, cleanseCurses, spellsBlocked, postRollReduction } from '../src/systems/curses.js';
 import { initDecks, drawCard, discardCard } from '../src/systems/decks.js';
 import { passesCheck, drawEventCard, resolveEvent } from '../src/systems/events.js';
 import { addPet, getDiceBonus } from '../src/systems/pets.js';
@@ -51,9 +51,12 @@ test('applyCurse añade maldición con duración correcta', () => {
 
 test('tickCurses decrementa y elimina maldiciones expiradas', () => {
   const hero = { id: 'guerrera', curses: [] };
-  let h = applyCurse(hero, 'silencio'); // duration 1
+  let h = applyCurse(hero, 'silencio'); // duración 3
   assert.equal(h.curses.length, 1);
-  h = tickCurses(h);
+  h = tickCurses(h); // 2
+  h = tickCurses(h); // 1
+  assert.equal(h.curses.length, 1);
+  h = tickCurses(h); // 0 → expira
   assert.equal(h.curses.length, 0);
 });
 
@@ -65,11 +68,14 @@ test('cleanseCurses elimina todas las maldiciones', () => {
   assert.equal(h.curses.length, 0);
 });
 
-test('spellsBlocked detecta maldición blocksSpells', () => {
+test('postRollReduction suma las penalizaciones por hook', () => {
   let h = { id: 'mago', curses: [] };
-  assert.equal(spellsBlocked(h), false);
-  h = applyCurse(h, 'silencio');
-  assert.equal(spellsBlocked(h), true);
+  assert.equal(postRollReduction(h, 'reduceStar'), 0);
+  h = applyCurse(h, 'silencio');  // reduceStar, power 1
+  h = applyCurse(h, 'confusion'); // reduceSword, power 1
+  assert.equal(postRollReduction(h, 'reduceStar'), 1);
+  assert.equal(postRollReduction(h, 'reduceSword'), 1);
+  assert.equal(spellsBlocked(h), false); // ninguna maldición bloquea hechizos ya
 });
 
 // ---- Decks ----
@@ -158,44 +164,44 @@ test('pendingCurses se aplican a toda la party al iniciar combate', () => {
   assert.ok(c.log.some((l) => l.kind === 'curse'));
 });
 
-test('maldición diceReduce reduce el pool de dados tirado', () => {
-  const rng = createRng(5);
+test('maldición Confusión resta espadas tras la tirada (reduceSword)', () => {
+  // Misma semilla → mismas caras; confusión solo resta del resultado, no quita dados.
+  let base = initCombat({ node: nodeOf('c1n02'), party: ['guerrera'], difficulty: 'facil' });
+  base = rollActiveHero(base, createRng(5));
+  const baseSword = activeHero(base).pool.sword;
+
   let c = initCombat({ node: nodeOf('c1n02'), party: ['guerrera'], difficulty: 'facil' });
-  // guerrera tira 4 dados; confusión (diceReduce power 2) → 2 dados
-  c.heroes[0] = applyCurse(c.heroes[0], 'confusion');
-  c = rollActiveHero(c, rng);
-  assert.equal(activeHero(c).pool.faces.length, 2);
+  c.heroes[0] = applyCurse(c.heroes[0], 'confusion'); // reduceSword power 1
+  c = rollActiveHero(c, createRng(5));
+  assert.equal(activeHero(c).pool.faces.length, 4); // no quita dados
+  assert.equal(activeHero(c).pool.sword, Math.max(0, baseSword - 1));
 });
 
-test('maldición Silencio (blocksSpells) impide lanzar hechizos', () => {
-  const rng = createRng(3);
+test('maldición Silencio resta estrellas y ya no bloquea hechizos', () => {
+  let base = initCombat({ node: nodeOf('c1n07'), party: ['mago'], difficulty: 'facil' });
+  base = rollActiveHero(base, createRng(3));
+  const baseStar = activeHero(base).pool.star;
+
   let c = initCombat({ node: nodeOf('c1n07'), party: ['mago'], difficulty: 'facil' });
-  c = rollActiveHero(c, rng);
-  c.heroes[0].energy = 5; // energía suficiente para Bola de Fuego (coste 2)
+  c.heroes[0] = applyCurse(c.heroes[0], 'silencio'); // reduceStar power 1
+  c = rollActiveHero(c, createRng(3));
+  assert.equal(activeHero(c).pool.star, Math.max(0, baseStar - 1));
+  assert.equal(spellsBlocked(activeHero(c)), false);
+
+  // El hechizo SÍ surte efecto: silencio ya no impide lanzar.
+  c.heroes[0].energy = 5;
   const target = c.enemies.find((e) => e.hp > 0);
-  // sin silencio: el hechizo cambia el estado (daña al objetivo)
   const cast = heroCast(c, 'bola_fuego', target.uid);
   assert.notDeepEqual(cast.enemies, c.enemies);
-  // con silencio: el hechizo no surte efecto
-  c.heroes[0] = applyCurse(c.heroes[0], 'silencio');
-  const blocked = heroCast(c, 'bola_fuego', target.uid);
-  assert.deepEqual(blocked.enemies, c.enemies);
 });
 
-test('maldición Sangría (onIncomingDamage) aumenta el daño recibido', () => {
-  function dmgTaken(withCurse) {
-    const rng = createRng(2);
-    let c = initCombat({ node: nodeOf('c1n02'), party: ['guerrera'], difficulty: 'facil' });
-    c.enemies = [c.enemies[0]]; // un único atacante determinista
-    c.phase = 'enemy';
-    if (withCurse) c.heroes[0] = applyCurse(c.heroes[0], 'sangria');
-    const before = c.heroes[0].hp;
-    c = resolveEnemyPhase(c, rng);
-    return before - c.heroes[0].hp;
-  }
-  const base = dmgTaken(false);
-  const cursed = dmgTaken(true);
-  assert.equal(cursed - base, 2); // power de Sangría
+test('maldición Sangría inflige daño al inicio del turno del héroe (dotDamage)', () => {
+  const rng = createRng(2);
+  let c = initCombat({ node: nodeOf('c1n02'), party: ['guerrera'], difficulty: 'facil' });
+  c.heroes[0] = applyCurse(c.heroes[0], 'sangria'); // dotDamage power 2
+  const before = c.heroes[0].hp;
+  c = rollActiveHero(c, rng); // el daño por turno se aplica al tirar
+  assert.equal(before - activeHero(c).hp, 2);
 });
 
 // ---- Boss behavior deck (Gulrath) ----

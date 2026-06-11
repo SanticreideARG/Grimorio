@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { content } from '../../data/index.js';
 import { assetUrl } from '../assets.js';
+import { useGameStore } from '../../store/gameStore.js';
 
 const BEHAVIOR_LABEL = {
   swarm:   'Turba',
@@ -16,7 +17,7 @@ function getCardbackPath(type, unit) {
   const MAP = {
     hero:   'cardbacks/heroes.png',
     item:   'cardbacks/botin.png',
-    potion: 'cardbacks/botin.png',
+    potion: 'cardbacks/pociones.png',
     pet:    'cardbacks/mascotas.png',
   };
   return MAP[type] ?? 'cardbacks/heroes.png';
@@ -255,6 +256,10 @@ function PetDetail({ unit: pet }) {
   const artUrl = pet.art ? assetUrl(pet.art) : null;
   const [hovered, setHovered] = useState(false);
 
+  const party = useGameStore((s) => s.game?.party ?? []);
+  const assignedHeroId = useGameStore((s) => s.game?.petAssignments?.[pet.id] ?? null);
+  const assignPet = useGameStore((s) => s.assignPet);
+
   return (
     <div className={`card-detail__content${hovered ? ' is-portrait-hover' : ''}`}>
       <div
@@ -275,6 +280,32 @@ function PetDetail({ unit: pet }) {
 
       <div className="card-detail__body">
         <p className="card-detail__lore">{pet.desc}</p>
+
+        <div className="card-detail__pet-assign">
+          <span className="card-detail__section-label">Acompaña a</span>
+          <div className="pet-assign__heroes">
+            {party.map((heroId) => {
+              const hero = content.heroesById[heroId];
+              if (!hero) return null;
+              const portraitUrl = assetUrl(hero.portrait ?? `heroes/${heroId}.png`);
+              const isActive = assignedHeroId === heroId;
+              return (
+                <button
+                  key={heroId}
+                  type="button"
+                  className={`pet-assign__hero${isActive ? ' is-active' : ''}`}
+                  title={isActive ? `Quitar de ${hero.name}` : `Asignar a ${hero.name}`}
+                  onClick={() => assignPet(pet.id, heroId)}
+                >
+                  {portraitUrl
+                    ? <img src={portraitUrl} alt={hero.name} />
+                    : <span>{hero.name[0]}</span>
+                  }
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   );

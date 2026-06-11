@@ -60,6 +60,7 @@ function makeEnemyInstance(enemy, idx, mult) {
     isElite: !!enemy.isElite, isBoss: !!enemy.isBoss,
     summons: enemy.summons ?? null,
     art: enemy.art ?? null,
+    curses: [],
   };
 }
 
@@ -246,8 +247,8 @@ export function heroAttack(combat, enemyUid, rng) {
   return checkEnd(c);
 }
 
-/** El héroe activo lanza un hechizo (si tiene energía). */
-export function heroCast(combat, spellId, targetUid) {
+/** El héroe activo lanza un hechizo (si tiene energía). `rng` para procs de maldición. */
+export function heroCast(combat, spellId, targetUid, rng) {
   const c = clone(combat);
   const h = activeHero(c);
   if (!h || !h.hasRolled || c.phase !== 'hero') return combat;
@@ -256,6 +257,7 @@ export function heroCast(combat, spellId, targetUid) {
   const spell = content.spellsById[spellId];
   if (!spell || h.energy < spell.cost) return combat;
   const fx = spell.effect ?? {};
+  const logStart = c.log.length; // para marcar el cardback de "magia" tras resolver
 
   // ---- AoE: daño a todos los enemigos ----
   if (fx.damageAll && fx.damage) {
@@ -294,6 +296,15 @@ export function heroCast(combat, spellId, targetUid) {
         pushLog(c, 'spell', `El rayo traspasa y golpea a ${behind.name} (${fx.damage}).`, {
           anim: 'laser', source: h.id, target: behind.uid,
         });
+      }
+    }
+    // Proc de maldición: algunas habilidades afligen al objetivo si sobrevive.
+    if (fx.curse && target.hp > 0 && rng && rng.chance(fx.curse.chance ?? 1)) {
+      const ci = c.enemies.findIndex((e) => e.uid === target.uid);
+      if (ci >= 0) {
+        c.enemies[ci] = applyCurse(c.enemies[ci], fx.curse.id);
+        const cname = content.cursesById[fx.curse.id]?.name ?? fx.curse.id;
+        pushLog(c, 'curse', `${target.name} queda afligido: ${cname}.`);
       }
     }
   }
@@ -339,6 +350,14 @@ export function heroCast(combat, spellId, targetUid) {
   }
 
   h.energy -= spell.cost;
+
+  // Magias de coste alto (≥3): marca la primera entrada de hechizo de esta tirada
+  // para que la UI dispare el flash del cardback de magias.
+  if (spell.cost >= 3) {
+    const i = c.log.findIndex((e, idx) => idx >= logStart && e.kind === 'spell');
+    if (i >= 0) c.log[i] = { ...c.log[i], cardback: 'magias' };
+  }
+
   return checkEnd(c);
 }
 
@@ -493,12 +512,32 @@ function applyOneEnemy(c, enemy, rng) {
   }
 }
 
-/** Inicia un nuevo round: resetea héroes, avanza contador. */
+/**
+ * Aplica daño por turno (sangría / veneno) a los enemigos malditos. Muta `c`.
+ * Reutiliza applyDotDamage, que opera sobre cualquier unidad con .curses y .hp.
+ */
+function applyEnemyDots(c) {
+  for (const enemy of c.enemies) {
+    if (enemy.hp <= 0) continue;
+    const dot = applyDotDamage(enemy);
+    if (dot.damage > 0) {
+      enemy.hp = dot.hero.hp;
+      pushLog(c, 'dot', `${enemy.name} sufre ${dot.damage} de ${dot.names.join(' + ')}.`,
+        { anim: 'dot', target: enemy.uid });
+      if (enemy.hp <= 0) pushLog(c, 'down', `${enemy.name} sucumbe a la maldición.`);
+    }
+  }
+}
+
+/** Inicia un nuevo round: resetea héroes, decrementa maldiciones, avanza contador. */
 function startNewRound(c) {
   c.round += 1;
   for (let i = 0; i < c.heroes.length; i++) {
     const h = c.heroes[i];
     c.heroes[i] = tickCurses({ ...h, block: 0, energy: 0, pool: null, hasRolled: false, hasAttacked: false });
+  }
+  for (let i = 0; i < c.enemies.length; i++) {
+    if (c.enemies[i].hp > 0) c.enemies[i] = tickCurses(c.enemies[i]);
   }
   c.phase = 'hero';
   c.activeHeroIndex = firstLivingHero(c);
@@ -514,6 +553,9 @@ function startNewRound(c) {
 export function startEnemyPhase(combat) {
   if (combat.phase !== 'enemy') return combat;
   const c = clone(combat);
+  // Sangría/veneno hacen efecto antes de que los enemigos actúen.
+  applyEnemyDots(c);
+  if (c.enemies.every((e) => e.hp <= 0)) return checkEnd(c);
   c.pendingEnemies = c.enemies.filter((e) => e.hp > 0).map((e) => e.uid);
   return c;
 }
@@ -549,6 +591,10 @@ export function resolveNextEnemy(combat, rng) {
 export function resolveEnemyPhase(combat, rng) {
   let c = clone(combat);
   if (c.phase !== 'enemy') return combat;
+
+  applyEnemyDots(c);
+  c = checkEnd(c);
+  if (isOver(c)) return c;
 
   for (const enemy of c.enemies) {
     if (enemy.hp <= 0) continue;

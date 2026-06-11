@@ -13,8 +13,11 @@ import {
   validAllyTargets,
 } from '../../systems/combat.js';
 import { useCombatFx } from '../combat/useCombatFx.js';
+import { useCardbackFlash } from '../combat/useCardbackFlash.js';
 import { useCombatBarks } from '../combat/useCombatBarks.js';
 import { assetUrl } from '../assets.js';
+import { DieFace, DieSymbol } from '../components/Dice.jsx';
+import CardbackFlash from '../components/CardbackFlash.jsx';
 import { canControlHero, activePlayerName } from '../../systems/turn.js';
 
 const KIND_LABEL = { combat: 'Combate', elite: 'Combate de Élite', boss: 'Jefe' };
@@ -26,52 +29,10 @@ function UnitArt({ src, alt, fallback }) {
   return <span className="unit__art unit__art--placeholder" aria-hidden="true">{fallback}</span>;
 }
 
-// Imagen de símbolo de dado (con fallback a emoji si el asset no carga)
-const DIE_IMGS = {
-  sword:  { path: 'ui/dado_espada',  fallback: '🗡️' },
-  shield: { path: 'ui/dado_escudo',  fallback: '🛡️' },
-  star:   { path: 'ui/dado_estrella', fallback: '⭐' },
-};
-
-// Símbolo de dado pequeño para usar inline (totales, coste de hechizo).
-// La imagen va sobre un mini-azulejo dorado con mezcla multiply para borrar
-// su fondo blanco original.
-function DieSymbol({ type }) {
-  const info = DIE_IMGS[type];
-  const url  = info ? assetUrl(info.path + '.png') : null;
-  if (!url) return <span className="die-sym die-sym--emoji">{info?.fallback ?? '·'}</span>;
-  return (
-    <span className="die-sym">
-      <img className="die-sym__img" src={url} alt={info.fallback} />
-    </span>
-  );
-}
-
-// Cara del dado grande: la imagen del símbolo llena el cuadrado y el número
-// (cantidad de símbolos de esa cara) se superpone en amarillo con glow.
-// Cada cara real tiene un único tipo de símbolo (o está vacía).
-function DieFace({ face }) {
-  const entry = face.sword ? ['sword', face.sword]
-    : face.shield ? ['shield', face.shield]
-    : face.star ? ['star', face.star]
-    : null;
-  if (!entry) return <span className="die-blank">·</span>;
-  const [type, count] = entry;
-  const info = DIE_IMGS[type];
-  const url  = info ? assetUrl(info.path + '.png') : null;
-  return (
-    <>
-      {url
-        ? <img className="die-face__img" src={url} alt={info.fallback} />
-        : <span className="die-face__emoji">{info?.fallback}</span>}
-      <span className="die-face__num">{count}</span>
-    </>
-  );
-}
-
 export default function CombatScreen() {
   const combat = useGameStore((s) => s.game.combat);
   const potionBag = useGameStore((s) => s.game.potionBag ?? {});
+  const petAssignments = useGameStore((s) => s.game?.petAssignments ?? {});
   const chapterIndex = useGameStore((s) => s.game?.chapterIndex ?? 0);
   const players = useGameStore((s) => s.game?.players ?? ['Jugador 1']);
   const roll = useGameStore((s) => s.combatRoll);
@@ -92,7 +53,15 @@ export default function CombatScreen() {
   const fxRef = useRef(null);
 
   useCombatFx(combat, fxRef);
+  const cardbackFlash = useCardbackFlash(combat);
   const barks = useCombatBarks(combat);
+
+  // heroId → mascota asignada (para el icono arriba-izquierda de su card)
+  const petByHero = {};
+  for (const [petId, heroId] of Object.entries(petAssignments)) {
+    const pet = content.petsById?.[petId];
+    if (pet && heroId) petByHero[heroId] = pet;
+  }
 
   // Limpiar targeting al cambiar de héroe o de fase.
   useEffect(() => {
@@ -320,6 +289,7 @@ export default function CombatScreen() {
             <HeroCard
               key={h.id}
               h={h}
+              pet={petByHero[h.id]}
               bark={barks[h.id]}
               active={combat.heroes[combat.activeHeroIndex]?.id === h.id && isHeroPhase}
               clickable={allyTargetIds.has(h.id) || (canSelectHero && selectableHeroIds.has(h.id) && h.id !== hero?.id)}
@@ -334,6 +304,7 @@ export default function CombatScreen() {
             <HeroCard
               key={h.id}
               h={h}
+              pet={petByHero[h.id]}
               bark={barks[h.id]}
               active={combat.heroes[combat.activeHeroIndex]?.id === h.id && isHeroPhase}
               clickable={allyTargetIds.has(h.id) || (canSelectHero && selectableHeroIds.has(h.id) && h.id !== hero?.id)}
@@ -392,6 +363,9 @@ export default function CombatScreen() {
 
       {/* Capa de efectos visuales (proyectiles, impactos, curación) */}
       <div className="fx-layer" ref={fxRef} aria-hidden="true" />
+
+      {/* Flash breve de cardback (poción / maldición / magia cara) */}
+      <CardbackFlash flash={cardbackFlash} />
 
       {detailUnit && (
         <CardDetailModal unit={detailUnit} type={detailType} onClose={() => setDetailUnit(null)} />
@@ -465,12 +439,29 @@ function EnemyCard({ e, bark, clickable, onClick, onOpenDetail }) {
         disabled={!clickable}
       >
         {!dead && <SpeechBubble bark={bark} />}
-        <UnitArt src={e.art ?? `enemies/${e.id}.png`} alt={e.name} fallback={e.name[0]} />
+        <div className="unit__art-wrap">
+          <UnitArt src={e.art ?? `enemies/${e.id}.png`} alt={e.name} fallback={e.name[0]} />
+          <CurseIcons curses={e.curses} />
+        </div>
         <span className="unit__name">{e.name}</span>
         <HpBar hp={e.hp} maxHp={e.maxHp} kind="enemy" />
         <span className="unit__meta">{e.dmg}🗡️ · {e.row === 'back' ? 'dist.' : 'melé'}</span>
       </button>
       <button className="unit__info-btn" tabIndex={-1} aria-label="Ver detalles" onClick={(ev) => { ev.stopPropagation(); onOpenDetail?.(e); }}>ⓘ</button>
+    </div>
+  );
+}
+
+// Icono de la mascota asignada, arriba-izquierda del retrato del héroe.
+function PetBadge({ pet }) {
+  if (!pet) return null;
+  const iconUrl = pet.art ? assetUrl(pet.art) : null;
+  return (
+    <div className="unit__pet" title={`${pet.name} acompaña a este héroe`}>
+      {iconUrl
+        ? <img src={iconUrl} alt={pet.name} />
+        : <span>{pet.name[0]}</span>
+      }
     </div>
   );
 }
@@ -496,7 +487,7 @@ function CurseIcons({ curses }) {
   );
 }
 
-function HeroCard({ h, bark, active, clickable, selectable, onClick, onOpenDetail }) {
+function HeroCard({ h, pet, bark, active, clickable, selectable, onClick, onOpenDetail }) {
   const cls = [
     'unit unit--hero',
     active ? 'is-active' : '',
@@ -517,6 +508,7 @@ function HeroCard({ h, bark, active, clickable, selectable, onClick, onOpenDetai
         {!h.down && <SpeechBubble bark={bark} />}
         <div className="unit__art-wrap">
           <UnitArt src={h.portrait ?? `heroes/${h.id}.png`} alt={h.name} fallback={h.name[0]} />
+          <PetBadge pet={pet} />
           <CurseIcons curses={h.curses} />
         </div>
         <span className="unit__name">{h.name.split(' ')[0]}</span>
@@ -572,46 +564,74 @@ function BossDefeatedDialogue({ combat, onFinish }) {
   const boss    = combat.enemies.find((e) => e.isBoss);
   const bossData = boss ? content.bossesById?.[boss.id] : null;
   const dialogue = bossData?.deathDialogue ?? null;
-  const artUrl   = boss?.art ? assetUrl(boss.art) : null;
+  // Arte de derrota (<id>_defeat); si falta, cae al arte normal del jefe.
+  const defeatUrl  = boss ? assetUrl(`bosses/${boss.id}_defeat.png`) : null;
+  const artUrl     = defeatUrl ?? (boss?.art ? assetUrl(boss.art) : null);
+  const cardbackUrl = assetUrl('cardbacks/jefes.png');
+
+  // Animación de entrada: 2 giros mostrando el cardback → al asentar, vira a sepia
+  // y recién entonces aparecen botín y continuar.
+  const [settled, setSettled] = useState(false);
+  useEffect(() => {
+    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) { setSettled(true); return undefined; }
+    const t = setTimeout(() => setSettled(true), 2000);
+    return () => clearTimeout(t);
+  }, []);
 
   return (
-    <div className="boss-defeat">
-      {/* Cabecera */}
-      <div className="overlay__sub">JEFE DERROTADO</div>
+    // Toda la card gira (2 vueltas) mostrando el cardback; asienta en el contenido,
+    // el retrato vira a sepia y aparecen botín + continuar.
+    <div className={`boss-defeat${settled ? ' is-settled' : ''}`}>
+      <div className="boss-defeat__flip-inner">
+        {/* Cara frontal: el contenido real (define la altura) */}
+        <div className="boss-defeat__flip-face boss-defeat__flip-front">
+          {/* Cabecera */}
+          <div className="overlay__sub">JEFE DERROTADO</div>
 
-      {/* Retrato (imagen real o placeholder) */}
-      <div className="boss-defeat__portrait">
-        {artUrl
-          ? <img className="boss-defeat__img" src={artUrl} alt={boss?.name} />
-          : <span className="boss-defeat__placeholder" aria-hidden="true">
-              {boss?.name?.[0] ?? '?'}
-            </span>
-        }
-        <div className="boss-defeat__vignette" />
+          {/* Retrato (vira a sepia al asentar) */}
+          <div className="boss-defeat__portrait">
+            {artUrl
+              ? <img className="boss-defeat__img" src={artUrl} alt={boss?.name} />
+              : <span className="boss-defeat__placeholder" aria-hidden="true">
+                  {boss?.name?.[0] ?? '?'}
+                </span>
+            }
+            <div className="boss-defeat__vignette" />
+          </div>
+
+          {/* Nombre del jefe */}
+          <h2 className="boss-defeat__name">{boss?.name ?? 'Jefe derrotado'}</h2>
+
+          {/* Diálogo + botín + continuar (aparecen tras el flip) */}
+          <div className={`boss-defeat__reveal${settled ? ' is-shown' : ''}`}>
+            {dialogue?.lastWords && (
+              <p className="boss-defeat__speech">
+                <span className="boss-defeat__quote">"</span>
+                {dialogue.lastWords}
+                <span className="boss-defeat__quote">"</span>
+              </p>
+            )}
+
+            {dialogue?.narrator && (
+              <p className="boss-defeat__narrator">{dialogue.narrator}</p>
+            )}
+
+            <p className="boss-defeat__loot">Botín: {combat.loot?.gold ?? 0} de oro</p>
+            <button className="btn btn--primary" onClick={onFinish}>
+              Continuar
+            </button>
+          </div>
+        </div>
+
+        {/* Cara trasera: cardback de jefes a tamaño completo */}
+        <div className="boss-defeat__flip-face boss-defeat__flip-back">
+          {cardbackUrl
+            ? <img className="boss-defeat__cardback" src={cardbackUrl} alt="" />
+            : <span className="boss-defeat__placeholder" aria-hidden="true">☠</span>
+          }
+        </div>
       </div>
-
-      {/* Nombre del jefe */}
-      <h2 className="boss-defeat__name">{boss?.name ?? 'Jefe derrotado'}</h2>
-
-      {/* Últimas palabras */}
-      {dialogue?.lastWords && (
-        <p className="boss-defeat__speech">
-          <span className="boss-defeat__quote">"</span>
-          {dialogue.lastWords}
-          <span className="boss-defeat__quote">"</span>
-        </p>
-      )}
-
-      {/* Narrador */}
-      {dialogue?.narrator && (
-        <p className="boss-defeat__narrator">{dialogue.narrator}</p>
-      )}
-
-      {/* Botín y continuar */}
-      <p className="boss-defeat__loot">Botín: {combat.loot?.gold ?? 0} de oro</p>
-      <button className="btn btn--primary" onClick={onFinish}>
-        Continuar
-      </button>
     </div>
   );
 }

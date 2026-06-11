@@ -87,8 +87,8 @@ test('la campaña tiene 4 capítulos, cada uno con start, jefe y enemigos válid
   }
 });
 
-test('los recuentos de nodos siguen el GDD (16/18/20/14)', () => {
-  assert.deepEqual(content.chapters.map((c) => c.nodes.length), [16, 18, 20, 14]);
+test('los recuentos de nodos siguen el GDD (16/18/20/15)', () => {
+  assert.deepEqual(content.chapters.map((c) => c.nodes.length), [16, 18, 20, 15]);
 });
 
 test('cada jefe que invoca lo hace con un enemigo existente', () => {

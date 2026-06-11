@@ -99,8 +99,8 @@ export const spells = [
   // ---- Pícara: Nix ----
   {
     id: 'golpe_furtivo', name: 'Golpe Furtivo', cost: 2, type: 'attack',
-    desc: '3 de daño a cualquier enemigo (ataca la retaguardia).',
-    effect: { damage: 3, target: 'enemy', ignoreRow: true },
+    desc: '3 de daño a cualquier enemigo; rara vez provoca sangría (2/turno, 3 turnos).',
+    effect: { damage: 3, target: 'enemy', ignoreRow: true, curse: { id: 'sangria', chance: 0.2 } },
     icon: 'spells/golpe_furtivo.png',
   },
   {
@@ -111,8 +111,8 @@ export const spells = [
   },
   {
     id: 'veneno_mortal', name: 'Veneno Mortal', cost: 2, type: 'attack',
-    desc: '5 de daño venenoso a cualquier enemigo.',
-    effect: { damage: 5, target: 'enemy', ignoreRow: true },
+    desc: '4 de daño; suele envenenar al objetivo (1/turno, 3 turnos).',
+    effect: { damage: 4, target: 'enemy', ignoreRow: true, curse: { id: 'veneno', chance: 0.5 } },
     icon: 'spells/veneno_mortal.png',
   },
 
@@ -131,8 +131,8 @@ export const spells = [
   },
   {
     id: 'flecha_pesada', name: 'Flecha Pesada', cost: 2, type: 'attack',
-    desc: '4 de daño a un enemigo a distancia.',
-    effect: { damage: 4, target: 'enemy', ignoreRow: true },
+    desc: '4 de daño a distancia; a veces envenena la herida (1/turno, 3 turnos).',
+    effect: { damage: 4, target: 'enemy', ignoreRow: true, curse: { id: 'veneno', chance: 0.3 } },
     icon: 'spells/flecha_pesada.png',
   },
 

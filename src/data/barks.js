@@ -48,6 +48,11 @@ export const heroBarks = {
     hurt:   ['Mala posición.', 'Reubicándome.', 'Tsk.', 'No otra vez.'],
     idle:   ['Tengo el ángulo.', 'Paciencia.', 'Veo todo desde aquí.'],
   },
+  orphen: { // El Mago Oscuro — sombrío, calculador, indiferente
+    attack: ['Sin rodeos.', 'Era inevitable.', 'Luz u oscuridad: el resultado es el mismo.', 'Ya terminó para ti.'],
+    hurt:   ['Descuido mío.', '…Interesante.', 'No lo repetiré.', 'Eso sí dolió.'],
+    idle:   ['No te confíes.', 'Cada movimiento tiene un precio.', 'Observo y aprendo.'],
+  },
 };
 
 // ───────────────────────── Jefes ─────────────────────────

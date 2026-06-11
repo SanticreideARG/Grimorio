@@ -92,8 +92,21 @@ export default function MapScreen() {
           const maxHp = effectiveMaxHp(id, game);
           const hp = game.partyHp?.[id] ?? maxHp;
           const pct = maxHp > 0 ? Math.max(0, Math.min(100, (hp / maxHp) * 100)) : 0;
+          // Mascota acompañante (cosmético): icono al inicio de la fila.
+          const petId = Object.entries(game.petAssignments ?? {})
+            .find(([, heroId]) => heroId === id)?.[0];
+          const pet = petId ? content.petsById[petId] : null;
+          const petUrl = pet?.art ? assetUrl(pet.art) : null;
           return (
             <span key={id} className="party-status__hero" title={`${hero.name}: ${hp}/${maxHp}`}>
+              {pet && (
+                <span className="party-status__heropet" title={`${pet.name} acompaña a ${hero.name}`}>
+                  {petUrl
+                    ? <img src={petUrl} alt={pet.name} />
+                    : <span>{pet.name[0]}</span>
+                  }
+                </span>
+              )}
               <span className="party-status__name">{hero.name.split(' ')[0]}</span>
               <span className="party-status__bar">
                 <span className="party-status__fill" style={{ width: `${pct}%` }} />

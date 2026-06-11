@@ -11,12 +11,6 @@ const BEHAVIOR_LABEL = {
   boss:    'Jefe',
 };
 
-const DIE_IMGS = {
-  sword:  'ui/dado_espada.png',
-  shield: 'ui/dado_escudo.png',
-  star:   'ui/dado_estrella.png',
-};
-
 export default function CardDetailModal({ unit, type, onClose }) {
   const [flipped, setFlipped] = useState(false);
 
@@ -62,10 +56,15 @@ export default function CardDetailModal({ unit, type, onClose }) {
 function HeroDetail({ unit }) {
   const hero = content.heroesById[unit.id] ?? unit;
   const portraitUrl = assetUrl(hero.portrait ?? `heroes/${hero.id}.png`);
+  const [hovered, setHovered] = useState(false);
 
   return (
-    <div className="card-detail__content">
-      <div className="card-detail__portrait">
+    <div className={`card-detail__content${hovered ? ' is-portrait-hover' : ''}`}>
+      <div
+        className="card-detail__portrait"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
         {portraitUrl
           ? <img src={portraitUrl} alt={hero.name} className="card-detail__portrait-img" />
           : <span className="card-detail__portrait-fallback">{hero.name[0]}</span>
@@ -90,32 +89,6 @@ function HeroDetail({ unit }) {
             <span className="card-detail__passive-text">{hero.passive.text}</span>
           </div>
         )}
-
-        <div>
-          <span className="card-detail__section-label">Dado — {hero.dice} dado{hero.dice !== 1 ? 's' : ''} de 6 caras</span>
-          <div className="card-detail__dice">
-            {(hero.diceFaces ?? []).map((face, i) => {
-              const entry = face.sword ? ['sword', face.sword]
-                : face.shield ? ['shield', face.shield]
-                : face.star   ? ['star',   face.star]
-                : null;
-              const url = entry ? assetUrl(DIE_IMGS[entry[0]]) : null;
-              return (
-                <span key={i} className="card-detail__die-face">
-                  {entry ? (
-                    <>
-                      {url
-                        ? <img className="card-detail__die-img" src={url} alt={entry[0]} />
-                        : <span className="card-detail__die-emoji">{entry[0][0]}</span>
-                      }
-                      <span className="card-detail__die-num">{entry[1]}</span>
-                    </>
-                  ) : <span className="card-detail__die-blank">·</span>}
-                </span>
-              );
-            })}
-          </div>
-        </div>
 
         {hero.spells?.length > 0 && (
           <div>
@@ -152,10 +125,15 @@ function EnemyDetail({ unit }) {
   const artUrl = assetUrl(unit.art ?? `enemies/${unit.id}.png`);
   const summonedName = base.summons ? (content.enemiesById[base.summons]?.name ?? base.summons) : null;
   const curseName = base.curse ? (content.cursesById?.[base.curse]?.name ?? base.curse) : null;
+  const [hovered, setHovered] = useState(false);
 
   return (
-    <div className="card-detail__content">
-      <div className="card-detail__portrait card-detail__portrait--enemy">
+    <div className={`card-detail__content${hovered ? ' is-portrait-hover' : ''}`}>
+      <div
+        className="card-detail__portrait card-detail__portrait--enemy"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
         {artUrl
           ? <img src={artUrl} alt={unit.name} className="card-detail__portrait-img" />
           : <span className="card-detail__portrait-fallback">{unit.name[0]}</span>

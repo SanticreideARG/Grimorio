@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useGameStore } from '../../store/gameStore.js';
 import { heroes } from '../../data/heroes.js';
 import { assetUrl } from '../assets.js';
+import CardDetailModal from '../components/CardDetailModal.jsx';
 
 const ROW_LABEL = { front: 'Frente', back: 'Retaguardia', any: 'Cualquiera' };
 const MAX = 4;
@@ -20,6 +21,7 @@ export default function PartySelect() {
   const quitToMenu = useGameStore((s) => s.quitToMenu);
   const players = useGameStore((s) => s.game?.players ?? ['Jugador 1']);
   const [selected, setSelected] = useState([]);
+  const [detailHero, setDetailHero] = useState(null);
 
   const toggle = (id) => {
     setSelected((cur) => {
@@ -50,33 +52,39 @@ export default function PartySelect() {
           const order = selected.indexOf(h.id) + 1;
           const full = !isSel && selected.length >= MAX;
           return (
-            <button
+            <div
               key={h.id}
-              className={`hero-pick${isSel ? ' is-selected' : ''}${(full || locked) ? ' is-disabled' : ''}${locked ? ' is-locked' : ''}`}
-              onClick={() => !locked && toggle(h.id)}
-              disabled={full || locked}
-              title={locked ? 'Completá la campaña en Difícil para desbloquear' : undefined}
+              className="unit-wrap"
+              onContextMenu={(ev) => { ev.preventDefault(); setDetailHero(h); }}
             >
-              {locked && <span className="hero-pick__locked">🔒</span>}
-              {isSel && (
-                <span className="hero-pick__order">
-                  {players.length > 1
-                    ? players[(order - 1) % players.length]?.slice(0, 2) ?? order
-                    : order}
+              <button
+                className={`hero-pick${isSel ? ' is-selected' : ''}${(full || locked) ? ' is-disabled' : ''}${locked ? ' is-locked' : ''}`}
+                onClick={() => !locked && toggle(h.id)}
+                disabled={full || locked}
+                title={locked ? 'Completá la campaña en Difícil para desbloquear' : undefined}
+              >
+                {locked && <span className="hero-pick__locked">🔒</span>}
+                {isSel && (
+                  <span className="hero-pick__order">
+                    {players.length > 1
+                      ? players[(order - 1) % players.length]?.slice(0, 2) ?? order
+                      : order}
+                  </span>
+                )}
+                <span className={`hero-pick__row hero-pick__row--${h.row}`}>
+                  {ROW_LABEL[h.row] ?? h.row}
                 </span>
-              )}
-              <span className={`hero-pick__row hero-pick__row--${h.row}`}>
-                {ROW_LABEL[h.row] ?? h.row}
-              </span>
-              <HeroPortrait portrait={h.portrait} name={h.name} />
-              <span className="hero-pick__name">{h.name.split(' ')[0]}</span>
-              <span className="hero-pick__role">{h.role}</span>
-              <dl className="hero-pick__stats">
-                <span>❤ {h.maxHp}</span>
-                <span>🎲 {h.dice}</span>
-                <span>✦ {h.spells.length}</span>
-              </dl>
-            </button>
+                <HeroPortrait portrait={h.portrait} name={h.name} />
+                <span className="hero-pick__name">{h.name.split(' ')[0]}</span>
+                <span className="hero-pick__role">{h.role}</span>
+                <dl className="hero-pick__stats">
+                  <span>❤ {h.maxHp}</span>
+                  <span>🎲 {h.dice}</span>
+                  <span>✦ {h.spells.length}</span>
+                </dl>
+              </button>
+              <button className="unit__info-btn" tabIndex={-1} aria-label="Ver detalles" onClick={(ev) => { ev.stopPropagation(); setDetailHero(h); }}>ⓘ</button>
+            </div>
           );
         })}
       </section>
@@ -94,6 +102,10 @@ export default function PartySelect() {
           Comenzar la campaña →
         </button>
       </div>
+
+      {detailHero && (
+        <CardDetailModal unit={detailHero} type="hero" onClose={() => setDetailHero(null)} />
+      )}
     </main>
   );
 }

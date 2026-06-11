@@ -6,6 +6,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useGameStore } from '../../store/gameStore.js';
 import { content } from '../../data/index.js';
+import CardDetailModal from '../components/CardDetailModal.jsx';
 import {
   activeHero,
   validEnemyTargets,
@@ -86,6 +87,8 @@ export default function CombatScreen() {
 
   // null | spell object | { type:'potion', potionId }
   const [targeting, setTargeting] = useState(null);
+  const [detailUnit, setDetailUnit] = useState(null);
+  const [detailType, setDetailType] = useState(null);
   const fxRef = useRef(null);
 
   useCombatFx(combat, fxRef);
@@ -217,12 +220,12 @@ export default function CombatScreen() {
       <section className="side side--enemies">
         <Row label="Retaguardia">
           {back(combat.enemies).map((e) => (
-            <EnemyCard key={e.uid} e={e} bark={barks[e.uid]} clickable={clickableEnemies.has(e.uid)} onClick={() => onEnemyClick(e)} />
+            <EnemyCard key={e.uid} e={e} bark={barks[e.uid]} clickable={clickableEnemies.has(e.uid)} onClick={() => onEnemyClick(e)} onOpenDetail={(u) => { setDetailUnit(u); setDetailType('enemy'); }} />
           ))}
         </Row>
         <Row label="Frente">
           {front(combat.enemies).map((e) => (
-            <EnemyCard key={e.uid} e={e} bark={barks[e.uid]} clickable={clickableEnemies.has(e.uid)} onClick={() => onEnemyClick(e)} />
+            <EnemyCard key={e.uid} e={e} bark={barks[e.uid]} clickable={clickableEnemies.has(e.uid)} onClick={() => onEnemyClick(e)} onOpenDetail={(u) => { setDetailUnit(u); setDetailType('enemy'); }} />
           ))}
         </Row>
       </section>
@@ -322,6 +325,7 @@ export default function CombatScreen() {
               clickable={allyTargetIds.has(h.id) || (canSelectHero && selectableHeroIds.has(h.id) && h.id !== hero?.id)}
               selectable={canSelectHero && selectableHeroIds.has(h.id) && h.id !== hero?.id}
               onClick={() => onHeroClick(h)}
+              onOpenDetail={(u) => { setDetailUnit(u); setDetailType('hero'); }}
             />
           ))}
         </Row>
@@ -335,6 +339,7 @@ export default function CombatScreen() {
               clickable={allyTargetIds.has(h.id) || (canSelectHero && selectableHeroIds.has(h.id) && h.id !== hero?.id)}
               selectable={canSelectHero && selectableHeroIds.has(h.id) && h.id !== hero?.id}
               onClick={() => onHeroClick(h)}
+              onOpenDetail={(u) => { setDetailUnit(u); setDetailType('hero'); }}
             />
           ))}
         </Row>
@@ -387,6 +392,10 @@ export default function CombatScreen() {
 
       {/* Capa de efectos visuales (proyectiles, impactos, curación) */}
       <div className="fx-layer" ref={fxRef} aria-hidden="true" />
+
+      {detailUnit && (
+        <CardDetailModal unit={detailUnit} type={detailType} onClose={() => setDetailUnit(null)} />
+      )}
     </main>
   );
 }
@@ -445,25 +454,28 @@ function SpeechBubble({ bark }) {
   );
 }
 
-function EnemyCard({ e, bark, clickable, onClick }) {
+function EnemyCard({ e, bark, clickable, onClick, onOpenDetail }) {
   const dead = e.hp <= 0;
   return (
-    <button
-      data-anim-key={e.uid}
-      className={`unit unit--enemy${e.isBoss ? ' unit--boss' : ''}${e.isElite ? ' unit--elite' : ''}${clickable ? ' is-clickable' : ''}${dead ? ' is-dead' : ''}`}
-      onClick={onClick}
-      disabled={!clickable}
-    >
-      {!dead && <SpeechBubble bark={bark} />}
-      <UnitArt src={e.art ?? `enemies/${e.id}.png`} alt={e.name} fallback={e.name[0]} />
-      <span className="unit__name">{e.name}</span>
-      <HpBar hp={e.hp} maxHp={e.maxHp} kind="enemy" />
-      <span className="unit__meta">{e.dmg}🗡️ · {e.row === 'back' ? 'dist.' : 'melé'}</span>
-    </button>
+    <div className="unit-wrap" onContextMenu={(ev) => { ev.preventDefault(); onOpenDetail?.(e); }}>
+      <button
+        data-anim-key={e.uid}
+        className={`unit unit--enemy${e.isBoss ? ' unit--boss' : ''}${e.isElite ? ' unit--elite' : ''}${clickable ? ' is-clickable' : ''}${dead ? ' is-dead' : ''}`}
+        onClick={onClick}
+        disabled={!clickable}
+      >
+        {!dead && <SpeechBubble bark={bark} />}
+        <UnitArt src={e.art ?? `enemies/${e.id}.png`} alt={e.name} fallback={e.name[0]} />
+        <span className="unit__name">{e.name}</span>
+        <HpBar hp={e.hp} maxHp={e.maxHp} kind="enemy" />
+        <span className="unit__meta">{e.dmg}🗡️ · {e.row === 'back' ? 'dist.' : 'melé'}</span>
+      </button>
+      <button className="unit__info-btn" tabIndex={-1} aria-label="Ver detalles" onClick={(ev) => { ev.stopPropagation(); onOpenDetail?.(e); }}>ⓘ</button>
+    </div>
   );
 }
 
-function HeroCard({ h, bark, active, clickable, selectable, onClick }) {
+function HeroCard({ h, bark, active, clickable, selectable, onClick, onOpenDetail }) {
   const cls = [
     'unit unit--hero',
     active ? 'is-active' : '',
@@ -474,35 +486,38 @@ function HeroCard({ h, bark, active, clickable, selectable, onClick }) {
   ].filter(Boolean).join(' ');
 
   return (
-    <button
-      data-anim-key={h.id}
-      className={cls}
-      onClick={onClick}
-      disabled={!clickable && !selectable}
-    >
-      {!h.down && <SpeechBubble bark={bark} />}
-      <UnitArt src={h.portrait ?? `heroes/${h.id}.png`} alt={h.name} fallback={h.name[0]} />
-      <span className="unit__name">{h.name.split(' ')[0]}</span>
-      <HpBar hp={h.hp} maxHp={h.maxHp} kind="hero" />
-      <span className="unit__meta">
-        {h.block > 0 && <span className="chip chip--block">🛡️{h.block}</span>}
-        {active && h.energy > 0 && <span className="chip chip--energy">⭐{h.energy}</span>}
-        {h.down && <span className="chip chip--down">caído</span>}
-        {h.hasRolled && !h.down && !active && <span className="chip chip--done">✓</span>}
-        {(h.curses ?? []).map((c) => {
-          const curseData = content.cursesById?.[c.id];
-          const curseIconUrl = curseData?.icon ? assetUrl(curseData.icon) : null;
-          return (
-            <span key={c.id} className="chip chip--curse" title={`${c.name} (${c.duration ?? '?'} turnos)`}>
-              {curseIconUrl
-                ? <img className="chip__icon" src={curseIconUrl} alt={c.name} />
-                : c.name[0]
-              }
-            </span>
-          );
-        })}
-      </span>
-    </button>
+    <div className="unit-wrap" onContextMenu={(ev) => { ev.preventDefault(); onOpenDetail?.(h); }}>
+      <button
+        data-anim-key={h.id}
+        className={cls}
+        onClick={onClick}
+        disabled={!clickable && !selectable}
+      >
+        {!h.down && <SpeechBubble bark={bark} />}
+        <UnitArt src={h.portrait ?? `heroes/${h.id}.png`} alt={h.name} fallback={h.name[0]} />
+        <span className="unit__name">{h.name.split(' ')[0]}</span>
+        <HpBar hp={h.hp} maxHp={h.maxHp} kind="hero" />
+        <span className="unit__meta">
+          {h.block > 0 && <span className="chip chip--block">🛡️{h.block}</span>}
+          {active && h.energy > 0 && <span className="chip chip--energy">⭐{h.energy}</span>}
+          {h.down && <span className="chip chip--down">caído</span>}
+          {h.hasRolled && !h.down && !active && <span className="chip chip--done">✓</span>}
+          {(h.curses ?? []).map((c) => {
+            const curseData = content.cursesById?.[c.id];
+            const curseIconUrl = curseData?.icon ? assetUrl(curseData.icon) : null;
+            return (
+              <span key={c.id} className="chip chip--curse" title={`${c.name} (${c.duration ?? '?'} turnos)`}>
+                {curseIconUrl
+                  ? <img className="chip__icon" src={curseIconUrl} alt={c.name} />
+                  : c.name[0]
+                }
+              </span>
+            );
+          })}
+        </span>
+      </button>
+      <button className="unit__info-btn" tabIndex={-1} aria-label="Ver detalles" onClick={(ev) => { ev.stopPropagation(); onOpenDetail?.(h); }}>ⓘ</button>
+    </div>
   );
 }
 

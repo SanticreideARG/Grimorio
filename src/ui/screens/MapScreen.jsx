@@ -22,6 +22,7 @@ import { content } from '../../data/index.js';
 import { getNodeNarration } from '../../data/narrative.js';
 import { assetUrl } from '../assets.js';
 import BoardMap from '../components/BoardMap.jsx';
+import Coin from '../components/Coin.jsx';
 
 export default function MapScreen() {
   const game = useGameStore((s) => s.game);
@@ -76,7 +77,7 @@ export default function MapScreen() {
             </span>
             <span className="doom-num">{game.doom}/{chapter.doomMax}</span>
           </span>
-          <span className="hud__stat" title="Oro">🪙 {game.gold}</span>
+          <span className="hud__stat" title="Oro"><Coin /> {game.gold}</span>
           <span className="hud__stat" title="Progreso">{game.nodeIndex + 1}/{nodes.length}</span>
         </div>
       </header>
@@ -234,7 +235,7 @@ const CAMP_OPTIONS = [
     icon: '🗺',
     title: 'Explorar los Alrededores',
     desc: 'Registráis la zona en busca de recursos. Poco sueño, pero algo de oro.',
-    bonus: 'Curación al 25% + 25🪙',
+    bonus: 'Curación al 25% + 25 de oro',
     cost: null,
   },
 ];

@@ -49,6 +49,15 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Moneda (oro) — SVG inline que reemplaza al emoji 🪙 (ver Coin.jsx). */
+.coin-ico {
+  width: 1.05em;
+  height: 1.05em;
+  vertical-align: -0.16em;
+  flex-shrink: 0;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
+}
+
 .screen {
   min-height: 100%;
   max-width: 1100px;
@@ -983,23 +992,32 @@ body {
 .side--enemies { grid-area: enemies; }
 .side--heroes { grid-area: heroes; }
 .combat-row {
+  position: relative;
   display: flex;
+  justify-content: center; /* cartas centradas horizontalmente */
   align-items: center;
   gap: 12px;
+  min-height: 60px;
 }
+/* La etiqueta de fila flota a la izquierda para no descentrar las cartas. */
 .combat-row__label {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
   width: 86px;
-  flex: 0 0 auto;
-  text-align: right;
+  text-align: left;
   font-size: 11px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text-dim);
+  pointer-events: none;
 }
 .combat-row__units {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+  justify-content: center;
 }
 
 /* unidades (cartas de combate) */
@@ -1351,36 +1369,83 @@ body {
 }
 
 .die {
-  min-width: 44px;
-  height: 44px;
-  padding: 0 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  font-size: 16px;
-  border-radius: 8px;
+  position: relative;
+  width: 66px;
+  height: 66px;
+  border-radius: 10px;
+  overflow: hidden;
   background: radial-gradient(circle at 38% 30%, #f1d59a, #cf9d4f 70%, #a9762f);
-  color: #2c1606;
-  box-shadow: inset 0 2px 4px rgba(255, 245, 220, 0.6), 0 4px 10px rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 2px 4px rgba(255, 245, 220, 0.5), 0 4px 12px rgba(0, 0, 0, 0.55);
   border: 1px solid #835414;
   transform-origin: center;
 }
-.die-sym {
-  width: 22px;
-  height: 22px;
-  object-fit: contain;
-  flex-shrink: 0;
+/* La imagen del símbolo llena el cuadrado; multiply borra su fondo blanco
+   y entinta el dado de piedra con el dorado del azulejo. */
+.die-face__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  mix-blend-mode: multiply;
 }
-.die-sym__count {
-  font-size: 11px;
+.die-face__emoji {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+}
+/* Número de símbolos de la cara, superpuesto en amarillo con glow. */
+.die-face__num {
+  position: absolute;
+  right: 6px;
+  bottom: 2px;
+  font-family: 'Cinzel', serif;
   font-weight: 700;
-  color: #2c1606;
+  font-size: 24px;
   line-height: 1;
+  color: #ffe98a;
+  text-shadow:
+    0 0 5px rgba(255, 214, 90, 0.95),
+    0 0 11px rgba(255, 188, 48, 0.7),
+    0 1px 2px rgba(0, 0, 0, 0.9);
+  pointer-events: none;
 }
 .die-blank {
-  color: rgba(44, 22, 6, 0.5);
-  font-size: 18px;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(44, 22, 6, 0.45);
+  font-size: 30px;
+}
+
+/* Mini-símbolo inline (totales, coste de hechizo): azulejo dorado pequeño. */
+.die-sym {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  overflow: hidden;
+  background: radial-gradient(circle at 40% 32%, #e9c87f, #b9883c 80%);
+  border: 1px solid rgba(131, 84, 20, 0.7);
+  vertical-align: -0.32em;
+}
+.die-sym__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  mix-blend-mode: multiply;
+}
+.die-sym--emoji {
+  background: none;
+  border: none;
+  font-size: 16px;
 }
 
 .dice-tray__faces.is-rolled .die {

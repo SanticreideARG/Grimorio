@@ -11,6 +11,7 @@ import {
 } from '../../systems/progression.js';
 import { getCurrentNode } from '../../systems/board.js';
 import { assetUrl } from '../assets.js';
+import Coin from '../components/Coin.jsx';
 
 function SectionBanner({ cardback, title }) {
   const url = assetUrl(cardback);
@@ -36,7 +37,7 @@ export default function ShopScreen() {
       <header className="shop-header">
         <span className="shop-header__label">TIENDA</span>
         <h1 className="shop-header__title">{node?.name ?? 'El Mercader'}</h1>
-        <span className="shop-header__gold">🪙 {game.gold}</span>
+        <span className="shop-header__gold"><Coin /> {game.gold}</span>
       </header>
 
       {node?.greeting && (
@@ -61,7 +62,7 @@ export default function ShopScreen() {
                   <div className="shop-card__desc">{it.desc}</div>
                   {it.mod?.upgradeFace && <DiceFaceUpgradePreview item={it} game={game} />}
                   <div className="shop-card__foot">
-                    <span className="shop-card__price">🪙 {it.price}</span>
+                    <span className="shop-card__price"><Coin /> {it.price}</span>
                     <button
                       className="btn btn--primary btn--sm"
                       disabled={!buyable}
@@ -91,7 +92,7 @@ export default function ShopScreen() {
                   </div>
                   <div className="shop-card__desc">{p.desc}</div>
                   <div className="shop-card__foot">
-                    <span className="shop-card__price">🪙 {p.price}</span>
+                    <span className="shop-card__price"><Coin /> {p.price}</span>
                     <button
                       className="btn btn--primary btn--sm"
                       disabled={!buyable}

@@ -32,24 +32,40 @@ const DIE_IMGS = {
   star:   { path: 'ui/dado_estrella', fallback: '⭐' },
 };
 
-function DieSymbol({ type, count = 1 }) {
+// Símbolo de dado pequeño para usar inline (totales, coste de hechizo).
+// La imagen va sobre un mini-azulejo dorado con mezcla multiply para borrar
+// su fondo blanco original.
+function DieSymbol({ type }) {
   const info = DIE_IMGS[type];
   const url  = info ? assetUrl(info.path + '.png') : null;
-  if (!url) return <>{info?.fallback ?? '·'}{count > 1 ? count : ''}</>;
+  if (!url) return <span className="die-sym die-sym--emoji">{info?.fallback ?? '·'}</span>;
   return (
-    <>
-      <img className="die-sym" src={url} alt={info.fallback} />
-      {count > 1 && <span className="die-sym__count">{count}</span>}
-    </>
+    <span className="die-sym">
+      <img className="die-sym__img" src={url} alt={info.fallback} />
+    </span>
   );
 }
 
-function DieFaceContent({ face }) {
-  const parts = [];
-  if (face.sword)  parts.push(<DieSymbol key="sw" type="sword"  count={face.sword}  />);
-  if (face.shield) parts.push(<DieSymbol key="sh" type="shield" count={face.shield} />);
-  if (face.star)   parts.push(<DieSymbol key="st" type="star"   count={face.star}   />);
-  return parts.length ? <>{parts}</> : <span className="die-blank">·</span>;
+// Cara del dado grande: la imagen del símbolo llena el cuadrado y el número
+// (cantidad de símbolos de esa cara) se superpone en amarillo con glow.
+// Cada cara real tiene un único tipo de símbolo (o está vacía).
+function DieFace({ face }) {
+  const entry = face.sword ? ['sword', face.sword]
+    : face.shield ? ['shield', face.shield]
+    : face.star ? ['star', face.star]
+    : null;
+  if (!entry) return <span className="die-blank">·</span>;
+  const [type, count] = entry;
+  const info = DIE_IMGS[type];
+  const url  = info ? assetUrl(info.path + '.png') : null;
+  return (
+    <>
+      {url
+        ? <img className="die-face__img" src={url} alt={info.fallback} />
+        : <span className="die-face__emoji">{info?.fallback}</span>}
+      <span className="die-face__num">{count}</span>
+    </>
+  );
 }
 
 export default function CombatScreen() {
@@ -395,7 +411,7 @@ function DiceTray({ pool, attacked, energy }) {
       <div className="dice-tray__faces is-rolled">
         {pool.faces.map((f, i) => (
           <span key={i} className="die" style={{ '--die-i': i }}>
-            <DieFaceContent face={f} />
+            <DieFace face={f} />
           </span>
         ))}
       </div>

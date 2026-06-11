@@ -24,7 +24,7 @@ const ICON = {
   elite: '☠️',
   event: '🃏',
   rest: '🛏️',
-  shop: '🪙',
+  shop: '💰',
   boss: '👑',
 };
 

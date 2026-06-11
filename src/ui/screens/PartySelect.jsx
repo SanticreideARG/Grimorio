@@ -61,7 +61,7 @@ export default function PartySelect() {
                 className={`hero-pick${isSel ? ' is-selected' : ''}${(full || locked) ? ' is-disabled' : ''}${locked ? ' is-locked' : ''}`}
                 onClick={() => !locked && toggle(h.id)}
                 disabled={full || locked}
-                title={locked ? 'Completá la campaña en Difícil para desbloquear' : undefined}
+                title={locked ? 'Disponible luego de completar el juego en Difícil.' : undefined}
               >
                 {locked && <span className="hero-pick__locked">🔒</span>}
                 {isSel && (

@@ -878,9 +878,10 @@ body {
   opacity: 0.45;
   cursor: not-allowed;
 }
-.hero-pick.is-locked {
+.hero-pick.is-locked,
+.hero-pick.is-locked:disabled {
   opacity: 0.55;
-  cursor: not-allowed;
+  cursor: default;
   border-color: rgba(100, 80, 60, 0.4);
 }
 .hero-pick__locked {

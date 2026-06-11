@@ -202,8 +202,12 @@ export function rollActiveHero(combat, rng) {
   h.pool = pool;
   h.block += pool.shield;
   h.energy += pool.star;
+  // Pasiva de Veyra (foco): consume el maná conservado del turno anterior.
+  const focus = h.focusBonus ?? 0;
+  if (focus > 0) { h.energy += focus; h.focusBonus = 0; }
   h.hasRolled = true;
   pushLog(c, 'roll', `${h.name} tira: ${pool.sword}🗡️ ${pool.shield}🛡️ ${pool.star}⭐`);
+  if (focus > 0) pushLog(c, 'roll', `${h.name} canaliza +${focus}⭐ de maná conservado (Foco).`);
   return c;
 }
 
@@ -425,6 +429,13 @@ export function usePotionOnHero(combat, potionId, targetHeroId) {
 export function endHeroTurn(combat) {
   const c = clone(combat);
   if (c.phase !== 'hero') return combat;
+
+  // Pasiva de Veyra (foco): si el héroe que termina conserva 1+ de maná, el
+  // próximo turno gana +1 (el flag sobrevive al reset de startNewRound).
+  const finishing = activeHero(c);
+  if (finishing && content.heroesById[finishing.id]?.passive?.hook === 'manaCarry' && finishing.energy >= 1) {
+    finishing.focusBonus = 1;
+  }
 
   const owners = c.heroOwners ?? {};
   const playerCount = c.playerCount ?? 1;

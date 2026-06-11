@@ -156,6 +156,15 @@ export default function CombatScreen() {
 
   const maxSpells = chapterIndex === 0 ? 1 : chapterIndex === 1 ? 2 : Infinity;
 
+  // Hechizos visibles: los desbloqueados por capítulo + los `innate` (siempre,
+  // p.ej. Escudo de Aura de Maevis desde la fase 1).
+  const visibleSpells = (h) => {
+    if (!h) return [];
+    const gated = h.spells.slice(0, maxSpells);
+    const innate = h.spells.filter((sid) => content.spellsById[sid]?.innate);
+    return [...new Set([...gated, ...innate])];
+  };
+
   const hint = () => {
     if (targetingPotion) {
       const pot = content.potionsById?.[targetingPotion.potionId];
@@ -238,7 +247,7 @@ export default function CombatScreen() {
                 )}
 
                 <div className="spell-bar">
-                  {hero.spells.slice(0, maxSpells).map((sid) => {
+                  {visibleSpells(hero).map((sid) => {
                     const sp = content.spellsById[sid];
                     if (!sp) return null;
                     const usable = hero.energy >= sp.cost;

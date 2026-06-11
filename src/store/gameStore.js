@@ -124,7 +124,20 @@ export const useGameStore = create((set, get) => ({
   advanceNode() {
     const { game } = get();
     if (game == null) return;
-    get().patchGame((g) => boardAdvanceNode(g));
+    get().patchGame((g) => {
+      const moved = boardAdvanceNode(g);
+      if (moved === g) return g; // no avanzó (nodo sin resolver o último)
+      // Pasiva de Maevis: su luz cura 2 a toda la party al avanzar de nodo.
+      if (!(moved.party ?? []).includes('sanadora')) return moved;
+      const before = moved.partyHp ?? {};
+      const healed = restParty(moved, 2);
+      const any = (healed.party ?? []).some((id) => (healed.partyHp?.[id] ?? 0) > (before[id] ?? 0));
+      if (!any) return healed;
+      return {
+        ...healed,
+        log: [...(healed.log ?? []), { kind: 'heal', text: 'La luz de Maevis cura 2 a la party.', at: Date.now() }],
+      };
+    });
   },
 
   /** Define la party fija (1–4 héroes), inicializa los mazos y entra al mapa. */

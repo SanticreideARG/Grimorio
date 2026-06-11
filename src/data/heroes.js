@@ -22,7 +22,7 @@ export const heroes = [
     name: 'Brenna la Quebrantahuesos',
     role: 'Tanque / DPS frontal',
     maxHp: 14, maxMana: 0, dice: 4, diceFaces: WARRIOR,
-    row: 'front', spells: ['golpe_escudo', 'embate', 'muro_acero'],
+    row: 'front', spells: ['golpe_escudo', 'embate', 'muro_acero', 'guardia'],
     passive: { id: 'muro', text: 'Resiste en primera línea.', hook: 'onTurnStart' },
     portrait: 'heroes/guerrera.png',
   },
@@ -50,7 +50,7 @@ export const heroes = [
     role: 'DPS arcano (retaguardia)',
     maxHp: 9, maxMana: 0, dice: 3, diceFaces: MAGE,
     row: 'back', attackAnim: 'arcane', spells: ['bola_fuego', 'tormenta_arcana', 'escudo_magico'],
-    passive: { id: 'foco', text: 'Canaliza poder arcano.', hook: 'onTurnStart' },
+    passive: { id: 'foco', text: 'Si le sobra maná al terminar el turno, gana +1 de maná el siguiente.', hook: 'manaCarry' },
     portrait: 'heroes/mago.png',
   },
   {
@@ -58,8 +58,8 @@ export const heroes = [
     name: 'Maevis',
     role: 'Sanadora (retaguardia)',
     maxHp: 10, maxMana: 0, dice: 3, diceFaces: HEALER,
-    row: 'back', attackAnim: 'arcane', spells: ['luz_curativa', 'aura_curativa', 'purificar'],
-    passive: { id: 'plegaria', text: 'Su luz no se extingue.', hook: 'onTurnStart' },
+    row: 'back', attackAnim: 'arcane', spells: ['luz_curativa', 'aura_curativa', 'purificar', 'escudo_aura'],
+    passive: { id: 'luz_constante', text: 'Cada vez que la party avanza de nodo, su luz cura 2 a todos.', hook: 'onNodeAdvance' },
     portrait: 'heroes/sanadora.png',
   },
   {

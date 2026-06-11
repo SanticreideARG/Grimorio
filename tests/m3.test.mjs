@@ -204,6 +204,37 @@ test('maldición Sangría inflige daño al inicio del turno del héroe (dotDamag
   assert.equal(before - activeHero(c).hp, 2);
 });
 
+// ---- Habilidades pasivas/activas nuevas ----
+test('Veyra (foco): endHeroTurn marca el bonus si termina con maná sobrante', () => {
+  let c = initCombat({ node: nodeOf('c1n07'), party: ['mago'], difficulty: 'facil' });
+  c = rollActiveHero(c, createRng(3));
+  c.heroes[0].energy = 2; // le sobra maná
+  c = endHeroTurn(c);
+  assert.equal(c.heroes[0].focusBonus, 1);
+});
+
+test('Veyra (foco): el maná conservado suma +1 a la tirada siguiente', () => {
+  // baseline sin foco
+  let base = initCombat({ node: nodeOf('c1n07'), party: ['mago'], difficulty: 'facil' });
+  base = rollActiveHero(base, createRng(3));
+  const baseEnergy = base.heroes[0].energy;
+  // misma semilla, con foco pendiente → +1 y se consume
+  let c = initCombat({ node: nodeOf('c1n07'), party: ['mago'], difficulty: 'facil' });
+  c.heroes[0].focusBonus = 1;
+  c = rollActiveHero(c, createRng(3));
+  assert.equal(c.heroes[0].energy, baseEnergy + 1);
+  assert.equal(c.heroes[0].focusBonus, 0);
+});
+
+test('Guardia de Brenna otorga +1 de bloqueo al lanzador', () => {
+  let c = initCombat({ node: nodeOf('c1n02'), party: ['guerrera'], difficulty: 'facil' });
+  c = rollActiveHero(c, createRng(5));
+  c.heroes[0].energy = 3; // asegurar maná para el coste
+  const before = c.heroes[0].block;
+  c = heroCast(c, 'guardia', c.heroes[0].id);
+  assert.equal(c.heroes[0].block, before + 1);
+});
+
 // ---- Boss behavior deck (Gulrath) ----
 test('Gulrath usa su mazo de comportamiento y termina el combate', () => {
   const rng = createRng(99);

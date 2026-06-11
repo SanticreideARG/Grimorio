@@ -13,7 +13,8 @@ const BEHAVIOR_LABEL = {
 };
 
 function getCardbackPath(type, unit) {
-  if (type === 'enemy') return unit?.isBoss ? 'cardbacks/bosses.png' : 'cardbacks/enemies.png';
+  // Jefes usan su cardback propio; los enemigos comunes, el cardback de enemigos.
+  if (type === 'enemy') return unit?.isBoss ? 'cardbacks/jefes.png' : 'cardbacks/enemigos.png';
   const MAP = {
     hero:   'cardbacks/heroes.png',
     item:   'cardbacks/botin.png',

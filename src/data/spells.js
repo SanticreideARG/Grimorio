@@ -20,7 +20,7 @@ export const spells = [
     icon: 'spells/golpe_escudo.png',
   },
   {
-    id: 'embate', name: 'Embate', cost: 1, type: 'attack',
+    id: 'embate', name: 'Embate', cost: 2, type: 'attack',
     desc: 'Golpe brutal: 5 de daño al enemigo de enfrente.',
     effect: { damage: 5, target: 'enemy', ignoreRow: false },
     icon: 'spells/embate.png',
@@ -31,12 +31,20 @@ export const spells = [
     effect: { block: 4, target: 'self' },
     icon: 'spells/muro_acero.png',
   },
+  {
+    // `innate`: disponible desde el principio, no se rige por el desbloqueo por capítulo.
+    id: 'guardia', name: 'Guardia', cost: 1, type: 'buff_block',
+    desc: 'Te pones en guardia: +1 de bloqueo este turno.',
+    effect: { block: 1, target: 'self' },
+    icon: 'spells/guardia.png',
+    innate: true,
+  },
 
   // ---- Paladin: Sir Aldric ----
   {
-    id: 'luz_curativa', name: 'Luz Curativa', cost: 1, type: 'heal',
-    desc: 'Cura 5 a un aliado.',
-    effect: { heal: 5, target: 'ally' },
+    id: 'luz_curativa', name: 'Luz Curativa', cost: 2, type: 'heal',
+    desc: 'Cura 6 a un aliado.',
+    effect: { heal: 6, target: 'ally' },
     icon: 'spells/luz_curativa.png',
   },
   {
@@ -69,8 +77,8 @@ export const spells = [
   // ---- Mago: Veyra de la Llama ----
   {
     id: 'bola_fuego', name: 'Bola de Fuego', cost: 2, type: 'attack',
-    desc: '3 de daño a un enemigo (alcance arcano).',
-    effect: { damage: 3, target: 'enemy', ignoreRow: true },
+    desc: '4 de daño a un enemigo (alcance arcano).',
+    effect: { damage: 4, target: 'enemy', ignoreRow: true },
     icon: 'spells/bola_fuego.png',
   },
   {
@@ -93,6 +101,14 @@ export const spells = [
     desc: 'Cura 3 de vida a TODOS los aliados.',
     effect: { heal: 3, healAll: true },
     icon: 'spells/aura_curativa.png',
+  },
+  {
+    // `innate`: disponible desde la fase 1, no se rige por el desbloqueo por capítulo.
+    id: 'escudo_aura', name: 'Escudo de Aura', cost: 1, type: 'buff_block',
+    desc: 'Envuelve a un aliado en luz: +1 de bloqueo.',
+    effect: { shieldAlly: 1, target: 'ally' },
+    icon: 'spells/escudo_aura.png',
+    innate: true,
   },
   // purificar compartida con paladin (arriba)
 

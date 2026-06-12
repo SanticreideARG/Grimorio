@@ -5,6 +5,7 @@
   "type": "module",
   "description": "Juego cooperativo dark-fantasy por turnos",
   "author": "Santiago Creide",
+  "license": "MIT",
   "main": "electron/main.cjs",
   "scripts": {
     "dev": "vite",

@@ -180,7 +180,7 @@ export default function MapScreen() {
             <EnemyPreview enemies={node.enemies} />
           )}
 
-          <div className="node-panel__actions">
+          <div className="node-panel__actions" data-tutorial="map-node">
             {!resolved && (
               <button className="btn btn--primary" onClick={onResolve}>
                 {nodeActionLabel(node.type)}

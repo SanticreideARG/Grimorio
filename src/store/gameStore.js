@@ -71,9 +71,31 @@ export const useGameStore = create((set, get) => ({
   /** Crea una partida nueva en un slot y la activa. */
   newGame(slot, opts = {}) {
     const game = createNewGame(opts);
+    // Tutorial de primera vez, salvo que se haya desactivado globalmente.
+    let off = false;
+    try { off = localStorage.getItem('grimorio_tutorial_off') === '1'; } catch { /* sin localStorage */ }
+    if (!off) game.tutorial = { step: 0 };
     saveToSlot(slot, game);
     bus.emit(EVENTS.GAME_CREATED, game);
     set({ game, activeSlot: slot, slots: listSlots() });
+  },
+
+  // ---------- Tutorial (coach-marks de primera vez) ----------
+
+  /** Fija el paso visible del tutorial. */
+  tutorialSetStep(step) {
+    get().patchGame((g) => (g.tutorial ? { ...g, tutorial: { step } } : g));
+  },
+
+  /** Cierra el tutorial de esta partida (no afecta futuras partidas). */
+  tutorialEnd() {
+    get().patchGame((g) => (g.tutorial ? { ...g, tutorial: null } : g));
+  },
+
+  /** Cierra el tutorial y lo desactiva para todas las partidas nuevas. */
+  tutorialDisableForever() {
+    try { localStorage.setItem('grimorio_tutorial_off', '1'); } catch { /* noop */ }
+    get().tutorialEnd();
   },
 
   /** Carga la partida de un slot. Devuelve true si había algo. */

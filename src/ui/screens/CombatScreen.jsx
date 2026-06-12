@@ -227,7 +227,7 @@ export default function CombatScreen() {
                     onCancel={() => setTargeting(null)}
                   />
                 )}
-                <button className="btn btn--primary btn--big" onClick={roll}>
+                <button className="btn btn--primary btn--big" data-tutorial="roll" onClick={roll}>
                   🎲 Tirar dados
                 </button>
               </>
@@ -246,7 +246,7 @@ export default function CombatScreen() {
                   />
                 )}
 
-                <div className="spell-bar">
+                <div className="spell-bar" data-tutorial="spells">
                   {visibleSpells(hero).map((sid) => {
                     const sp = content.spellsById[sid];
                     if (!sp) return null;
@@ -273,7 +273,7 @@ export default function CombatScreen() {
                   )}
                 </div>
 
-                <button className="btn btn--primary" onClick={endTurn}>
+                <button className="btn btn--primary" data-tutorial="endturn" onClick={endTurn}>
                   Terminar turno
                 </button>
               </>

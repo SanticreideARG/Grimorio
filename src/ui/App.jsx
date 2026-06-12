@@ -5,6 +5,7 @@ import { script } from '../data/script.js';
 import { menuBg, aboutBg } from '../data/mapImages.js';
 import SlotCard from './components/SlotCard.jsx';
 import PreloadBar from './components/PreloadBar.jsx';
+import TutorialCoach from './components/TutorialCoach.jsx';
 import MapScreen from './screens/MapScreen.jsx';
 import PartySelect from './screens/PartySelect.jsx';
 import CombatScreen from './screens/CombatScreen.jsx';
@@ -25,6 +26,19 @@ export default function App() {
   const [difficulty, setDifficulty] = useState('normal');
   const [playerCount, setPlayerCount] = useState(1);
   const [showAbout, setShowAbout] = useState(false);
+  const [tutorialOn, setTutorialOn] = useState(() => {
+    try { return localStorage.getItem('grimorio_tutorial_off') !== '1'; } catch { return true; }
+  });
+  const toggleTutorial = () => {
+    setTutorialOn((on) => {
+      const next = !on;
+      try {
+        if (next) localStorage.removeItem('grimorio_tutorial_off');
+        else localStorage.setItem('grimorio_tutorial_off', '1');
+      } catch { /* noop */ }
+      return next;
+    });
+  };
 
   // Audio — se inicializa una sola vez aquí para toda la app
   const { muted, toggleMuted } = useAudio();
@@ -51,6 +65,7 @@ export default function App() {
         <div key={game.view} className="view">
           {screen}
         </div>
+        <TutorialCoach />
         <MuteButton muted={muted} onToggle={toggleMuted} />
       </>
     );
@@ -118,6 +133,13 @@ export default function App() {
 
         <footer className="footnote">
           <span>GRIMORIO · v1.0</span>
+          <button
+            className="btn btn--ghost btn--xs"
+            onClick={toggleTutorial}
+            title="Mostrar el tutorial guiado al iniciar partidas nuevas"
+          >
+            Tutorial: {tutorialOn ? 'Sí' : 'No'}
+          </button>
           <button className="btn btn--ghost btn--xs about-btn" onClick={() => setShowAbout(true)}>
             Acerca de este juego
           </button>

@@ -96,6 +96,7 @@ export default function PartySelect() {
         <span className="party-count">{selected.length}/{MAX} elegidos</span>
         <button
           className="btn btn--primary"
+          data-tutorial="party-confirm"
           disabled={!canConfirm}
           onClick={() => canConfirm && setParty(selected)}
         >

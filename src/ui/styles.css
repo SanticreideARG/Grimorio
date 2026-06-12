@@ -47,6 +47,11 @@ body {
   color: var(--text);
   font-family: 'Cinzel', serif;
   -webkit-font-smoothing: antialiased;
+  /* Es una UI de juego: evitar la selección de texto/imágenes con el mouse
+     (el resaltado azul al arrastrar) y el highlight de tap en móvil. */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Moneda (oro) — SVG inline que reemplaza al emoji 🪙 (ver Coin.jsx). */
@@ -2966,26 +2971,26 @@ body {
 .card-detail__name {
   display: block;
   font-family: 'Cinzel Decorative', 'Cinzel', serif;
-  font-size: 14px;
+  font-size: 19px;
   font-weight: 700;
   color: var(--amber-lt);
   text-shadow: 0 1px 5px rgba(0, 0, 0, 0.9);
-  line-height: 1.3;
+  line-height: 1.25;
 }
 
 .card-detail__role {
   display: block;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-dim);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  margin-top: 3px;
+  margin-top: 4px;
 }
 
 .card-detail__badge {
   display: inline-block;
-  font-size: 10px;
-  padding: 2px 8px;
+  font-size: 12px;
+  padding: 3px 9px;
   border-radius: 20px;
   margin-top: 4px;
   text-transform: uppercase;
@@ -3032,15 +3037,15 @@ body {
 
 .card-detail__stats {
   display: flex;
-  gap: 14px;
+  gap: 16px;
   flex-wrap: wrap;
-  font-size: 13px;
+  font-size: 16px;
   color: var(--text);
 }
 
 .card-detail__section-label {
   display: block;
-  font-size: 10px;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--amber);
@@ -3058,10 +3063,10 @@ body {
 }
 
 .card-detail__passive-text {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text);
   font-style: italic;
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 /* Dice faces */
@@ -3152,28 +3157,28 @@ body {
 }
 
 .card-detail__spell-name {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--amber-lt);
 }
 
 .card-detail__spell-cost {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-dim);
   flex-shrink: 0;
 }
 
 .card-detail__spell-desc {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text);
   font-style: italic;
-  line-height: 1.4;
+  line-height: 1.45;
   font-family: 'IM Fell English', serif;
 }
 
 /* Enemy lore */
 .card-detail__lore {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text);
   font-style: italic;
   line-height: 1.6;
@@ -3222,7 +3227,7 @@ body {
 }
 
 .card-detail__loot-name {
-  font-size: 17px;
+  font-size: 20px;
   font-weight: bold;
   color: var(--amber-lt, #e8c060);
   font-family: var(--font-title, 'MedievalSharp', serif);
@@ -3230,7 +3235,7 @@ body {
 }
 
 .card-detail__price {
-  font-size: 13px;
+  font-size: 15px;
   color: #e8c060;
   background: rgba(0, 0, 0, 0.3);
   padding: 3px 14px;
@@ -3578,4 +3583,85 @@ body {
 }
 @media (prefers-reduced-motion: reduce) {
   .preload-bar, .preload-bar__fill { transition: none; }
+}
+
+/* ===== Tutorial (coach-marks) ===== */
+/* Capa que no bloquea el juego: solo el cartel captura clics. */
+.tut-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 600;
+  pointer-events: none;
+}
+/* Aro de resaltado alrededor del elemento anclado */
+.tut-ring {
+  position: fixed;
+  border-radius: 12px;
+  border: 2px solid var(--amber-lt);
+  box-shadow: 0 0 0 4px rgba(201, 145, 63, 0.25), 0 0 22px rgba(201, 145, 63, 0.6),
+    0 0 0 9999px rgba(5, 3, 2, 0.55);
+  animation: tutPulse 1.6s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes tutPulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(201, 145, 63, 0.2), 0 0 16px rgba(201, 145, 63, 0.5), 0 0 0 9999px rgba(5, 3, 2, 0.55); }
+  50%      { box-shadow: 0 0 0 6px rgba(201, 145, 63, 0.4), 0 0 28px rgba(201, 145, 63, 0.85), 0 0 0 9999px rgba(5, 3, 2, 0.5); }
+}
+/* Cartel del paso */
+.tut-card {
+  position: fixed;
+  width: min(340px, 88vw);
+  background: linear-gradient(180deg, rgba(42, 28, 13, 0.98), rgba(16, 10, 5, 0.98));
+  border: 1px solid rgba(201, 145, 63, 0.5);
+  border-radius: 12px;
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.75);
+  padding: 14px 16px 13px;
+  pointer-events: auto;
+  z-index: 601;
+  animation: viewFadeIn 0.2s ease-out both;
+}
+.tut-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.tut-card__step {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+.tut-card__x {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+  padding: 2px 4px;
+}
+.tut-card__x:hover { color: var(--amber-lt); }
+.tut-card__title {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-size: 17px;
+  color: var(--amber-lt);
+  margin: 0 0 6px;
+}
+.tut-card__text {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text);
+  font-family: 'IM Fell English', serif;
+}
+.tut-card__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 12px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tut-ring { animation: none; }
+  .tut-card { animation: none; }
 }

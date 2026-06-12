@@ -4,12 +4,14 @@ import { DIFFICULTIES } from '../core/state.js';
 import { script } from '../data/script.js';
 import { menuBg, aboutBg } from '../data/mapImages.js';
 import SlotCard from './components/SlotCard.jsx';
+import PreloadBar from './components/PreloadBar.jsx';
 import MapScreen from './screens/MapScreen.jsx';
 import PartySelect from './screens/PartySelect.jsx';
 import CombatScreen from './screens/CombatScreen.jsx';
 import EventScreen from './screens/EventScreen.jsx';
 import ShopScreen from './screens/ShopScreen.jsx';
 import { useAudio } from './hooks/useAudio.js';
+import { useAssetPreload } from './preload.js';
 
 const DIFFICULTY_LABEL = { facil: 'Fácil', normal: 'Normal', dificil: 'Difícil' };
 
@@ -27,6 +29,9 @@ export default function App() {
   // Audio — se inicializa una sola vez aquí para toda la app
   const { muted, toggleMuted } = useAudio();
 
+  // Precarga de imágenes en segundo plano (warming de caché) + barra de progreso
+  const preload = useAssetPreload();
+
   if (game) {
     // La key cambia con cada vista → React desmonta/monta la pantalla
     // → el CSS de .view dispara la animación de entrada automáticamente.
@@ -42,6 +47,7 @@ export default function App() {
     })();
     return (
       <>
+        <PreloadBar {...preload} />
         <div key={game.view} className="view">
           {screen}
         </div>
@@ -52,6 +58,7 @@ export default function App() {
 
   return (
     <main className="screen screen--menu">
+      <PreloadBar {...preload} />
       {/* Imagen de fondo a pantalla completa (capa fija independiente del
           ancho del contenido). En pantallas anchas se ve completa (contain);
           en chicas, centrada y recortada (cover). */}

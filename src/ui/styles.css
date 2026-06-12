@@ -1209,9 +1209,11 @@ body {
 .overlay__ending-type--bad         { color: #e7a89a; }
 
 /* ===== Diálogo de derrota de jefe ===== */
-/* Contenedor de la card que gira completa al derrotar al jefe. */
+/* Contenedor de la card que gira completa al derrotar al jefe.
+   Sustituye a .overlay__card: es la propia carta (con su marco) la que rota. */
 .boss-defeat {
   width: 100%;
+  max-width: 480px;
   perspective: 1600px;
 }
 
@@ -1617,12 +1619,10 @@ body {
   gap: 24px;
   padding: 32px 24px;
 }
+/* Sin marco propio: el marco lo da la cara del flip (.event-flip__face). */
 .event-card {
-  border: 1px solid rgba(201, 145, 63, 0.4);
-  border-radius: 14px;
-  background: linear-gradient(180deg, rgba(50, 32, 14, 0.7), rgba(20, 12, 5, 0.85));
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
   padding: 28px 32px;
+  background: transparent;
 }
 .event-card__title {
   font-family: 'Cinzel Decorative', serif;
@@ -2413,6 +2413,7 @@ body {
 .shop-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-auto-rows: 1fr; /* todas las filas a la misma altura → cards uniformes */
   gap: 14px;
 }
 .shop-card {
@@ -3440,9 +3441,16 @@ body {
 .event-flip.is-flipped .event-flip__inner {
   transform: rotateY(180deg);
 }
+/* Cada cara es una carta completa con su marco; así el flip se ve a nivel de la
+   card y no de su contenido interno. */
 .event-flip__face {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+  border: 1px solid rgba(201, 145, 63, 0.4);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(50, 32, 14, 0.7), rgba(20, 12, 5, 0.85));
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
 }
 /* La cara trasera (carta real) fluye y define la altura; la frontal (cardback)
    se superpone en absoluto. */
@@ -3453,8 +3461,6 @@ body {
 .event-flip__front {
   position: absolute;
   inset: 0;
-  border-radius: 14px;
-  overflow: hidden;
 }
 .event-cardback {
   width: 100%;
@@ -3486,9 +3492,16 @@ body {
   transform-style: preserve-3d;
   animation: bossFlipIn 2s cubic-bezier(0.45, 0.05, 0.3, 1) forwards;
 }
+/* Cada cara es una carta completa con marco (antes lo daba .overlay__card),
+   por eso el flip se ve a nivel de la card y no de su contenido. */
 .boss-defeat__flip-face {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+  border: 1px solid rgba(201, 145, 63, 0.4);
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(40, 26, 12, 0.95), rgba(15, 9, 4, 0.97));
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
 }
 .boss-defeat__flip-front {
   position: relative;
@@ -3497,19 +3510,18 @@ body {
   align-items: center;
   gap: 14px;
   width: 100%;
+  padding: 36px;
 }
 .boss-defeat__flip-back {
   position: absolute;
   inset: 0;
   transform: rotateY(180deg);
-  border-radius: 10px;
-  overflow: hidden;
-  background: linear-gradient(175deg, #1e1009 0%, #0d0805 100%);
 }
 .boss-defeat__cardback {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 @keyframes bossFlipIn {
   0%   { transform: rotateY(0deg); }

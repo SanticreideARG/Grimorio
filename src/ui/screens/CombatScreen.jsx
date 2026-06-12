@@ -337,19 +337,17 @@ export default function CombatScreen() {
       {/* Overlays de fin */}
       {combat.phase === 'victory' && (
         <div className="overlay">
-          <div className="overlay__card">
-            {combat.kind === 'boss'
-              ? <BossDefeatedDialogue combat={combat} onFinish={finish} />
-              : (
-                <>
-                  <div className="overlay__sub">VICTORIA</div>
-                  <h2 className="overlay__title">El camino queda libre</h2>
-                  <p className="overlay__text">Botín: {combat.loot?.gold ?? 0} de oro.</p>
-                  <button className="btn btn--primary" onClick={finish}>Reclamar botín</button>
-                </>
-              )
-            }
-          </div>
+          {combat.kind === 'boss'
+            ? <BossDefeatedDialogue combat={combat} onFinish={finish} />
+            : (
+              <div className="overlay__card">
+                <div className="overlay__sub">VICTORIA</div>
+                <h2 className="overlay__title">El camino queda libre</h2>
+                <p className="overlay__text">Botín: {combat.loot?.gold ?? 0} de oro.</p>
+                <button className="btn btn--primary" onClick={finish}>Reclamar botín</button>
+              </div>
+            )
+          }
         </div>
       )}
       {combat.phase === 'defeat' && (

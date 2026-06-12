@@ -12,6 +12,11 @@
   --parchment: #d9b577;
   --text: #e9d5ab;
   --text-dim: #b7975f;
+
+  /* Tamaños que se reducen por breakpoint (mobile). Ver @media más abajo. */
+  --unit-w: 150px;   /* ancho de carta de unidad en combate */
+  --die-size: 66px;  /* lado del dado grande */
+  --tap: 44px;       /* objetivo táctil mínimo */
 }
 
 * {
@@ -24,6 +29,13 @@ html,
 body,
 #root {
   height: 100%;
+}
+/* En móvil, 100dvh evita los saltos por la barra del navegador. */
+#root {
+  min-height: 100dvh;
+}
+body {
+  overflow-x: hidden; /* nada debe desbordar horizontalmente en mobile */
 }
 
 /* ===== Transiciones de pantalla ===== */
@@ -1029,7 +1041,7 @@ body {
 /* unidades (cartas de combate) */
 .unit {
   position: relative; /* ancla para la burbuja de diálogo */
-  width: 150px;
+  width: var(--unit-w);
   text-align: left;
   display: flex;
   flex-direction: column;
@@ -1380,8 +1392,8 @@ body {
 
 .die {
   position: relative;
-  width: 66px;
-  height: 66px;
+  width: var(--die-size);
+  height: var(--die-size);
   border-radius: 10px;
   overflow: hidden;
   background: radial-gradient(circle at 38% 30%, #f1d59a, #cf9d4f 70%, #a9762f);
@@ -3664,4 +3676,114 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .tut-ring { animation: none; }
   .tut-card { animation: none; }
+}
+
+/* =====================================================================
+   Responsive mobile (teléfonos y tablets) — vertical y horizontal
+   ===================================================================== */
+
+/* Botón flotante del registro: oculto en desktop, visible en mobile. */
+.combat-log__toggle { display: none; }
+
+/* ---- Tablet y teléfono (≤900px) ---- */
+@media (max-width: 900px) {
+  .btn { min-height: var(--tap); }
+
+  /* Combate sin columna de log (el log pasa a cajón). */
+  .combat {
+    grid-template-areas: 'top' 'enemies' 'mid' 'heroes';
+    grid-template-columns: 1fr;
+    padding: 12px 12px calc(16px + env(safe-area-inset-bottom));
+  }
+  .combat-top { padding-top: calc(env(safe-area-inset-top) + 4px); }
+
+  /* Registro = cajón inferior deslizante + botón flotante (abajo-izquierda). */
+  .combat-log__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    left: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    z-index: 210;
+    background: rgba(24, 16, 9, 0.92);
+    border: 1px solid rgba(201, 145, 63, 0.5);
+    color: var(--amber-lt);
+    font-size: 18px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+    cursor: pointer;
+  }
+  .combat-log {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-height: 45vh;
+    border-radius: 12px 12px 0 0;
+    transform: translateY(calc(100% + 24px));
+    transition: transform 0.28s ease;
+    z-index: 205;
+    background: rgba(10, 7, 5, 0.97);
+    padding-bottom: calc(14px + env(safe-area-inset-bottom));
+  }
+  .combat-log.is-open { transform: translateY(0); }
+
+  /* La etiqueta de fila (absoluta) estorba en angosto. */
+  .combat-row__label { display: none; }
+  .combat-row { min-height: 0; }
+
+  .spell-bar { flex-wrap: wrap; justify-content: center; }
+
+  /* HUD del mapa: envuelve y baja las stats a su propia línea. */
+  .hud {
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    padding: 10px 14px;
+    padding-top: calc(10px + env(safe-area-inset-top));
+  }
+  .hud__stats { margin-left: 0; width: 100%; justify-content: flex-start; gap: 16px; }
+  .hud__title { font-size: 18px; }
+  .map-body { padding: 14px; gap: 14px; }
+
+  /* Overlays fijos respetan el notch. */
+  .preload-bar { top: env(safe-area-inset-top); }
+  .mute-btn { bottom: calc(14px + env(safe-area-inset-bottom)); }
+}
+@media (max-width: 900px) and (prefers-reduced-motion: reduce) {
+  .combat-log { transition: none; }
+}
+
+/* ---- Teléfono / angosto (≤600px): cartas y dados más chicos ---- */
+@media (max-width: 600px) {
+  :root { --unit-w: 110px; --die-size: 46px; }
+  .die-face__num { font-size: 18px; }
+  .combat { gap: 10px; }
+  .combat-kind { font-size: 18px; }
+  .unit__name { font-size: 13px; }
+  .shop-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .shop-card__icon { width: 92px; height: 92px; }
+  .event-body { padding: 18px 14px; }
+  .event-card__title { font-size: 22px; }
+  .overlay__card { padding: 24px 18px; }
+}
+
+/* ---- Teléfono horizontal (landscape corto): franjas compactas ---- */
+@media (orientation: landscape) and (max-height: 520px) {
+  :root { --unit-w: 96px; --die-size: 40px; }
+  .combat {
+    grid-template-areas: 'top' 'enemies' 'mid' 'heroes';
+    gap: 6px;
+    padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
+  }
+  .combat-row { min-height: 0; }
+  /* Filas con scroll horizontal: no rompen el alto. */
+  .combat-row__units { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding-bottom: 2px; }
+  .combat-mid { gap: 6px; }
+  .dice-tray__faces { gap: 4px; }
+  .combat-log { max-height: 82vh; }
+  /* En landscape hay ancho: el mapa vuelve a 2 columnas. */
+  .map-body { grid-template-columns: 1fr 300px; }
 }

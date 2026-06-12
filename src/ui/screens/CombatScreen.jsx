@@ -50,6 +50,7 @@ export default function CombatScreen() {
   const [targeting, setTargeting] = useState(null);
   const [detailUnit, setDetailUnit] = useState(null);
   const [detailType, setDetailType] = useState(null);
+  const [logOpen, setLogOpen] = useState(false); // cajón de registro en mobile
   const fxRef = useRef(null);
 
   useCombatFx(combat, fxRef);
@@ -325,8 +326,15 @@ export default function CombatScreen() {
         </Row>
       </section>
 
-      {/* Registro */}
-      <aside className="combat-log">
+      {/* Registro — en mobile es un cajón colapsable (botón flotante) */}
+      <button
+        className="combat-log__toggle"
+        onClick={() => setLogOpen((o) => !o)}
+        aria-label={logOpen ? 'Cerrar registro' : 'Abrir registro'}
+      >
+        {logOpen ? '✕' : '📜'}
+      </button>
+      <aside className={`combat-log${logOpen ? ' is-open' : ''}`}>
         {combat.log.slice(-7).map((l, i) => (
           <div key={i} className={`logline logline--${l.kind}`}>
             {l.text}

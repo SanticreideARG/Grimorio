@@ -6,12 +6,9 @@
   "description": "Juego cooperativo dark-fantasy por turnos",
   "author": "Santiago Creide",
   "license": "MIT",
-  "main": "electron/main.cjs",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:electron": "vite build --base ./",
-    "dist:win": "npm run build:electron && electron-builder --win portable --x64",
     "preview": "vite preview",
     "test": "node --test \"tests/**/*.test.mjs\""
   },
@@ -25,36 +22,6 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",
-    "electron": "^42.4.0",
-    "electron-builder": "^26.15.2",
     "vite": "^6.0.5"
-  },
-  "build": {
-    "appId": "com.santiagocreide.grimorio",
-    "productName": "Grimorio",
-    "copyright": "© 2026 Santiago Creide",
-    "asar": true,
-    "directories": {
-      "output": "../release"
-    },
-    "files": [
-      "dist/**/*",
-      "electron/main.cjs",
-      "package.json"
-    ],
-    "win": {
-      "icon": "assets/grimorioicon.ico",
-      "target": [
-        {
-          "target": "portable",
-          "arch": [
-            "x64"
-          ]
-        }
-      ]
-    },
-    "portable": {
-      "artifactName": "Grimorio-v1.0-portable.exe"
-    }
   }
 }

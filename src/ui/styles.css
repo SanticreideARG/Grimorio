@@ -4026,6 +4026,17 @@ body {
   .event-card__title { font-size: 22px; }
   .overlay__card { padding: 24px 18px; }
 
+  /* Mapa: las mascotas van A LA DERECHA de los héroes (no en otra línea); se
+     reducen los padding laterales para ganar espacio horizontal → menos alto. */
+  .party-status { padding: 6px 8px; gap: 6px 10px; }
+  .party-status__hero { font-size: 11px; gap: 4px; }
+  .party-status__name { min-width: 0; }
+  .party-status__bar { width: 54px; }
+  .party-status__pets { padding-left: 8px; margin-left: 2px; }
+
+  /* El título del capítulo sobre el mapa es redundante con el de arriba: ocultar. */
+  .board__cartouche { display: none; }
+
   /* Party-select: header compacto + carta más alta con portrait 1:1, para que
      entre sin scroll vertical. (No afecta al menú: .screen--menu queda excluido.) */
   .screen:not(.screen--menu) { padding: 14px 14px 16px; }

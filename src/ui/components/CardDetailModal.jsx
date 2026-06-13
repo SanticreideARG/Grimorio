@@ -1,7 +1,43 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { content } from '../../data/index.js';
 import { assetUrl } from '../assets.js';
 import { useGameStore } from '../../store/gameStore.js';
+
+// Zoom del retrato: en desktop con hover (entra/sale); en táctil, tap alterna y
+// un swipe hacia arriba vuelve al modo detalles. Compartido por héroe/enemigo/pet.
+function usePortraitZoom() {
+  const [zoomed, setZoomed] = useState(false);
+  const start = useRef(null);
+  const moved = useRef(false);
+  const canHover = typeof window !== 'undefined'
+    && window.matchMedia?.('(hover: hover)').matches;
+
+  if (canHover) {
+    return {
+      zoomed,
+      handlers: {
+        onMouseEnter: () => setZoomed(true),
+        onMouseLeave: () => setZoomed(false),
+      },
+    };
+  }
+  const onPointerDown = (e) => { start.current = { x: e.clientX, y: e.clientY }; moved.current = false; };
+  const onPointerMove = (e) => {
+    if (!start.current) return;
+    if (Math.abs(e.clientX - start.current.x) > 8 || Math.abs(e.clientY - start.current.y) > 10) {
+      moved.current = true;
+    }
+  };
+  const onPointerUp = (e) => {
+    if (!start.current) return;
+    const dy = e.clientY - start.current.y;
+    const dx = e.clientX - start.current.x;
+    start.current = null;
+    if (dy < -40 && Math.abs(dy) > Math.abs(dx)) { setZoomed(false); return; } // swipe ↑ → detalles
+    if (!moved.current) setZoomed((z) => !z);                                   // tap → alterna
+  };
+  return { zoomed, handlers: { onPointerDown, onPointerMove, onPointerUp } };
+}
 
 const BEHAVIOR_LABEL = {
   swarm:   'Turba',
@@ -79,15 +115,11 @@ export default function CardDetailModal({ unit, type, onClose }) {
 function HeroDetail({ unit }) {
   const hero = content.heroesById[unit.id] ?? unit;
   const portraitUrl = assetUrl(hero.portrait ?? `heroes/${hero.id}.png`);
-  const [hovered, setHovered] = useState(false);
+  const { zoomed, handlers } = usePortraitZoom();
 
   return (
-    <div className={`card-detail__content${hovered ? ' is-portrait-hover' : ''}`}>
-      <div
-        className="card-detail__portrait"
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-      >
+    <div className={`card-detail__content${zoomed ? ' is-portrait-hover' : ''}`}>
+      <div className="card-detail__portrait" {...handlers}>
         {portraitUrl
           ? <img src={portraitUrl} alt={hero.name} className="card-detail__portrait-img" />
           : <span className="card-detail__portrait-fallback">{hero.name[0]}</span>
@@ -150,15 +182,11 @@ function EnemyDetail({ unit }) {
   const artUrl = assetUrl(unit.art ?? `enemies/${unit.id}.png`);
   const summonedName = base.summons ? (content.enemiesById[base.summons]?.name ?? base.summons) : null;
   const curseName = base.curse ? (content.cursesById?.[base.curse]?.name ?? base.curse) : null;
-  const [hovered, setHovered] = useState(false);
+  const { zoomed, handlers } = usePortraitZoom();
 
   return (
-    <div className={`card-detail__content${hovered ? ' is-portrait-hover' : ''}`}>
-      <div
-        className="card-detail__portrait card-detail__portrait--enemy"
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-      >
+    <div className={`card-detail__content${zoomed ? ' is-portrait-hover' : ''}`}>
+      <div className="card-detail__portrait card-detail__portrait--enemy" {...handlers}>
         {artUrl
           ? <img src={artUrl} alt={unit.name} className="card-detail__portrait-img" />
           : <span className="card-detail__portrait-fallback">{unit.name[0]}</span>
@@ -255,19 +283,15 @@ function LootDetail({ unit }) {
 
 function PetDetail({ unit: pet }) {
   const artUrl = pet.art ? assetUrl(pet.art) : null;
-  const [hovered, setHovered] = useState(false);
+  const { zoomed, handlers } = usePortraitZoom();
 
   const party = useGameStore((s) => s.game?.party ?? []);
   const assignedHeroId = useGameStore((s) => s.game?.petAssignments?.[pet.id] ?? null);
   const assignPet = useGameStore((s) => s.assignPet);
 
   return (
-    <div className={`card-detail__content${hovered ? ' is-portrait-hover' : ''}`}>
-      <div
-        className="card-detail__portrait"
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-      >
+    <div className={`card-detail__content${zoomed ? ' is-portrait-hover' : ''}`}>
+      <div className="card-detail__portrait" {...handlers}>
         {artUrl
           ? <img src={artUrl} alt={pet.name} className="card-detail__portrait-img" />
           : <span className="card-detail__portrait-fallback">{pet.name[0]}</span>

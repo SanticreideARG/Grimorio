@@ -3267,6 +3267,25 @@ body {
   flex-grow: 1;
   cursor: zoom-in;
 }
+/* Táctil: pista para volver a los detalles con un swipe hacia arriba. */
+@media (hover: none) {
+  .card-detail__content.is-portrait-hover .card-detail__portrait::after {
+    content: 'deslizá ↑ para volver';
+    position: absolute;
+    left: 50%;
+    bottom: 10px;
+    transform: translateX(-50%);
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: rgba(10, 7, 5, 0.7);
+    border: 1px solid rgba(201, 145, 63, 0.4);
+    color: var(--amber-lt);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+}
 .card-detail__body::-webkit-scrollbar { display: none; }  /* WebKit: scroll sin barra */
 .card-detail__content.is-portrait-hover .card-detail__body {
   max-height: 0;
@@ -3912,25 +3931,23 @@ body {
    Responsive mobile (teléfonos y tablets) — vertical y horizontal
    ===================================================================== */
 
-/* Controles del registro (solo mobile): ocultos en desktop (allí es sidebar). */
-.combat-log__toggle,
-.combat-log__close,
-.combat-log__backdrop { display: none; }
+/* Botón flotante del registro (solo mobile): oculto en desktop (allí es sidebar). */
+.combat-log__toggle { display: none; }
 
 /* ---- Tablet y teléfono (≤900px) ---- */
 @media (max-width: 900px) {
   .btn { min-height: var(--tap); }
 
-  /* Combate sin columna de log (el log pasa a cajón). */
+  /* Combate en una columna; el registro ocupa una fila AL PIE (tras los héroes). */
   .combat {
-    grid-template-areas: 'top' 'enemies' 'mid' 'heroes';
+    grid-template-areas: 'top' 'enemies' 'mid' 'heroes' 'log';
     grid-template-columns: 1fr;
     padding: 12px 12px calc(16px + env(safe-area-inset-bottom));
   }
   /* deja sitio arriba-derecha para el botón de sonido reubicado */
   .combat-top { padding-top: calc(env(safe-area-inset-top) + 4px); padding-right: 50px; }
 
-  /* Registro = bottom-sheet con backdrop. Botón flotante (abajo-izquierda) abre. */
+  /* Botón flotante redondo: ALTERNA abrir/cerrar el registro (abajo-izquierda). */
   .combat-log__toggle {
     display: flex;
     align-items: center;
@@ -3949,41 +3966,14 @@ body {
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
     cursor: pointer;
   }
-  .combat-log__backdrop {
-    display: block;
-    position: fixed;
-    inset: 0;
-    z-index: 204;
-    background: rgba(5, 3, 2, 0.5);
-  }
+  /* Registro incrustado en el flujo: oculto cerrado; al pie de la pantalla abierto. */
   .combat-log {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    max-height: 55vh;
-    border-radius: 12px 12px 0 0;
-    border-top: 1px solid rgba(201, 145, 63, 0.4);
-    transform: translateY(calc(100% + 24px));
-    transition: transform 0.28s ease;
-    z-index: 206;
-    background: rgba(10, 7, 5, 0.98);
-    padding: 12px 14px calc(14px + env(safe-area-inset-bottom));
+    grid-area: log;
+    display: none;
+    max-height: none;
+    margin-bottom: 64px; /* aire para que el botón flotante no tape la última línea */
   }
-  .combat-log.is-open { transform: translateY(0); }
-  .combat-log__close {
-    display: block;
-    align-self: flex-end;
-    margin-bottom: 4px;
-    background: rgba(201, 145, 63, 0.14);
-    border: 1px solid rgba(201, 145, 63, 0.4);
-    border-radius: 8px;
-    color: var(--amber-lt);
-    font-size: 13px;
-    padding: 6px 12px;
-    min-height: var(--tap);
-    cursor: pointer;
-  }
+  .combat-log.is-open { display: flex; }
 
   /* Sonido reubicado arriba-derecha (libera la zona inferior en mobile). */
   .mute-btn {
@@ -4099,7 +4089,7 @@ body {
 @media (orientation: landscape) and (max-height: 520px) and (max-width: 1024px) {
   :root { --unit-w: 96px; --die-size: 40px; }
   .combat {
-    grid-template-areas: 'top' 'enemies' 'mid' 'heroes';
+    grid-template-areas: 'top' 'enemies' 'mid' 'heroes' 'log';
     gap: 6px;
     padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
   }
@@ -4108,7 +4098,6 @@ body {
   .combat-row__units { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding-bottom: 2px; }
   .combat-mid { gap: 6px; }
   .dice-tray__faces { gap: 4px; }
-  .combat-log { max-height: 82vh; }
   /* En landscape hay ancho: el mapa vuelve a 2 columnas. */
   .map-body { grid-template-columns: 1fr 300px; }
 }

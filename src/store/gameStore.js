@@ -55,11 +55,32 @@ import { assignHeroOwners } from '../systems/turn.js';
 import { computeEnding } from '../systems/endings.js';
 import { script } from '../data/script.js';
 
+// Recuerda el slot activo para reanudar la sesión al recargar (en mobile, Chrome
+// recarga con un swipe, y no queremos volver al menú perdiendo la pantalla actual).
+const ACTIVE_SLOT_KEY = 'grimorio_active_slot';
+const rememberActiveSlot = (slot) => {
+  try { localStorage.setItem(ACTIVE_SLOT_KEY, String(slot)); } catch { /* sin localStorage */ }
+};
+const forgetActiveSlot = () => {
+  try { localStorage.removeItem(ACTIVE_SLOT_KEY); } catch { /* sin localStorage */ }
+};
+/** Reanuda la última partida activa (su `view` está guardada en el save). */
+function resumeLastSession() {
+  try {
+    const slot = Number(localStorage.getItem(ACTIVE_SLOT_KEY));
+    if (!Number.isInteger(slot)) return {};
+    const game = loadFromSlot(slot);
+    if (game) return { game, activeSlot: slot };
+  } catch { /* sin localStorage o save corrupto */ }
+  return {};
+}
+const _resumed = resumeLastSession();
+
 export const useGameStore = create((set, get) => ({
   /** Estado de la partida activa, o null en el menú de título. */
-  game: null,
+  game: _resumed.game ?? null,
   /** Slot (0..2) de la partida activa, o null. */
-  activeSlot: null,
+  activeSlot: _resumed.activeSlot ?? null,
   /** Metadatos de los 3 slots para pintar el menú. */
   slots: listSlots(),
 
@@ -76,6 +97,7 @@ export const useGameStore = create((set, get) => ({
     try { off = localStorage.getItem('grimorio_tutorial_off') === '1'; } catch { /* sin localStorage */ }
     if (!off) game.tutorial = { step: 0 };
     saveToSlot(slot, game);
+    rememberActiveSlot(slot);
     bus.emit(EVENTS.GAME_CREATED, game);
     set({ game, activeSlot: slot, slots: listSlots() });
   },
@@ -102,6 +124,7 @@ export const useGameStore = create((set, get) => ({
   load(slot) {
     const game = loadFromSlot(slot);
     if (!game) return false;
+    rememberActiveSlot(slot);
     bus.emit(EVENTS.GAME_LOADED, game);
     set({ game, activeSlot: slot });
     return true;
@@ -498,6 +521,7 @@ export const useGameStore = create((set, get) => ({
   remove(slot) {
     deleteSlot(slot);
     const { activeSlot } = get();
+    if (activeSlot === slot) forgetActiveSlot();
     set({
       slots: listSlots(),
       ...(activeSlot === slot ? { game: null, activeSlot: null } : {}),
@@ -506,6 +530,7 @@ export const useGameStore = create((set, get) => ({
 
   /** Vuelve al menú de título sin borrar nada. */
   quitToMenu() {
+    forgetActiveSlot(); // recargar en el menú ya no reanuda la partida
     set({ game: null, activeSlot: null, slots: listSlots() });
   },
 }));

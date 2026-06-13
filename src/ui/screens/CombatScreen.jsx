@@ -326,15 +326,27 @@ export default function CombatScreen() {
         </Row>
       </section>
 
-      {/* Registro — en mobile es un cajón colapsable (botón flotante) */}
-      <button
-        className="combat-log__toggle"
-        onClick={() => setLogOpen((o) => !o)}
-        aria-label={logOpen ? 'Cerrar registro' : 'Abrir registro'}
-      >
-        {logOpen ? '✕' : '📜'}
-      </button>
+      {/* Registro — en mobile: bottom-sheet con backdrop; en desktop: sidebar fijo */}
+      {!logOpen && (
+        <button
+          className="combat-log__toggle"
+          onClick={() => setLogOpen(true)}
+          aria-label="Abrir registro"
+        >
+          📜
+        </button>
+      )}
+      {logOpen && (
+        <div className="combat-log__backdrop" onClick={() => setLogOpen(false)} aria-hidden="true" />
+      )}
       <aside className={`combat-log${logOpen ? ' is-open' : ''}`}>
+        <button
+          className="combat-log__close"
+          onClick={() => setLogOpen(false)}
+          aria-label="Cerrar registro"
+        >
+          ✕ Cerrar
+        </button>
         {combat.log.slice(-7).map((l, i) => (
           <div key={i} className={`logline logline--${l.kind}`}>
             {l.text}

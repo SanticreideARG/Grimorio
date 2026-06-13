@@ -3912,8 +3912,10 @@ body {
    Responsive mobile (teléfonos y tablets) — vertical y horizontal
    ===================================================================== */
 
-/* Botón flotante del registro: oculto en desktop, visible en mobile. */
-.combat-log__toggle { display: none; }
+/* Controles del registro (solo mobile): ocultos en desktop (allí es sidebar). */
+.combat-log__toggle,
+.combat-log__close,
+.combat-log__backdrop { display: none; }
 
 /* ---- Tablet y teléfono (≤900px) ---- */
 @media (max-width: 900px) {
@@ -3925,9 +3927,10 @@ body {
     grid-template-columns: 1fr;
     padding: 12px 12px calc(16px + env(safe-area-inset-bottom));
   }
-  .combat-top { padding-top: calc(env(safe-area-inset-top) + 4px); }
+  /* deja sitio arriba-derecha para el botón de sonido reubicado */
+  .combat-top { padding-top: calc(env(safe-area-inset-top) + 4px); padding-right: 50px; }
 
-  /* Registro = cajón inferior deslizante + botón flotante (abajo-izquierda). */
+  /* Registro = bottom-sheet con backdrop. Botón flotante (abajo-izquierda) abre. */
   .combat-log__toggle {
     display: flex;
     align-items: center;
@@ -3946,20 +3949,48 @@ body {
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
     cursor: pointer;
   }
+  .combat-log__backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 204;
+    background: rgba(5, 3, 2, 0.5);
+  }
   .combat-log {
     position: fixed;
     left: 0;
     right: 0;
     bottom: 0;
-    max-height: 45vh;
+    max-height: 55vh;
     border-radius: 12px 12px 0 0;
+    border-top: 1px solid rgba(201, 145, 63, 0.4);
     transform: translateY(calc(100% + 24px));
     transition: transform 0.28s ease;
-    z-index: 205;
-    background: rgba(10, 7, 5, 0.97);
-    padding-bottom: calc(14px + env(safe-area-inset-bottom));
+    z-index: 206;
+    background: rgba(10, 7, 5, 0.98);
+    padding: 12px 14px calc(14px + env(safe-area-inset-bottom));
   }
   .combat-log.is-open { transform: translateY(0); }
+  .combat-log__close {
+    display: block;
+    align-self: flex-end;
+    margin-bottom: 4px;
+    background: rgba(201, 145, 63, 0.14);
+    border: 1px solid rgba(201, 145, 63, 0.4);
+    border-radius: 8px;
+    color: var(--amber-lt);
+    font-size: 13px;
+    padding: 6px 12px;
+    min-height: var(--tap);
+    cursor: pointer;
+  }
+
+  /* Sonido reubicado arriba-derecha (libera la zona inferior en mobile). */
+  .mute-btn {
+    top: calc(8px + env(safe-area-inset-top));
+    right: 10px;
+    bottom: auto;
+  }
 
   /* La etiqueta de fila (absoluta) estorba en angosto. */
   .combat-row__label { display: none; }
@@ -3978,9 +4009,13 @@ body {
   .hud__title { font-size: 18px; }
   .map-body { padding: 14px; gap: 14px; }
 
+  /* Holgura arriba-derecha para que el botón de sonido no pise el contenido. */
+  .shop-header,
+  .event-header { padding-right: 52px; }
+  .hud { padding-right: calc(14px + 46px); }
+
   /* Overlays fijos respetan el notch. */
   .preload-bar { top: env(safe-area-inset-top); }
-  .mute-btn { bottom: calc(14px + env(safe-area-inset-bottom)); }
 }
 @media (max-width: 900px) and (prefers-reduced-motion: reduce) {
   .combat-log { transition: none; }
@@ -3998,6 +4033,23 @@ body {
   .event-body { padding: 18px 14px; }
   .event-card__title { font-size: 22px; }
   .overlay__card { padding: 24px 18px; }
+
+  /* Party-select: header compacto + carta más alta con portrait 1:1, para que
+     entre sin scroll vertical. (No afecta al menú: .screen--menu queda excluido.) */
+  .screen:not(.screen--menu) { padding: 14px 14px 16px; }
+  .screen:not(.screen--menu) .title { margin-bottom: 6px; }
+  .screen:not(.screen--menu) .title__sub {
+    letter-spacing: 0.2em;
+    font-size: 11px;
+    margin-bottom: 4px;
+    white-space: nowrap;
+  }
+  .screen:not(.screen--menu) .intro { font-size: 12.5px; line-height: 1.35; margin-top: 6px; }
+  .roster { margin: 6px 0 12px; }
+  /* Portrait cuadrado (1:1): la carta se hace más alta. */
+  .hero-pick__art { aspect-ratio: 1 / 1; height: auto; }
+  .hero-pick { gap: 4px; }
+  .hero-pick__role { font-size: 11px; }
 
   /* Selección de party como carrusel: una carta por slide con scroll-snap;
      las vecinas asoman a los lados. Swipe táctil nativo. */
@@ -4044,7 +4096,7 @@ body {
 }
 
 /* ---- Teléfono horizontal (landscape corto): franjas compactas ---- */
-@media (orientation: landscape) and (max-height: 520px) {
+@media (orientation: landscape) and (max-height: 520px) and (max-width: 1024px) {
   :root { --unit-w: 96px; --die-size: 40px; }
   .combat {
     grid-template-areas: 'top' 'enemies' 'mid' 'heroes';

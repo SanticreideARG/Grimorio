@@ -92,7 +92,7 @@ export default function PartySelect() {
     <main className="screen">
       <header className="title">
         <div className="title__sub">FORMAD VUESTRA COMPAÑÍA</div>
-        <h1 className="title__main" style={{ fontSize: '52px' }}>
+        <h1 className="title__main" style={{ fontSize: 'clamp(30px, 8vw, 52px)' }}>
           La Party
         </h1>
         <p className="intro" style={{ marginTop: 12 }}>

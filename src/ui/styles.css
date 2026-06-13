@@ -2324,6 +2324,59 @@ body {
   100% { opacity: 0; transform: translate(-50%, -50%) scale(1.9); }
 }
 
+/* Número de daño: salta desde la esquina superior del objetivo (rojo si lo
+   recibe un héroe, ámbar si un enemigo; más grande en críticos). */
+.fx-dmg {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-family: 'Cinzel', serif;
+  font-weight: 800;
+  font-size: 19px;
+  pointer-events: none;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.95);
+  animation: fx-dmg-pop 0.85s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+}
+.fx-dmg--enemy { color: #ffe08a; text-shadow: 0 0 8px rgba(255, 170, 40, 0.7), 0 2px 5px rgba(0, 0, 0, 0.95); }
+.fx-dmg--hero  { color: #ff7a6e; text-shadow: 0 0 8px rgba(220, 40, 30, 0.8), 0 2px 5px rgba(0, 0, 0, 0.95); }
+.fx-dmg--crit  { font-size: 27px; }
+@keyframes fx-dmg-pop {
+  0%   { opacity: 0; transform: translate(-50%, -10%) scale(0.5); }
+  18%  { opacity: 1; transform: translate(-32%, -78%) scale(1.18); }
+  45%  { transform: translate(-22%, -98%) scale(1); }
+  100% { opacity: 0; transform: translate(-12%, -138%) scale(0.9); }
+}
+
+/* Tajo cruzado sobre el objetivo (ataques cuerpo a cuerpo / tanques). */
+.fx-slash {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.fx-slash__line {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 88px;
+  height: 5px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, transparent, #ffffff 48%, #ffffff 52%, transparent);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.9), 0 0 18px rgba(205, 225, 255, 0.6);
+  opacity: 0;
+}
+.fx-slash__line--a { animation: fx-slash-a 0.34s ease-out forwards; }
+.fx-slash__line--b { animation: fx-slash-b 0.34s ease-out 0.07s forwards; }
+@keyframes fx-slash-a {
+  0%   { opacity: 0; transform: translate(-50%, -50%) rotate(-35deg) scaleX(0.15); }
+  35%  { opacity: 1; transform: translate(-50%, -50%) rotate(-35deg) scaleX(1.1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) rotate(-35deg) scaleX(1.1); }
+}
+@keyframes fx-slash-b {
+  0%   { opacity: 0; transform: translate(-50%, -50%) rotate(28deg) scaleX(0.15); }
+  35%  { opacity: 1; transform: translate(-50%, -50%) rotate(28deg) scaleX(1.1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) rotate(28deg) scaleX(1.1); }
+}
+
 /* Reacciones de la carta: fallo / crítico / sangrado */
 .unit.is-miss {
   animation: unitmiss 0.42s ease;

@@ -204,9 +204,40 @@ function spawnArmorShimmer(layer, at) {
   setTimeout(() => el.remove(), 720);
 }
 
+// Tajo cruzado sobre el objetivo (ataques cuerpo a cuerpo / tanques).
+function spawnSlash(layer, at) {
+  if (!layer) return;
+  const el = document.createElement('div');
+  el.className = 'fx-slash';
+  el.style.left = `${at.x}px`;
+  el.style.top = `${at.y}px`;
+  el.innerHTML =
+    '<span class="fx-slash__line fx-slash__line--a"></span>' +
+    '<span class="fx-slash__line fx-slash__line--b"></span>';
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 380);
+}
+
+// Número de daño que salta desde la esquina del objetivo (rojo si lo recibe un
+// héroe, ámbar si un enemigo; más grande en críticos).
+function spawnDamageNumber(layer, targetKey, dmg, crit = false) {
+  if (!layer || !dmg) return;
+  const el2 = elByKey(targetKey);
+  if (!el2) return;
+  const r = el2.getBoundingClientRect();
+  const toHero = el2.classList.contains('unit--hero');
+  const el = document.createElement('div');
+  el.className = `fx-dmg ${toHero ? 'fx-dmg--hero' : 'fx-dmg--enemy'}${crit ? ' fx-dmg--crit' : ''}`;
+  el.style.left = `${r.right - 18}px`; // esquina superior derecha del objetivo
+  el.style.top = `${r.top + 8}px`;
+  el.textContent = `-${dmg}`;
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 880);
+}
+
 // ---------- Reproductores por tipo ----------
 
-async function playMelee(layer, from, to, sourceKey, targetKey) {
+async function playMelee(layer, from, to, sourceKey, targetKey, dmg) {
   const src = elByKey(sourceKey);
   const dx = (to.x - from.x) * 0.55;
   const dy = (to.y - from.y) * 0.55;
@@ -222,15 +253,18 @@ async function playMelee(layer, from, to, sourceKey, targetKey) {
   }
   await wait(170); // hasta el momento del golpe
   impact(layer, to, 'melee');
+  spawnSlash(layer, to);
   flash(targetKey, 'is-hit', 340);
+  spawnDamageNumber(layer, targetKey, dmg);
   await wait(200);
 }
 
-async function playRanged(layer, from, to, targetKey, variant) {
+async function playRanged(layer, from, to, targetKey, variant, dmg) {
   spawnProjectile(layer, from, to, variant);
   await wait(380); // viaje del proyectil
   impact(layer, to, variant);
   flash(targetKey, 'is-hit', 340);
+  spawnDamageNumber(layer, targetKey, dmg);
   await wait(120);
 }
 
@@ -240,18 +274,19 @@ async function playHeal(layer, at, targetKey) {
   await wait(720);
 }
 
-async function playExplosion(layer, targets) {
+async function playExplosion(layer, targets, dmg) {
   if (!targets?.length) return;
   for (const uid of targets) {
     const at = getCenter(uid);
     if (at) spawnExplosion(layer, at);
     flash(uid, 'is-hit', 500);
+    spawnDamageNumber(layer, uid, dmg);
     await wait(50);
   }
   await wait(850);
 }
 
-async function playAoe(layer, from, targets, school) {
+async function playAoe(layer, from, targets, school, dmg) {
   if (!from || !targets?.length) return;
   const variant = school ?? 'arcane';
   // Dispara proyectiles a cada enemigo con un pequeño escalonado
@@ -265,6 +300,7 @@ async function playAoe(layer, from, targets, school) {
     const to = getCenter(uid);
     if (to) impact(layer, to, variant);
     flash(uid, 'is-hit', 340);
+    spawnDamageNumber(layer, uid, dmg);
     await wait(60);
   }
   await wait(200);
@@ -343,12 +379,14 @@ async function playCritAnim(layer, e) {
   }
   spawnFloatingText(layer, to, '¡CRÍTICO!', 'fx-float--crit');
   spawnCritBurst(layer, to);
+  spawnDamageNumber(layer, e.target, e.dmg, true);
   flash(e.target, 'is-crit', 500);
   await wait(500);
 }
 
-async function playDotAnim(layer, at, targetKey) {
+async function playDotAnim(layer, at, targetKey, dmg) {
   spawnFloatingText(layer, at, '🩸', 'fx-float--dot');
+  spawnDamageNumber(layer, targetKey, dmg);
   flash(targetKey, 'is-dot', 380);
   await wait(480);
 }
@@ -373,7 +411,7 @@ export async function playEvent(layer, e) {
   // Daño por turno (dotDamage: sangría / veneno)
   if (e.anim === 'dot') {
     const at = getCenter(e.target);
-    if (at) await playDotAnim(layer, at, e.target);
+    if (at) await playDotAnim(layer, at, e.target, e.dmg);
     return;
   }
 
@@ -392,12 +430,12 @@ export async function playEvent(layer, e) {
 
   // AoE — múltiples objetivos, no usa e.target
   if (e.anim === 'explosion') {
-    await playExplosion(layer, e.targets);
+    await playExplosion(layer, e.targets, e.dmg);
     return;
   }
   if (e.anim === 'aoe') {
     const from = e.source ? getCenter(e.source) : null;
-    await playAoe(layer, from, e.targets, e.school);
+    await playAoe(layer, from, e.targets, e.school, e.dmg);
     return;
   }
   if (e.anim === 'heal_all') {
@@ -430,16 +468,17 @@ export async function playEvent(layer, e) {
   const from = e.source ? getCenter(e.source) : null;
   if (!from) {
     flash(e.target, 'is-hit', 340);
+    spawnDamageNumber(layer, e.target, e.dmg);
     return;
   }
   if (e.anim === 'laser') {
-    await playRanged(layer, from, to, e.target, 'laser');
+    await playRanged(layer, from, to, e.target, 'laser', e.dmg);
   } else if (e.anim === 'ranged') {
     // La escuela del hechizo decide el proyectil (flecha, fuego, sombra, etc.);
     // los ataques básicos a distancia caen a arcano/flecha como antes.
     const variant = e.school ?? ((e.kind === 'spell' || e.arcane) ? 'arcane' : 'arrow');
-    await playRanged(layer, from, to, e.target, variant);
+    await playRanged(layer, from, to, e.target, variant, e.dmg);
   } else {
-    await playMelee(layer, from, to, e.source, e.target);
+    await playMelee(layer, from, to, e.source, e.target, e.dmg);
   }
 }

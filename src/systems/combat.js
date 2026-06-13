@@ -174,7 +174,7 @@ export function rollActiveHero(combat, rng) {
     h = c.heroes[c.activeHeroIndex];
     pushLog(c, 'dot',
       `${h.name} sufre ${dotResult.damage} de ${dotResult.names.join(' + ')}.`,
-      { anim: 'dot', target: h.id });
+      { anim: 'dot', target: h.id, dmg: dotResult.damage });
     if (h.hp <= 0 && !h.down) {
       c.heroes[c.activeHeroIndex].down = true;
       pushLog(c, 'down', `${h.name} cae.`);
@@ -239,12 +239,12 @@ export function heroAttack(combat, enemyUid, rng) {
 
   if (isCrit) {
     pushLog(c, 'crit', `${h.name} ¡CRÍTICO! a ${target.name} por ${dmg}.`, {
-      anim: 'crit', source: h.id, target: target.uid, variant: hitAnim(h),
+      anim: 'crit', source: h.id, target: target.uid, variant: hitAnim(h), dmg,
       ...(h.attackAnim === 'arcane' && { arcane: true }),
     });
   } else {
     pushLog(c, 'attack', `${h.name} golpea a ${target.name} por ${dmg}.`, {
-      anim: hitAnim(h), source: h.id, target: target.uid,
+      anim: hitAnim(h), source: h.id, target: target.uid, dmg,
       ...(h.attackAnim === 'arcane' && { arcane: true }),
     });
   }
@@ -270,7 +270,7 @@ export function heroCast(combat, spellId, targetUid, rng) {
     const targets = c.enemies.filter((e) => e.hp > 0);
     for (const t of targets) t.hp = Math.max(0, t.hp - fx.damage);
     pushLog(c, 'spell', `${h.name} lanza ${spell.name} sobre todos (${fx.damage} c/u).`, {
-      anim: fx.explosion ? 'explosion' : 'aoe', source: h.id, school, targets: targets.map((t) => t.uid),
+      anim: fx.explosion ? 'explosion' : 'aoe', source: h.id, school, dmg: fx.damage, targets: targets.map((t) => t.uid),
     });
   }
 
@@ -291,7 +291,7 @@ export function heroCast(combat, spellId, targetUid, rng) {
     target.hp = Math.max(0, target.hp - fx.damage);
     const singleAnim = fx.pierce ? 'laser' : (fx.ignoreRow ? 'ranged' : 'melee');
     pushLog(c, 'spell', `${h.name} lanza ${spell.name} sobre ${target.name} (${fx.damage}).`, {
-      anim: singleAnim, source: h.id, school, castfx, target: target.uid,
+      anim: singleAnim, source: h.id, school, castfx, dmg: fx.damage, target: target.uid,
     });
     // Pierce: also hits the next alive enemy behind the target
     if (fx.pierce) {
@@ -300,7 +300,7 @@ export function heroCast(combat, spellId, targetUid, rng) {
       if (behind) {
         behind.hp = Math.max(0, behind.hp - fx.damage);
         pushLog(c, 'spell', `El rayo traspasa y golpea a ${behind.name} (${fx.damage}).`, {
-          anim: 'laser', source: h.id, target: behind.uid,
+          anim: 'laser', source: h.id, dmg: fx.damage, target: behind.uid,
         });
       }
     }
@@ -544,7 +544,7 @@ function applyEnemyDots(c) {
     if (dot.damage > 0) {
       enemy.hp = dot.hero.hp;
       pushLog(c, 'dot', `${enemy.name} sufre ${dot.damage} de ${dot.names.join(' + ')}.`,
-        { anim: 'dot', target: enemy.uid });
+        { anim: 'dot', target: enemy.uid, dmg: dot.damage });
       if (enemy.hp <= 0) pushLog(c, 'down', `${enemy.name} sucumbe a la maldición.`);
     }
   }
@@ -694,11 +694,11 @@ function applyEnemyHit(c, enemy, target, rng) {
   const blockTxt = absorbed > 0 ? ` (🛡️${absorbed})` : '';
   if (isCrit) {
     pushLog(c, 'crit', `${enemy.name} ¡CRÍTICO! a ${target.name} por ${dmg}${blockTxt}.`, {
-      anim: 'crit', source: enemy.uid, target: target.id, variant: hitAnim(enemy),
+      anim: 'crit', source: enemy.uid, target: target.id, variant: hitAnim(enemy), dmg,
     });
   } else {
     pushLog(c, 'enemyhit', `${enemy.name} ataca a ${target.name} por ${dmg}${blockTxt}.`, {
-      anim: hitAnim(enemy), source: enemy.uid, target: target.id,
+      anim: hitAnim(enemy), source: enemy.uid, target: target.id, dmg,
     });
   }
   if (target.hp <= 0 && !target.down) {

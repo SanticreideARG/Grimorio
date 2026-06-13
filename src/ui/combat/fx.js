@@ -31,6 +31,32 @@ function flash(key, cls, ms) {
   setTimeout(() => el.classList.remove(cls), ms);
 }
 
+// Color por escuela mágica (proyectil/impacto/brillo del lanzador).
+const SCHOOL_COLOR = {
+  arcane: '#c98bf0',
+  fire:   '#ff9a3c',
+  shadow: '#9a63d8',
+  blade:  '#bfe0ff',
+  poison: '#8fdc6b',
+  arrow:  '#e8c483',
+  steel:  '#d8c39a',
+  holy:   '#ffe9a8',
+};
+const schoolColor = (school) => SCHOOL_COLOR[school] ?? SCHOOL_COLOR.arcane;
+
+// Brillo en el contorno de la carta del lanzador al usar una habilidad. El color
+// se tinta según la escuela del hechizo (vía la variable CSS --cast).
+function flashCast(key, school) {
+  const el = elByKey(key);
+  if (!el) return;
+  el.style.setProperty('--cast', schoolColor(school));
+  el.classList.add('is-casting');
+  setTimeout(() => {
+    el.classList.remove('is-casting');
+    el.style.removeProperty('--cast');
+  }, 720);
+}
+
 // ---------- Primitivas de partículas ----------
 
 function spawnProjectile(layer, from, to, variant) {
@@ -133,10 +159,11 @@ function spawnExplosion(layer, at) {
   setTimeout(() => el.remove(), 900);
 }
 
-function spawnArcaneCast(layer, at) {
+function spawnArcaneCast(layer, at, school) {
   if (!layer) return;
   const el = document.createElement('div');
   el.className = 'fx-arcane-cast';
+  el.style.setProperty('--cast', schoolColor(school));
   el.style.left = `${at.x}px`;
   el.style.top = `${at.y}px`;
   el.innerHTML =
@@ -195,22 +222,30 @@ async function playExplosion(layer, targets) {
   await wait(850);
 }
 
-async function playAoe(layer, from, targets) {
+async function playAoe(layer, from, targets, school) {
   if (!from || !targets?.length) return;
+  const variant = school ?? 'arcane';
   // Dispara proyectiles a cada enemigo con un pequeño escalonado
   for (const uid of targets) {
     const to = getCenter(uid);
-    if (to) spawnProjectile(layer, from, to, 'arcane');
+    if (to) spawnProjectile(layer, from, to, variant);
     await wait(80);
   }
   await wait(300); // tiempo de viaje
   for (const uid of targets) {
     const to = getCenter(uid);
-    if (to) impact(layer, to, 'arcane');
+    if (to) impact(layer, to, variant);
     flash(uid, 'is-hit', 340);
     await wait(60);
   }
   await wait(200);
+}
+
+// Auto-mejora sobre el lanzador (p.ej. solo bloqueo): aura de escudo + brillo.
+async function playSelfBuff(layer, at, targetKey) {
+  spawnShield(layer, at);
+  flash(targetKey, 'is-shielded', 600);
+  await wait(420);
 }
 
 async function playHealAll(layer, targets) {
@@ -313,10 +348,12 @@ export async function playEvent(layer, e) {
     return;
   }
 
-  // Efecto de canalización arcana sobre el lanzador (no bloqueante)
+  // Toda habilidad: brillo en el contorno de la carta del lanzador + chispas de
+  // canalización, tintados según la escuela del hechizo (no bloqueante).
   if (e.kind === 'spell' && e.source) {
+    flashCast(e.source, e.school);
     const srcAt = getCenter(e.source);
-    if (srcAt) spawnArcaneCast(layer, srcAt);
+    if (srcAt) spawnArcaneCast(layer, srcAt, e.school);
   }
 
   // AoE — múltiples objetivos, no usa e.target
@@ -326,11 +363,16 @@ export async function playEvent(layer, e) {
   }
   if (e.anim === 'aoe') {
     const from = e.source ? getCenter(e.source) : null;
-    await playAoe(layer, from, e.targets);
+    await playAoe(layer, from, e.targets, e.school);
     return;
   }
   if (e.anim === 'heal_all') {
     await playHealAll(layer, e.targets);
+    return;
+  }
+  if (e.anim === 'selfbuff') {
+    const at = getCenter(e.target ?? e.source);
+    if (at) await playSelfBuff(layer, at, e.target ?? e.source);
     return;
   }
 
@@ -359,7 +401,9 @@ export async function playEvent(layer, e) {
   if (e.anim === 'laser') {
     await playRanged(layer, from, to, e.target, 'laser');
   } else if (e.anim === 'ranged') {
-    const variant = (e.kind === 'spell' || e.arcane) ? 'arcane' : 'arrow';
+    // La escuela del hechizo decide el proyectil (flecha, fuego, sombra, etc.);
+    // los ataques básicos a distancia caen a arcano/flecha como antes.
+    const variant = e.school ?? ((e.kind === 'spell' || e.arcane) ? 'arcane' : 'arrow');
     await playRanged(layer, from, to, e.target, variant);
   } else {
     await playMelee(layer, from, to, e.source, e.target);

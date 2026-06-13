@@ -14,9 +14,10 @@
   --text-dim: #b7975f;
 
   /* Tamaños que se reducen por breakpoint (mobile). Ver @media más abajo. */
-  --unit-w: 150px;   /* ancho de carta de unidad en combate */
-  --die-size: 66px;  /* lado del dado grande */
-  --tap: 44px;       /* objetivo táctil mínimo */
+  --unit-w: 150px;       /* ancho de carta de unidad en combate */
+  --unit-w-boss: 200px;  /* ancho de la carta de jefe (más grande) */
+  --die-size: 66px;      /* lado del dado grande */
+  --tap: 44px;           /* objetivo táctil mínimo */
 }
 
 * {
@@ -1071,7 +1072,7 @@ body {
   min-height: 18px;
 }
 .unit--boss {
-  width: 200px;
+  width: var(--unit-w-boss);
   border-color: rgba(178, 53, 34, 0.6);
 }
 .unit--boss .unit__name {
@@ -4013,7 +4014,8 @@ body {
 
 /* ---- Teléfono / angosto (≤600px): cartas y dados más chicos ---- */
 @media (max-width: 600px) {
-  :root { --unit-w: 110px; --die-size: 46px; }
+  :root { --unit-w: 110px; --unit-w-boss: 150px; --die-size: 46px; }
+  .unit--boss .unit__art { height: 108px; }
   .die-face__num { font-size: 18px; }
   .combat { gap: 10px; }
   .combat-kind { font-size: 18px; }
@@ -4087,7 +4089,7 @@ body {
 
 /* ---- Teléfono horizontal (landscape corto): franjas compactas ---- */
 @media (orientation: landscape) and (max-height: 520px) and (max-width: 1024px) {
-  :root { --unit-w: 96px; --die-size: 40px; }
+  :root { --unit-w: 96px; --unit-w-boss: 124px; --die-size: 40px; }
   .combat {
     grid-template-areas: 'top' 'enemies' 'mid' 'heroes' 'log';
     gap: 6px;

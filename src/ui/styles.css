@@ -3768,6 +3768,49 @@ body {
   .event-body { padding: 18px 14px; }
   .event-card__title { font-size: 22px; }
   .overlay__card { padding: 24px 18px; }
+
+  /* Selección de party como carrusel: una carta por slide con scroll-snap;
+     las vecinas asoman a los lados. Swipe táctil nativo. */
+  .roster {
+    display: flex;
+    grid-template-columns: none;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 12px;
+    /* el padding-top deja sitio al badge de orden (sobresale -10px) y el
+       lateral centra la carta activa dejando ver las contiguas */
+    padding: 16px 12vw 14px;
+    scroll-padding-inline: 12vw;
+    scrollbar-width: none;
+  }
+  .roster::-webkit-scrollbar { display: none; }
+  .roster .unit-wrap {
+    flex: 0 0 76vw;
+    max-width: 360px;
+    scroll-snap-align: center;
+  }
+  .roster .unit-wrap .hero-pick {
+    width: 100%;
+    padding: 20px;
+  }
+
+  /* Acciones de party: evitar overflow horizontal. Menú + contador en una fila;
+     el botón de confirmar pasa a ancho completo debajo. */
+  .party-actions {
+    flex-wrap: wrap;
+    gap: 10px 12px;
+  }
+  .party-actions .btn--ghost { order: 1; }
+  .party-count { order: 2; margin: 0 0 0 auto; }
+  .party-actions .btn--primary { order: 3; flex: 1 1 100%; }
+}
+
+/* En dispositivos táctiles (sin hover) el botón ⓘ queda visible como acceso
+   directo al detalle, además del long-press de 2 s. */
+@media (hover: none) {
+  .unit__info-btn { opacity: 0.85; }
 }
 
 /* ---- Teléfono horizontal (landscape corto): franjas compactas ---- */

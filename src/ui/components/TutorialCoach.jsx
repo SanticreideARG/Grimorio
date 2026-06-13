@@ -3,7 +3,7 @@
 // muestra un cartel al lado con la explicación y los controles. Avanza con
 // "Siguiente"; se puede saltar o desactivar para siempre.
 
-import { useLayoutEffect, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { useGameStore } from '../../store/gameStore.js';
 import { TUTORIAL_STEPS } from '../../data/tutorial.js';
 
@@ -14,6 +14,10 @@ function visibleStepFor(from, view) {
   }
   return -1;
 }
+
+const RING_PAD = 8;   // holgura del aro alrededor del ancla
+const MARGIN = 12;    // separación mínima del cartel respecto a los bordes
+const GAP = 14;       // separación entre el cartel y el ancla
 
 export default function TutorialCoach() {
   const view = useGameStore((s) => s.game?.view);
@@ -26,10 +30,12 @@ export default function TutorialCoach() {
   const idx = tutorial ? visibleStepFor(stored, view) : -1;
   const step = idx >= 0 ? TUTORIAL_STEPS[idx] : null;
 
+  const cardRef = useRef(null);
   const [rect, setRect] = useState(null);
+  const [pos, setPos] = useState(null);
 
-  // Localiza el elemento anclado y mide su posición (reintenta unos frames por
-  // si el DOM de la pantalla aún se está montando/animando).
+  // 1) Localiza el elemento anclado y mide su posición (reintenta unos frames
+  // por si el DOM de la pantalla aún se está montando/animando).
   useLayoutEffect(() => {
     if (!step) { setRect(null); return undefined; }
     let raf;
@@ -57,6 +63,47 @@ export default function TutorialCoach() {
     };
   }, [idx, view, step]);
 
+  // 2) Posiciona el cartel midiendo SU tamaño real y lo limita al viewport, así
+  // nunca queda fuera de pantalla (la causa del bug en mobile/desktop).
+  useLayoutEffect(() => {
+    if (!step) { setPos(null); return undefined; }
+    const place = () => {
+      const card = cardRef.current;
+      if (!card) return;
+      // Viewport VISUAL (no innerWidth): si la página tuviera overflow horizontal,
+      // innerWidth lo incluye y el cartel se saldría. visualViewport da el área visible.
+      const vw = window.visualViewport?.width ?? document.documentElement.clientWidth;
+      const vh = window.visualViewport?.height ?? document.documentElement.clientHeight;
+      const cw = card.offsetWidth;
+      const ch = card.offsetHeight;
+
+      let left;
+      let top;
+      if (rect) {
+        left = rect.left + rect.width / 2 - cw / 2; // centrado horizontal sobre el ancla
+        const below = rect.top + rect.height + GAP; // borde superior si va debajo
+        const above = rect.top - GAP - ch;          // borde superior si va arriba
+        if (below + ch + MARGIN <= vh) top = below;       // cabe debajo
+        else if (above >= MARGIN) top = above;            // si no, cabe arriba
+        else top = (vh - ch) / 2;                         // sin lugar: centrado vertical
+      } else {
+        left = (vw - cw) / 2;
+        top = (vh - ch) / 2;
+      }
+      // Clamp final a los bordes del viewport (garantiza visibilidad completa).
+      left = Math.max(MARGIN, Math.min(left, vw - cw - MARGIN));
+      top = Math.max(MARGIN, Math.min(top, vh - ch - MARGIN));
+      setPos({ left: Math.round(left), top: Math.round(top) });
+    };
+    place();
+    window.addEventListener('resize', place);
+    window.addEventListener('scroll', place, true);
+    return () => {
+      window.removeEventListener('resize', place);
+      window.removeEventListener('scroll', place, true);
+    };
+  }, [rect, idx, step]);
+
   if (!step) return null;
 
   const total = TUTORIAL_STEPS.length;
@@ -67,32 +114,27 @@ export default function TutorialCoach() {
     else setStep(next);
   };
 
-  // Posición del cartel: debajo del ancla si hay lugar, si no arriba; centrado
-  // en pantalla si no se encontró el elemento.
-  const PAD = 8;
-  let callout = { left: '50%', top: '50%', transform: 'translate(-50%, -50%)' };
-  if (rect) {
-    const below = rect.top + rect.height + 320 < window.innerHeight;
-    const cx = Math.min(Math.max(rect.left + rect.width / 2, 180), window.innerWidth - 180);
-    callout = below
-      ? { left: cx, top: rect.top + rect.height + 14, transform: 'translate(-50%, 0)' }
-      : { left: cx, top: rect.top - 14, transform: 'translate(-50%, -100%)' };
-  }
-
   return (
     <div className="tut-layer" aria-live="polite">
       {rect && (
         <div
           className="tut-ring"
           style={{
-            top: rect.top - PAD,
-            left: rect.left - PAD,
-            width: rect.width + PAD * 2,
-            height: rect.height + PAD * 2,
+            top: rect.top - RING_PAD,
+            left: rect.left - RING_PAD,
+            width: rect.width + RING_PAD * 2,
+            height: rect.height + RING_PAD * 2,
           }}
         />
       )}
-      <div className="tut-card" style={callout} role="dialog">
+      {/* Hasta tener la posición medida, se renderiza fuera de pantalla para
+          medir su tamaño sin parpadeo (useLayoutEffect corre antes del paint). */}
+      <div
+        ref={cardRef}
+        className="tut-card"
+        style={pos ? { left: pos.left, top: pos.top } : { left: -9999, top: -9999 }}
+        role="dialog"
+      >
         <div className="tut-card__head">
           <span className="tut-card__step">Tutorial · {idx + 1}/{total}</span>
           <button className="tut-card__x" onClick={end} aria-label="Cerrar tutorial">✕</button>

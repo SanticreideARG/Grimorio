@@ -175,6 +175,35 @@ function spawnArcaneCast(layer, at, school) {
   setTimeout(() => el.remove(), 750);
 }
 
+// Pentagrama invocador sobre la carta del lanzador (p.ej. Bola de Fuego de Veyra).
+function spawnPentagram(layer, at, school) {
+  if (!layer) return;
+  const el = document.createElement('div');
+  el.className = 'fx-pentagram';
+  el.style.left = `${at.x}px`;
+  el.style.top = `${at.y}px`;
+  el.style.setProperty('--cast', schoolColor(school));
+  el.innerHTML =
+    '<svg viewBox="0 0 100 100" aria-hidden="true">' +
+      '<circle class="fx-pentagram__circle" cx="50" cy="50" r="46"/>' +
+      '<path class="fx-pentagram__star" d="M50 5 L76.4 86.4 L7.2 36.1 L92.8 36.1 L23.6 86.4 Z"/>' +
+    '</svg>';
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 820);
+}
+
+// Destello plateado de blindaje sobre la carta (p.ej. Guardia de Brenna).
+function spawnArmorShimmer(layer, at) {
+  if (!layer) return;
+  const el = document.createElement('div');
+  el.className = 'fx-armor';
+  el.style.left = `${at.x}px`;
+  el.style.top = `${at.y}px`;
+  el.innerHTML = '<div class="fx-armor__sweep"></div><div class="fx-armor__ring"></div>';
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 720);
+}
+
 // ---------- Reproductores por tipo ----------
 
 async function playMelee(layer, from, to, sourceKey, targetKey) {
@@ -348,12 +377,17 @@ export async function playEvent(layer, e) {
     return;
   }
 
-  // Toda habilidad: brillo en el contorno de la carta del lanzador + chispas de
-  // canalización, tintados según la escuela del hechizo (no bloqueante).
+  // Toda habilidad: brillo en el contorno de la carta del lanzador (tintado por
+  // escuela) + un efecto de canalización; algunas magias tienen uno propio
+  // (pentagrama, blindaje). No bloqueante.
   if (e.kind === 'spell' && e.source) {
     flashCast(e.source, e.school);
     const srcAt = getCenter(e.source);
-    if (srcAt) spawnArcaneCast(layer, srcAt, e.school);
+    if (srcAt) {
+      if (e.castfx === 'pentagram') spawnPentagram(layer, srcAt, e.school);
+      else if (e.castfx === 'armor') spawnArmorShimmer(layer, srcAt);
+      else spawnArcaneCast(layer, srcAt, e.school);
+    }
   }
 
   // AoE — múltiples objetivos, no usa e.target

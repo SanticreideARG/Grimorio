@@ -262,6 +262,7 @@ export function heroCast(combat, spellId, targetUid, rng) {
   if (!spell || h.energy < spell.cost) return combat;
   const fx = spell.effect ?? {};
   const school = spell.school; // estilo visual (proyectil/impacto/brillo)
+  const castfx = spell.castfx; // efecto especial sobre el lanzador (pentagram/armor)
   const logStart = c.log.length; // para marcar el cardback de "magia" tras resolver
 
   // ---- AoE: daño a todos los enemigos ----
@@ -290,7 +291,7 @@ export function heroCast(combat, spellId, targetUid, rng) {
     target.hp = Math.max(0, target.hp - fx.damage);
     const singleAnim = fx.pierce ? 'laser' : (fx.ignoreRow ? 'ranged' : 'melee');
     pushLog(c, 'spell', `${h.name} lanza ${spell.name} sobre ${target.name} (${fx.damage}).`, {
-      anim: singleAnim, source: h.id, school, target: target.uid,
+      anim: singleAnim, source: h.id, school, castfx, target: target.uid,
     });
     // Pierce: also hits the next alive enemy behind the target
     if (fx.pierce) {
@@ -358,7 +359,7 @@ export function heroCast(combat, spellId, targetUid, rng) {
   // dispara el brillo del lanzador, que de otro modo no tendría animación.
   if (c.log.length === logStart && (fx.block || fx.selfHeal)) {
     pushLog(c, 'spell', `${h.name} usa ${spell.name}.`, {
-      anim: 'selfbuff', source: h.id, school, target: h.id,
+      anim: 'selfbuff', source: h.id, school, castfx, target: h.id,
     });
   }
 

@@ -44,6 +44,7 @@ export const spells = [
     desc: 'Te pones en guardia: +1 de bloqueo este turno.',
     effect: { block: 1, target: 'self' },
     school: 'steel',
+    castfx: 'armor', // destello plateado de blindaje sobre la carta
     icon: 'spells/guardia.png',
     innate: true,
   },
@@ -93,6 +94,7 @@ export const spells = [
     desc: '4 de daño a un enemigo (alcance arcano).',
     effect: { damage: 4, target: 'enemy', ignoreRow: true },
     school: 'fire',
+    castfx: 'pentagram', // invoca un pentagrama con glow sobre la carta de Veyra
     icon: 'spells/bola_fuego.png',
   },
   {

@@ -1987,6 +1987,91 @@ body {
   }
   100% { box-shadow: 0 0 0 0 transparent; }
 }
+
+/* Pentagrama invocador (Bola de Fuego de Veyra): círculo + estrella que se
+   dibuja con glow tintado por la escuela del hechizo. */
+.fx-pentagram {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.fx-pentagram svg {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100px;
+  height: 100px;
+  transform: translate(-50%, -50%);
+  overflow: visible;
+  animation: pentagram-life 0.82s ease-out forwards;
+}
+.fx-pentagram__circle,
+.fx-pentagram__star {
+  fill: none;
+  stroke: var(--cast, #ff7a1f);
+  stroke-width: 2.2;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 4px var(--cast, #ff7a1f)) drop-shadow(0 0 10px var(--cast, #ff7a1f));
+}
+.fx-pentagram__star {
+  stroke-dasharray: 440;
+  stroke-dashoffset: 440;
+  animation: pentagram-draw 0.46s ease-out 0.05s forwards;
+}
+@keyframes pentagram-draw { to { stroke-dashoffset: 0; } }
+@keyframes pentagram-life {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.5) rotate(-28deg); }
+  26%  { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+  70%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.16) rotate(18deg); }
+}
+
+/* Blindaje plateado (Guardia de Brenna): destello metálico que barre la carta
+   y un aro de acero, dando sensación de armadura. */
+.fx-armor {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.fx-armor__sweep {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 150px;
+  height: 184px;
+  transform: translate(-50%, -50%);
+  border-radius: 12px;
+  background: linear-gradient(120deg,
+    transparent 30%, rgba(235, 242, 255, 0.9) 50%, transparent 70%);
+  background-size: 280% 100%;
+  background-position: 130% 0;
+  mix-blend-mode: screen;
+  animation: armor-sweep 0.62s ease-out forwards;
+}
+.fx-armor__ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 150px;
+  height: 184px;
+  transform: translate(-50%, -50%);
+  border-radius: 12px;
+  border: 2px solid rgba(222, 232, 246, 0.85);
+  box-shadow: 0 0 14px rgba(200, 215, 240, 0.7), inset 0 0 10px rgba(200, 215, 240, 0.4);
+  animation: armor-ring 0.62s ease-out forwards;
+}
+@keyframes armor-sweep {
+  0%   { opacity: 0; background-position: 130% 0; }
+  20%  { opacity: 1; }
+  100% { opacity: 0; background-position: -30% 0; }
+}
+@keyframes armor-ring {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.85); }
+  30%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.06); }
+}
 @keyframes arcane-cast-star {
   0%   { transform: translate(-50%, -50%) scale(0.4); opacity: 0.9; }
   55%  { transform: translate(-50%, calc(-50% - 18px)) scale(1.1); opacity: 1; }
@@ -2499,15 +2584,28 @@ body {
 }
 .shop-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
   grid-auto-rows: 1fr; /* todas las filas a la misma altura → cards uniformes */
-  gap: 14px;
+  gap: 12px;
+  /* Tope ~5 columnas en pantallas anchas (sin esto auto-fill haría más); se
+     reduce solo en pantallas angostas. */
+  max-width: 780px;
+  margin-inline: auto;
+}
+/* El wrapper (para el botón ⓘ) debe estirar la card a toda la celda del grid,
+   si no las cards quedan a la altura de su contenido y se ven desparejas. */
+.shop-grid .unit-wrap {
+  display: flex;
+  flex-direction: column;
+}
+.shop-grid .unit-wrap > .shop-card {
+  flex: 1;
 }
 .shop-card {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 14px;
+  gap: 6px;
+  padding: 11px;
   border: 1px solid rgba(201, 145, 63, 0.3);
   border-radius: 10px;
   background: linear-gradient(180deg, rgba(40, 26, 12, 0.55), rgba(15, 9, 4, 0.75));
@@ -2516,12 +2614,12 @@ body {
   opacity: 0.6;
 }
 .shop-card__icon {
-  width: 112px;
-  height: 112px;
+  width: 84px;
+  height: 84px;
   object-fit: contain;
   display: block;
   margin: 0 auto;
-  /* x2 y sin recuadro: el PNG del ítem se muestra centrado y suelto */
+  /* el PNG del ítem se muestra centrado y suelto, sin recuadro */
 }
 .shop-card__icon--pet {
   width: 72px;
@@ -2548,10 +2646,13 @@ body {
 }
 .shop-card__name {
   font-family: 'Cinzel', serif;
+  font-size: 14px;
+  line-height: 1.2;
   color: var(--amber-lt);
 }
 .shop-card__desc {
-  font-size: 13px;
+  font-size: 12px;
+  line-height: 1.35;
   color: var(--text-dim);
   flex: 1;
 }
@@ -2961,7 +3062,10 @@ body {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  scrollbar-width: none;        /* Firefox: scroll sin barra */
+  -ms-overflow-style: none;     /* Edge antiguo */
 }
+.card-detail-flip__back::-webkit-scrollbar { display: none; }  /* WebKit */
 
 /* Close button */
 .card-detail__close {
@@ -3097,6 +3201,8 @@ body {
   flex-direction: column;
   gap: 12px;
   overflow-y: auto;
+  scrollbar-width: none;        /* Firefox: scroll sin barra */
+  -ms-overflow-style: none;     /* Edge antiguo */
   max-height: 450px;
   transition: max-height 0.38s cubic-bezier(0.4, 0, 0.2, 1),
               opacity 0.25s ease,
@@ -3108,6 +3214,7 @@ body {
   flex-grow: 1;
   cursor: zoom-in;
 }
+.card-detail__body::-webkit-scrollbar { display: none; }  /* WebKit: scroll sin barra */
 .card-detail__content.is-portrait-hover .card-detail__body {
   max-height: 0;
   opacity: 0;

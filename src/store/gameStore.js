@@ -9,7 +9,10 @@ import {
   loadFromSlot,
   deleteSlot,
   listSlots,
+  SLOT_COUNT,
 } from '../core/save.js';
+import { pullSaves, pushSave, deleteCloudSave } from '../core/cloudSaves.js';
+import { onAuthChange } from '../core/auth.js';
 import { bus, EVENTS } from '../core/events.js';
 import { createRng } from '../core/rng.js';
 import {
@@ -64,6 +67,46 @@ const rememberActiveSlot = (slot) => {
 const forgetActiveSlot = () => {
   try { localStorage.removeItem(ACTIVE_SLOT_KEY); } catch { /* sin localStorage */ }
 };
+// ---------- Sincronización con la nube (Supabase, opcional) ----------
+// Si no hay sesión, todo esto es no-op y el juego funciona solo con localStorage.
+
+const pushTimers = new Map(); // slot → timeout (debounce de subida)
+
+/** Sube el save del slot a la nube, con debounce, si hay usuario logueado. */
+function schedulePush(get, slot, data) {
+  const { user } = get();
+  if (!user || slot == null) return;
+  clearTimeout(pushTimers.get(slot));
+  pushTimers.set(slot, setTimeout(() => {
+    pushTimers.delete(slot);
+    pushSave(user.id, slot, data);
+  }, 1500));
+}
+
+/**
+ * Al iniciar sesión: trae los saves de la nube y reconcilia con los locales por
+ * `updatedAt` (last-write-wins). El más nuevo gana; los huérfanos se copian al
+ * otro lado (saves de invitado → nube; saves de nube → local).
+ */
+async function reconcileOnSignIn(userId, get) {
+  const cloud = await pullSaves(userId);
+  const bySlot = new Map(cloud.map((r) => [r.slot, r.data]));
+  for (let slot = 0; slot < SLOT_COUNT; slot++) {
+    const local = loadFromSlot(slot);
+    const remote = bySlot.get(slot) ?? null;
+    const lt = local ? (Date.parse(local.updatedAt) || 0) : -1;
+    const rt = remote ? (Date.parse(remote.updatedAt) || 0) : -1;
+    if (lt < 0 && rt < 0) continue;
+    if (rt > lt) {
+      saveToSlot(slot, remote); // la nube es más nueva → bajar a local
+    } else if (lt > rt) {
+      pushSave(userId, slot, local); // local más nuevo (o invitado) → subir
+    }
+  }
+  // refrescar el menú con lo reconciliado
+  try { useGameStore.setState({ slots: listSlots() }); } catch { /* aún no creado */ }
+}
+
 /** Reanuda la última partida activa (su `view` está guardada en el save). */
 function resumeLastSession() {
   try {
@@ -83,6 +126,8 @@ export const useGameStore = create((set, get) => ({
   activeSlot: _resumed.activeSlot ?? null,
   /** Metadatos de los 3 slots para pintar el menú. */
   slots: listSlots(),
+  /** Usuario logueado (Supabase) o null en modo invitado. */
+  user: null,
 
   /** Relee los metadatos de los slots desde el almacenamiento. */
   refreshSlots() {
@@ -97,6 +142,7 @@ export const useGameStore = create((set, get) => ({
     try { off = localStorage.getItem('grimorio_tutorial_off') === '1'; } catch { /* sin localStorage */ }
     if (!off) game.tutorial = { step: 0 };
     saveToSlot(slot, game);
+    schedulePush(get, slot, game);
     rememberActiveSlot(slot);
     bus.emit(EVENTS.GAME_CREATED, game);
     set({ game, activeSlot: slot, slots: listSlots() });
@@ -135,6 +181,7 @@ export const useGameStore = create((set, get) => ({
     const { game, activeSlot } = get();
     if (game == null || activeSlot == null) return;
     saveToSlot(activeSlot, game);
+    schedulePush(get, activeSlot, game);
     bus.emit(EVENTS.GAME_SAVED, game);
     set({ slots: listSlots() });
   },
@@ -150,7 +197,10 @@ export const useGameStore = create((set, get) => ({
       typeof mutator === 'function'
         ? mutator({ ...game })
         : { ...game, ...mutator };
-    if (activeSlot != null) saveToSlot(activeSlot, next);
+    if (activeSlot != null) {
+      saveToSlot(activeSlot, next);
+      schedulePush(get, activeSlot, next);
+    }
     set({ game: next, slots: listSlots() });
   },
 
@@ -520,7 +570,8 @@ export const useGameStore = create((set, get) => ({
   /** Borra un slot (y desactiva la partida si era la activa). */
   remove(slot) {
     deleteSlot(slot);
-    const { activeSlot } = get();
+    const { activeSlot, user } = get();
+    if (user) deleteCloudSave(user.id, slot);
     if (activeSlot === slot) forgetActiveSlot();
     set({
       slots: listSlots(),
@@ -534,3 +585,16 @@ export const useGameStore = create((set, get) => ({
     set({ game: null, activeSlot: null, slots: listSlots() });
   },
 }));
+
+// ---------- Enganche de autenticación (no-op si la nube está deshabilitada) ----------
+// Al cambiar la sesión: guardamos el usuario y, al iniciar sesión, reconciliamos
+// los saves locales con los de la nube (last-write-wins).
+onAuthChange((user) => {
+  const prev = useGameStore.getState().user;
+  useGameStore.setState({ user });
+  if (user && user.id !== prev?.id) {
+    reconcileOnSignIn(user.id, useGameStore.getState).catch((e) =>
+      console.warn('[cloud] reconcile:', e?.message ?? e),
+    );
+  }
+});

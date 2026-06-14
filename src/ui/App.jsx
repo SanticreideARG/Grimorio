@@ -13,6 +13,8 @@ import EventScreen from './screens/EventScreen.jsx';
 import ShopScreen from './screens/ShopScreen.jsx';
 import { useAudio } from './hooks/useAudio.js';
 import { useAssetPreload } from './preload.js';
+import { cloudEnabled } from '../core/supabase.js';
+import { signInWithGoogle, signOut } from '../core/auth.js';
 
 const DIFFICULTY_LABEL = { facil: 'Fácil', normal: 'Normal', dificil: 'Difícil' };
 
@@ -22,6 +24,7 @@ export default function App() {
   const newGame = useGameStore((s) => s.newGame);
   const load = useGameStore((s) => s.load);
   const remove = useGameStore((s) => s.remove);
+  const user = useGameStore((s) => s.user);
 
   const [difficulty, setDifficulty] = useState('normal');
   const [playerCount, setPlayerCount] = useState(1);
@@ -116,6 +119,8 @@ export default function App() {
           </div>
         </section>
 
+        {cloudEnabled && <AuthBar user={user} />}
+
         <section className="slots">
           {slots.map((s) => (
             <SlotCard
@@ -148,6 +153,36 @@ export default function App() {
 
       {showAbout && <AboutScreen onClose={() => setShowAbout(false)} />}
     </main>
+  );
+}
+
+// Barra de cuenta: login con Google o chip del usuario + salir. Solo se renderiza
+// si la nube está habilitada (cloudEnabled). El email/avatar vienen del provider.
+function AuthBar({ user }) {
+  if (!user) {
+    return (
+      <section className="auth-bar">
+        <button className="btn btn--google" onClick={signInWithGoogle}>
+          <span className="auth-bar__g" aria-hidden="true">G</span>
+          Entrar con Google
+        </button>
+        <span className="auth-bar__hint">Guardá tus partidas en la nube</span>
+      </section>
+    );
+  }
+  const meta = user.user_metadata ?? {};
+  const name = meta.full_name || meta.name || user.email || 'Aventurero';
+  const avatar = meta.avatar_url || meta.picture || null;
+  return (
+    <section className="auth-bar">
+      <div className="auth-chip">
+        {avatar
+          ? <img className="auth-chip__avatar" src={avatar} alt="" referrerPolicy="no-referrer" />
+          : <span className="auth-chip__avatar auth-chip__avatar--ph" aria-hidden="true">{name[0]}</span>}
+        <span className="auth-chip__name">{name}</span>
+      </div>
+      <button className="btn btn--ghost btn--xs" onClick={signOut}>Salir</button>
+    </section>
   );
 }
 

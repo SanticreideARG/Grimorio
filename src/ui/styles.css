@@ -752,6 +752,75 @@ body {
 }
 .about-btn:hover { opacity: 1; }
 
+/* ── Barra de cuenta (login Google / chip de usuario) ───────────────────── */
+.auth-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  margin: 4px 0 18px;
+}
+.auth-bar__hint {
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+}
+.btn--google {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  background: #ffffff;
+  color: #1f1208;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  font-weight: 600;
+}
+.btn--google:hover { background: #f1ece2; }
+.btn--google .auth-bar__g {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: conic-gradient(#ea4335 0 25%, #fbbc05 0 50%, #34a853 0 75%, #4285f4 0);
+  color: #fff;
+  font-weight: 800;
+  font-size: 11px;
+  font-family: Arial, sans-serif;
+}
+.auth-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px 4px 4px;
+  border: 1px solid rgba(201, 145, 63, 0.4);
+  border-radius: 999px;
+  background: rgba(20, 12, 5, 0.55);
+}
+.auth-chip__avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.auth-chip__avatar--ph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 38% 32%, #f1d59a, #cf9d4f);
+  color: #2c1606;
+  font-weight: 700;
+}
+.auth-chip__name {
+  font-size: 13px;
+  color: var(--amber-lt);
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* ── Pantalla Acerca de ─────────────────────────────────────────────── */
 .about-overlay {
   position: fixed;

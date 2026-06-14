@@ -16,6 +16,7 @@
     "@fontsource/cinzel": "^5.2.8",
     "@fontsource/cinzel-decorative": "^5.2.8",
     "@fontsource/im-fell-english": "^5.2.6",
+    "@supabase/supabase-js": "^2.108.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "zustand": "^5.0.2"

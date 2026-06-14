@@ -12,7 +12,8 @@ import {
   SLOT_COUNT,
 } from '../core/save.js';
 import { pullSaves, pushSave, deleteCloudSave } from '../core/cloudSaves.js';
-import { onAuthChange } from '../core/auth.js';
+import { onAuthChange, pushUnlocksToCloud } from '../core/auth.js';
+import { heroes } from '../data/heroes.js';
 import { bus, EVENTS } from '../core/events.js';
 import { createRng } from '../core/rng.js';
 import {
@@ -105,6 +106,37 @@ async function reconcileOnSignIn(userId, get) {
   }
   // refrescar el menú con lo reconciliado
   try { useGameStore.setState({ slots: listSlots() }); } catch { /* aún no creado */ }
+}
+
+// Desbloqueos (héroes secretos): flags en localStorage + espejo en la cuenta.
+const UNLOCK_KEYS = heroes.filter((h) => h.unlockKey).map((h) => h.unlockKey);
+
+/** Mapa de los desbloqueos presentes en localStorage. */
+function localUnlocks() {
+  const out = {};
+  for (const k of UNLOCK_KEYS) {
+    try { if (localStorage.getItem(k)) out[k] = true; } catch { /* sin localStorage */ }
+  }
+  return out;
+}
+
+/**
+ * Une los desbloqueos de la nube (user_metadata) con los locales (son
+ * monotónicos: una vez desbloqueado, queda). Baja a local lo que falte y sube a
+ * la nube lo que el local aporte de más.
+ */
+function reconcileUnlocks(user) {
+  if (!user) return;
+  const cloud = user.user_metadata?.unlocks ?? {};
+  // nube → local
+  for (const k of Object.keys(cloud)) {
+    if (cloud[k]) { try { localStorage.setItem(k, '1'); } catch { /* noop */ } }
+  }
+  // local → nube (unión; no-op si no aporta nada nuevo)
+  const union = { ...cloud, ...localUnlocks() };
+  pushUnlocksToCloud(user, union).catch((e) =>
+    console.warn('[cloud] pushUnlocks:', e?.message ?? e),
+  );
 }
 
 /** Reanuda la última partida activa (su `view` está guardada en el save). */
@@ -561,7 +593,10 @@ export const useGameStore = create((set, get) => ({
         totalDoom: (g.totalDoom ?? 0) + (g.doom ?? 0),
       });
       if (g.difficulty === 'dificil') {
-        localStorage.setItem('grimorio_orphen_unlocked', '1');
+        try { localStorage.setItem('grimorio_orphen_unlocked', '1'); } catch { /* noop */ }
+        // Si hay sesión, persistir el desbloqueo en la cuenta (cross-device).
+        const u = get().user;
+        if (u) pushUnlocksToCloud(u, localUnlocks()).catch(() => {});
       }
       return { ...g, ending: endingType };
     });
@@ -596,5 +631,6 @@ onAuthChange((user) => {
     reconcileOnSignIn(user.id, useGameStore.getState).catch((e) =>
       console.warn('[cloud] reconcile:', e?.message ?? e),
     );
+    reconcileUnlocks(user); // sincroniza héroes secretos (Orphen) con la cuenta
   }
 });

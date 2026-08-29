@@ -1,0 +1,14 @@
+Use case: illustration-story
+Asset type: Grimorio II narrative event card artwork, wide 16:9 scene
+Input images: Image 1 defines the Eclipse Monastery architecture and palette; Image 2 defines ritual bells, eclipse lighting and painterly materials; Image 3 defines cinematic event-card framing and finish; Image 4 is Elian's identity, silver hair, robes and clockkeeper equipment reference.
+Primary request: depict the choir frozen on the same final note for centuries and Elian about to release them.
+Scene/backdrop: a vast midnight-blue monastery choir hall beneath eight silent hanging bells, with old-gold clockwork ribs and a fixed eclipse visible through the apse.
+Subject: seven exhausted robed monks stand in one restrained choir formation, frozen mid-song, eyes sealed with pale wax and mouths open naturally. Their single sustained note appears as one motionless ribbon of fine gold dust. At the side of the composition, Elian—preserving the supplied identity, silver hair, midnight robes and cracked astrolabe staff—reaches with one hand toward one heavy release rope.
+Style/medium: mature dark-fantasy oil illustration, tactile brushwork, cinematic realism, solemn human drama, consistent with the supplied Grimorio II references.
+Composition/framing: wide altar-facing view; choir forms the central mass while Elian and the rope create a clear secondary decision point; complete figures and eight bells remain inside safe margins; lower edge subdued for card UI.
+Lighting/mood: cold lunar-white light on the choir, soft old-gold dust and a restrained red eclipse rim; compassionate, suspended and tragic.
+Color palette: midnight blue, wax ivory, old gold, lunar silver and restrained eclipse red.
+Constraints: exactly seven monks, exactly eight visible hanging bells and exactly one Elian; preserve Elian's identity and clothing; no duplicated limbs, no musical notation, no text, no UI, no frame, no logo, no watermark; 8% safe margins.
+Avoid: zombie choir, screaming horror faces, orchestra, additional heroes, floating letters, action battle pose, excessive gold spectacle.
+
+Ratio: 16:9 scene

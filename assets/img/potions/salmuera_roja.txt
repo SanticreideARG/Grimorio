@@ -1,0 +1,5 @@
+Dark fantasy painterly illustration, oil-painting texture, dramatic chiaroscuro lighting with warm ember/amber key light and deep crimson + cold teal-purple shadows, grim and atmospheric, high detail, cinematic, muted desaturated palette with glowing ember accents. No text, no UI, no watermark, no border.
+
+Premium dark-fantasy consumable icon of one squat, heavy clear-glass potion bottle filled with glowing crimson brine. Small luminous pearl bubbles rise inside; controlled black salt crystals grow around the dark cork and upper shoulders without hiding the bottle silhouette. A tarnished brass clasp seals the cork, while the red liquid casts a restrained ember glow through thick imperfect glass. Three-quarter front view, centered, full bottle visible, occupying about 70% of the square canvas. No table, floor, scenery, hands, labels, letters, numerals, readable glyphs, blood, extra bottles, frame, icon plate, or detached crystals.
+
+Ratio: 1:1. True transparent RGBA background with clean antialiased glass edges and no painted checkerboard.

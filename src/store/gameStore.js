@@ -9,6 +9,7 @@ import {
   loadFromSlot,
   deleteSlot,
   listSlots,
+  saveTimestamp,
   SLOT_COUNT,
 } from '../core/save.js';
 import { pullSaves, pushSave, deleteCloudSave } from '../core/cloudSaves.js';
@@ -36,7 +37,9 @@ import {
   buyItem,
   buyPotion,
   consumePotion,
+  grantNodeRewards,
 } from '../systems/progression.js';
+import { persistNarrativeUnlocks } from '../systems/unlocks.js';
 import {
   drawEventCard,
   resolveEvent,
@@ -56,8 +59,14 @@ import {
   resolveNextEnemy,
 } from '../systems/combat.js';
 import { assignHeroOwners } from '../systems/turn.js';
-import { computeEnding } from '../systems/endings.js';
+import { computeEnding, computeExpansionEnding } from '../systems/endings.js';
 import { script } from '../data/script.js';
+import {
+  createDebugSession,
+  jumpDebugSession,
+  setDebugResources,
+  healDebugParty,
+} from '../systems/debug.js';
 
 // Recuerda el slot activo para reanudar la sesión al recargar (en mobile, Chrome
 // recarga con un swipe, y no queremos volver al menú perdiendo la pantalla actual).
@@ -73,14 +82,29 @@ const forgetActiveSlot = () => {
 
 const pushTimers = new Map(); // slot → timeout (debounce de subida)
 
+/** Cancela una subida pendiente para que no resucite un slot borrado. */
+function cancelPendingPush(slot) {
+  const timer = pushTimers.get(slot);
+  if (timer != null) clearTimeout(timer);
+  pushTimers.delete(slot);
+}
+
+/** Al cerrar o cambiar de cuenta, ninguna subida de la sesión anterior sigue viva. */
+function cancelAllPendingPushes() {
+  for (const timer of pushTimers.values()) clearTimeout(timer);
+  pushTimers.clear();
+}
+
 /** Sube el save del slot a la nube, con debounce, si hay usuario logueado. */
 function schedulePush(get, slot, data) {
   const { user } = get();
   if (!user || slot == null) return;
-  clearTimeout(pushTimers.get(slot));
+  cancelPendingPush(slot);
   pushTimers.set(slot, setTimeout(() => {
     pushTimers.delete(slot);
-    pushSave(user.id, slot, data);
+    // La sesión pudo cambiar durante el debounce. Nunca subir datos de una
+    // cuenta usando una sesión distinta.
+    if (get().user?.id === user.id) pushSave(user.id, slot, data);
   }, 1500));
 }
 
@@ -91,15 +115,29 @@ function schedulePush(get, slot, data) {
  */
 async function reconcileOnSignIn(userId, get) {
   const cloud = await pullSaves(userId);
-  const bySlot = new Map(cloud.map((r) => [r.slot, r.data]));
+  // Si la sesión cambió mientras esperábamos la red, descartamos la respuesta.
+  if (get().user?.id !== userId) return;
+  const bySlot = new Map(cloud.map((r) => [r.slot, r]));
   for (let slot = 0; slot < SLOT_COUNT; slot++) {
     const local = loadFromSlot(slot);
-    const remote = bySlot.get(slot) ?? null;
-    const lt = local ? (Date.parse(local.updatedAt) || 0) : -1;
-    const rt = remote ? (Date.parse(remote.updatedAt) || 0) : -1;
+    const row = bySlot.get(slot) ?? null;
+    const remote = row?.data ?? null;
+    const lt = local ? saveTimestamp(local.updatedAt) : -1;
+    // `updated_at` es respaldo para saves antiguos que no llevaban updatedAt
+    // dentro del JSON.
+    const rt = remote ? saveTimestamp(remote.updatedAt ?? row?.updated_at) : -1;
     if (lt < 0 && rt < 0) continue;
     if (rt > lt) {
-      saveToSlot(slot, remote); // la nube es más nueva → bajar a local
+      const downloaded = remote.updatedAt
+        ? remote
+        : { ...remote, updatedAt: row.updated_at };
+      saveToSlot(slot, downloaded, undefined, { touchUpdatedAt: false });
+      // Si el usuario inició sesión mientras jugaba este slot, actualizar
+      // también la copia en memoria; de otro modo la próxima acción pisaría
+      // inmediatamente el save remoto ganador.
+      if (get().activeSlot === slot) {
+        useGameStore.setState({ game: loadFromSlot(slot) });
+      }
     } else if (lt > rt) {
       pushSave(userId, slot, local); // local más nuevo (o invitado) → subir
     }
@@ -160,6 +198,56 @@ export const useGameStore = create((set, get) => ({
   slots: listSlots(),
   /** Usuario logueado (Supabase) o null en modo invitado. */
   user: null,
+
+  // ---------- Herramientas de desarrollo (sesión sin slot) ----------
+
+  /** Inicia una sesión efímera. No recuerda slot ni escribe local/cloud save. */
+  startDebugSession(opts = {}) {
+    const current = get().game;
+    if (current && !current.debugSession) return false;
+    const game = createDebugSession(opts);
+    set({ game, activeSlot: null });
+    bus.emit(EVENTS.GAME_CREATED, game);
+    return true;
+  },
+
+  debugJumpToNode(chapterIndex, nodeIndex) {
+    const { game } = get();
+    if (!game?.debugSession) return false;
+    set({ game: jumpDebugSession(game, chapterIndex, nodeIndex), activeSlot: null });
+    return true;
+  },
+
+  debugEnterCurrentNode() {
+    const game = get().game;
+    if (!game?.debugSession) return false;
+    const node = getCurrentNode(game);
+    if (!node) return false;
+    if (['combat', 'elite', 'boss'].includes(node.type)) get().startCombat();
+    else if (node.type === 'event') get().startEvent();
+    else if (node.type === 'rest') get().rest();
+    else if (node.type === 'shop') get().openShop();
+    else get().resolveNode();
+    return true;
+  },
+
+  debugSetResources(patch) {
+    const { game } = get();
+    if (!game?.debugSession) return;
+    set({ game: setDebugResources(game, patch), activeSlot: null });
+  },
+
+  debugHealParty() {
+    const { game } = get();
+    if (!game?.debugSession) return;
+    set({ game: healDebugParty(game), activeSlot: null });
+  },
+
+  quitDebugSession() {
+    if (!get().game?.debugSession) return false;
+    set({ game: null, activeSlot: null, slots: listSlots() });
+    return true;
+  },
 
   /** Relee los metadatos de los slots desde el almacenamiento. */
   refreshSlots() {
@@ -413,6 +501,7 @@ export const useGameStore = create((set, get) => ({
       const doomDelta = Math.max(0, pendingDoom - doomReduction);
       let s = persistCombatHp(g, g.combat); // la vida final se mantiene en el mapa (M4)
       s = markNodeResolved(s, node, `Victoria en ${node.name}. Botín: ${gold} de oro.`);
+      s = grantNodeRewards(s, node);
       s = { ...s, gold: s.gold + gold, combat: null, combatEntryHp: null, view: 'map' };
       if (doomDelta > 0) s = addDoom(s, doomDelta, Object.values(content.chaptersById));
       return s;
@@ -488,6 +577,11 @@ export const useGameStore = create((set, get) => ({
     const chapters = Object.values(content.chaptersById);
     const next = resolveEvent(game, choiceIndex, pool, chapters);
     get().patchGame(() => ({ ...next, view: 'map' }));
+    const unlocked = persistNarrativeUnlocks(next);
+    if (unlocked && get().user) {
+      pushUnlocksToCloud(get().user, localUnlocks()).catch((e) =>
+        console.warn('[cloud] pushUnlocks:', e?.message ?? e));
+    }
   },
 
   /** Expone la carta activa del evento para la UI. */
@@ -585,9 +679,36 @@ export const useGameStore = create((set, get) => ({
     bus.emit(EVENTS.CHAPTER_COMPLETE, {});
   },
 
+  /** Continúa desde el final base hacia la expansión sin invalidar ese final. */
+  startExpansion() {
+    const game = get().game;
+    if (!game || getChapter(game)?.arcEnd !== 'base' || !game.ending) return false;
+    get().patchGame((g) => {
+      const advanced = advanceToNextChapter({
+        ...g,
+        baseEnding: g.ending,
+        ending: null,
+        expansionActive: true,
+        totalDoom: (g.totalDoom ?? 0) + (g.doom ?? 0),
+      });
+      const healed = restParty(resetDoom(advanced), null);
+      return {
+        ...healed,
+        checkpointNodeIndex: null,
+        expansionEnding: null,
+        view: 'map',
+        log: [...(healed.log ?? []), { kind: 'chapter', text: 'Comienza Ecos del Vacío.', at: Date.now() }],
+      };
+    });
+    return true;
+  },
+
   /** Calcula y fija el tipo de final cuando se termina el Cap.4. */
   computeAndSetEnding() {
     get().patchGame((g) => {
+      if (getChapter(g)?.arcEnd === 'expansion') {
+        return { ...g, expansionEnding: computeExpansionEnding(g) };
+      }
       const endingType = computeEnding({
         ...g,
         totalDoom: (g.totalDoom ?? 0) + (g.doom ?? 0),
@@ -604,6 +725,7 @@ export const useGameStore = create((set, get) => ({
 
   /** Borra un slot (y desactiva la partida si era la activa). */
   remove(slot) {
+    cancelPendingPush(slot);
     deleteSlot(slot);
     const { activeSlot, user } = get();
     if (user) deleteCloudSave(user.id, slot);
@@ -626,6 +748,7 @@ export const useGameStore = create((set, get) => ({
 // los saves locales con los de la nube (last-write-wins).
 onAuthChange((user) => {
   const prev = useGameStore.getState().user;
+  if (prev?.id !== user?.id) cancelAllPendingPushes();
   useGameStore.setState({ user });
   if (user && user.id !== prev?.id) {
     reconcileOnSignIn(user.id, useGameStore.getState).catch((e) =>

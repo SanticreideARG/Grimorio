@@ -1,0 +1,14 @@
+Use case: illustration-story
+Asset type: Grimorio II narrative event card artwork, wide 16:9 scene
+Input images: Image 1 defines the Eclipse Monastery architecture and palette; Image 2 defines ritual old-gold details, eclipse lighting and painterly materials; Image 3 defines cinematic event-card framing and finish.
+Primary request: depict the empty confessional where truth and a comforting lie offer visibly different paths.
+Scene/backdrop: a ruined midnight-blue stone chapel open to the fixed eclipse, with sparse wax candles and fractured astronomical windows.
+Subject: one ornate but weathered dark-wood confessional stands alone at center. Its left chamber is lit by a small honest amber candle; its right chamber receives seductive deep-red eclipse light. Behind the central lattice waits one flat faceless shadow with no body detail.
+Style/medium: mature dark-fantasy oil illustration, tactile brushwork, cinematic realism, psychological rather than graphic horror, consistent with the supplied Grimorio II references.
+Composition/framing: frontal wide composition with the confessional as the single dominant object; balanced dual lighting without dividing the image into panels; quiet dark lower band for card UI.
+Lighting/mood: intimate amber against controlled eclipse red and cold lunar-blue stone; solemn, morally tense and still.
+Color palette: midnight blue, charred wood, old gold, candle amber, lunar white and restrained eclipse red.
+Constraints: exactly one confessional and one faceless shadow; no visible people, no eyes or mouth on the shadow, no text, no UI, no frame, no logo, no watermark; 8% safe margins.
+Avoid: priest or penitent figures, demon face, gore, bright church interior, split-screen composition, multiple confessionals.
+
+Ratio: 16:9 scene

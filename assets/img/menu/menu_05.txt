@@ -1,0 +1,8 @@
+STATUS: GENERADO — menu_05.webp
+USE CASE: stylized-concept, fondo promocional de menú principal para videojuego dark fantasy.
+SCENE/BACKDROP: Grieta del Vacío, acantilado suspendido sobre un abismo cósmico, rocas flotantes y fisuras violetas.
+SUBJECT: Veyra en perfil heroico sosteniendo su foco arcano frente a El Devorado, una silueta cósmica gigantesca que emerge de la grieta.
+DETAILS: partículas como polvo estelar, luz fría violeta, reflejo ámbar en la figura de Veyra, escala épica sin gore.
+REFERENCES: assets/img/heroes/mago_v2.webp, assets/img/bosses/el_devorado.webp, assets/img/mapbackground/map4.webp.
+COMPOSITION: tercio izquierdo sólo abismo y rocas sin figuras; Veyra y El Devorado dentro del centro-derecha con amplio aire para Ken Burns; lectura clara en recorte 9:16 centrado.
+CONSTRAINTS: sin texto, UI, logo, watermark, marco, tentáculos adicionales ni símbolos legibles.

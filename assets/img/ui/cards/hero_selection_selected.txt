@@ -1,0 +1,11 @@
+Use case: ui-mockup
+Asset type: polished in-game hero selection card concept
+Input images: Image 1 is the hero artwork reference and must remain visually recognizable.
+Primary request: design the selected-state version of the mature hero card system for Maevis, using the supplied portrait as full-bleed background artwork.
+Style/medium: shippable dark-fantasy game UI mockup; sober editorial hierarchy; tactile historical materials; premium but restrained.
+Composition/framing: one vertical 3:4 card filling the canvas. Preserve Maevis's face, braids, teal garments, hands and blue reliquary light. Add a thin blackened-iron outer frame, narrow obsidian inner bevel and a single old-silver accent line. Use a black-blue lower gradient for text.
+Text (verbatim): "RETAGUARDIA"; "MAEVIS"; "SANADORA"; "10 HP"; "3 DADOS".
+Typography: elegant high-contrast engraved serif for the name; compact restrained uppercase sans serif for metadata; warm ivory text and muted blue-gray secondary text.
+State: selected. Express selection with a controlled pale-amber inner halo, a tiny dark wax party seal near one lower corner and slightly restored light on face and hands; do not recolor the artwork.
+Constraints: preserve the original hero identity and painterly artwork; selection must remain legible without relying only on color; clear hierarchy at thumbnail size; no large ornaments; no fake buttons; no extra text; no logo; no watermark.
+Avoid: bright gold aura, green confirmation checkmark, thick glowing border, parchment panel, glossy mobile UI, circular portrait window.

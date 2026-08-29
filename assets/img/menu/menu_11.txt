@@ -1,0 +1,8 @@
+STATUS: GENERADO — menu_11.webp
+USE CASE: stylized-concept, fondo promocional de menú principal para videojuego dark fantasy.
+SCENE/BACKDROP: cresta rocosa al anochecer con los seis reinos insinuados por capas de paisaje y nubes de tormenta.
+SUBJECT: los diez héroes jugables del repositorio en formación natural de expedición, no una cuadrícula; cada silueta y rol reconocible.
+DETAILS: Brenna, Veyra, Maevis, Nix, Aldric, Corvin, Orphen, Caballero Oscuro, Mara y Elian; telas y metales coherentes, luz de borde ámbar.
+REFERENCES: assets/img/heroes/*.webp (usar los diez retratos publicados como referencias de identidad).
+COMPOSITION: tercio izquierdo sólo cielo y roca sin héroes; grupo escalonado entre 40%-82%, con aire sobre cabezas y alrededor de armas para zoom 8%; priorizar que al menos seis figuras sobrevivan al 9:16 central.
+CONSTRAINTS: sin texto, UI, logo, watermark, marco, duplicados, poses idénticas ni personajes nuevos.

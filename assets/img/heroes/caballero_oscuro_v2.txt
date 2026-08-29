@@ -1,0 +1,11 @@
+Use case: identity-preserve
+Asset type: evolved hero portrait and full-card background for a dark-fantasy game
+Input images: Image 1 is the original visual identity anchor for the Dark Knight.
+Primary request: portray the same fully enclosed Dark Knight after mastering rather than merely enduring the corrupting power in the armor.
+Subject: preserve the faceless jagged crown-like helmet, narrow magenta eye glow, massive black plate silhouette and raised spellcasting hand. Evolve the armor with repaired overlapping obsidian plates, controlled dark-crimson energy channels and a few restrained cold-silver binding runes; the raised hand contains a denser, disciplined ember of shadow instead of a chaotic blaze.
+Style/medium: the same dark-fantasy painterly oil illustration, tactile impasto metal, dramatic chiaroscuro, premium game key art.
+Composition/framing: vertical 3:4, imposing three-quarter portrait; helmet centered in the upper-middle safe zone, raised hand and chest silhouette readable, lower quarter dark and quiet for card text.
+Lighting/mood: black-violet darkness, controlled crimson-magenta glow, faint cold rim light; ominous but disciplined.
+Color palette: obsidian, gunmetal, deep burgundy, magenta embers, sparse cold silver.
+Constraints: keep the face completely hidden; preserve helmet identity, body scale, raised hand, corrupted armor language and original painterly style; no text; no UI; no border; no logo; no watermark.
+Avoid: exposed human face, horns replacing the crown silhouette, red demon skin, excessive spikes, generic sci-fi armor, extra characters.

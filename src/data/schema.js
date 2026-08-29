@@ -14,6 +14,8 @@
  * @property {'front'|'back'|'any'} [row]   fila de combate (Q-COMBATE-POS)
  * @property {{id:string,text:string,hook:string}} [passive]
  * @property {string} portrait        ruta del retrato (heroes/<id>.png)
+ * @property {string} [unlockKey]     clave persistente de desbloqueo
+ * @property {string} [unlockHint]    pista mostrada mientras está bloqueado
  */
 
 /**
@@ -63,6 +65,8 @@
  * @property {Effect} [effect]
  * @property {string} desc
  * @property {string} icon
+ * @property {string} [school]        familia visual y temática
+ * @property {string} [fxId]          perfil visual específico para animación
  */
 
 /**
@@ -72,6 +76,8 @@
  * @property {string} desc
  * @property {{dice?:number,maxHp?:number,maxMana?:number}} mod
  * @property {number} [price]         coste en oro en la tienda (M4)
+ * @property {number} [chapterMin]    índice mínimo de capítulo para venderlo
+ * @property {boolean} [shop]         false si solo se obtiene como recompensa
  * @property {string} icon
  */
 
@@ -79,9 +85,10 @@
  * @typedef {Object} Potion
  * @property {string} id
  * @property {string} name
- * @property {'heal'|'mana'|'cleanse'} type
+ * @property {'heal'|'energy'|'cleanse'} type
  * @property {number} [power]
  * @property {number} [price]         coste en oro en la tienda (M4)
+ * @property {number} [chapterMin]    índice mínimo de capítulo para venderla
  * @property {string} desc
  * @property {string} icon
  */

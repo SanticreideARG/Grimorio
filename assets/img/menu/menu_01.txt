@@ -1,0 +1,8 @@
+STATUS: GENERADO — menu_01.webp
+USE CASE: stylized-concept, fondo promocional de menú principal para videojuego dark fantasy.
+SCENE/BACKDROP: último refugio de Grimorio al amanecer gris, murallas de piedra, braseros encendidos y valle brumoso al fondo.
+SUBJECT: Brenna, Veyra, Maevis y Nix de espaldas y en tres cuartos, reunidos ante el camino; siluetas reconocibles, escala heroica pero humana.
+DETAILS: estandartes gastados sin símbolos ni letras, ceniza flotando, luz ámbar recortando hombros y capas, sensación de inicio de expedición.
+REFERENCES: assets/img/heroes/guerrera_v2.webp, assets/img/heroes/mago_v2.webp, assets/img/heroes/sanadora_v2.webp, assets/img/heroes/picara_v2.webp, assets/img/mapbackground/menu background.webp como referencias de identidad y atmósfera, no como composición a copiar.
+COMPOSITION: 2560x1440, perspectiva amplia; dejar el tercio izquierdo como arquitectura oscura y cielo vacío; grupo en el centro-derecha, con aire alrededor para zoom Ken Burns 8%; todos los rostros y armas sobreviven a un recorte vertical 9:16 centrado.
+CONSTRAINTS: sin texto, UI, logo, watermark, marco, personajes extra ni narrativa en el tercio izquierdo.

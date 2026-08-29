@@ -1,0 +1,8 @@
+STATUS: GENERADO — menu_10.webp
+USE CASE: stylized-concept, fondo promocional de menú principal para videojuego dark fantasy.
+SCENE/BACKDROP: mercado abandonado de un pueblo nocturno, toldos húmedos, faroles apagados y calle adoquinada con niebla.
+SUBJECT: dos siluetas fantasmales de comerciantes al fondo-derecha, sugeridas y elegantes, integradas en el escenario sin robar protagonismo.
+DETAILS: objetos cotidianos irreconocibles, reflejos espectrales, paleta azul petróleo y ámbar apagado, misterio apto para público general.
+REFERENCES: assets/img/mapbackground/map3.webp y assets/img/enemies/ (referencia de textura atmosférica, no copiar personajes).
+COMPOSITION: tercio izquierdo completamente vacío de narrativa, sólo fachada y niebla; fantasmas dentro del 48%-78%, amplio aire para Ken Burns 8%; lectura del escenario en recorte 9:16.
+CONSTRAINTS: sin texto legible en carteles, UI, logo, watermark, marco ni rostros humanos detallados.

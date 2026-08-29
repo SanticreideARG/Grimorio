@@ -1,0 +1,5 @@
+Dark fantasy painterly illustration, oil-painting texture, dramatic chiaroscuro lighting with warm ember/amber key light and deep crimson + cold teal-purple shadows, grim and atmospheric, high detail, cinematic, muted desaturated palette with glowing ember accents. No text, no UI, no watermark, no border.
+
+Premium dark-fantasy inventory icon of one circular obsidian lens held in an ornate but disciplined old-gold monastery frame with a short folding handle. A single tiny eclipse burns at the exact center of the glass, black core with a narrow crimson corona, producing two impossible crescent reflections inside the lens. Three-quarter front view, crisp round silhouette, centered and occupying about 74% of the square canvas; mature gothic craftsmanship, not baroque clutter. No table, floor, scenery, eye, face, hands, extra lenses, letters, numerals, readable glyphs, frame around the canvas, or icon plate.
+
+Ratio: 1:1. True transparent RGBA background with clean antialiased edges; retain the eclipse glow within and immediately around the lens.

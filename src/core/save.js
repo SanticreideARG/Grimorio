@@ -32,17 +32,31 @@ export function resolveStorage(storage) {
 
 const slotKey = (slot) => `${KEY_PREFIX}${slot}`;
 
+/** Convierte timestamps de saves (epoch numérico o ISO) a milisegundos comparables. */
+export function saveTimestamp(value) {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  const parsed = typeof value === 'string' ? Date.parse(value) : NaN;
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 function assertSlot(slot) {
   if (!Number.isInteger(slot) || slot < 0 || slot >= SLOT_COUNT) {
     throw new Error(`Slot fuera de rango: ${slot} (válidos 0..${SLOT_COUNT - 1})`);
   }
 }
 
-/** Guarda el estado en un slot. Actualiza updatedAt. */
-export function saveToSlot(slot, state, storage) {
+/**
+ * Guarda el estado en un slot.
+ *
+ * Por defecto actualiza `updatedAt`, porque una escritura local representa un
+ * cambio nuevo. La sincronización puede pasar `{ touchUpdatedAt: false }` al
+ * cachear una copia remota: así no convierte una descarga en una edición local
+ * artificialmente más nueva.
+ */
+export function saveToSlot(slot, state, storage, { touchUpdatedAt = true } = {}) {
   assertSlot(slot);
   const store = resolveStorage(storage);
-  touch(state);
+  if (touchUpdatedAt) touch(state);
   store.setItem(slotKey(slot), serialize(state));
   return state;
 }

@@ -15,7 +15,9 @@ docs/
   CONTENT_SCHEMA.md        formas de datos de todo el contenido
   ROADMAP.md               milestones M0–M7
   ASSETS.md                pipeline de imágenes (prompt → png → datos)
-  PROMPT_TABLERO.md        prompt del mapa para Claude Design (campaña por capítulos)
+  BOARD_ENGINE_V2.md       motor del tablero + sistema visual y pipeline de assets
+  EXPANSION_ECOS_DEL_VACIO.md  plan de los capítulos 5–6
+  PROMPT_TABLERO.md        referencia histórica del tablero V1
   QUESTIONNAIRE.md         cuestionario de definiciones (decisiones 🔲)
 assets/img/                árbol de carpetas + un .txt de prompt por imagen
   _STYLE.txt  README.txt
@@ -26,8 +28,8 @@ assets/img/                árbol de carpetas + un .txt de prompt por imagen
 ## Cómo usarlo
 
 1. Completar `docs/QUESTIONNAIRE.md` (resuelve las decisiones 🔲).
-2. Generar las imágenes con los prompts de `assets/img/**/*.txt` y el mapa con
-   Claude Design (`docs/PROMPT_TABLERO.md`).
+2. Generar las imágenes con los prompts de `assets/img/**/*.txt`; para los seis
+   mapas seguir el pipeline de `docs/BOARD_ENGINE_V2.md`.
 3. Abrir el proyecto con Claude Code; seguir `CLAUDE.md` y `ROADMAP.md`.
 
 ## Estado

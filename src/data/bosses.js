@@ -225,6 +225,44 @@ export const bosses = [
       },
     ],
   },
+  {
+    id: 'leviatan_sal_negra',
+    name: 'El Leviatán de Sal Negra',
+    maxHp: 92, dmg: 8,
+    behavior: 'boss', row: 'front', isBoss: true,
+    art: 'bosses/leviatan_sal_negra.png',
+    deathDialogue: {
+      lastWords: null,
+      narrator: 'El Leviatán abre el pecho y no hay rugido: cientos de voces ahogadas respiran a la vez. La sal cae como nieve y, entre las costillas de nácar, espera un astrolabio negro.',
+    },
+    behaviorDeck: [
+      { id: 'mordida_bajamar', name: 'Mordida de Bajamar', text: 'Muerde dos veces al héroe más resistente.', effect: { type: 'attack', target: 'tank', times: 2 }, weight: 3 },
+      { id: 'vomito_naufragios', name: 'Vómito de Naufragios', text: 'Invoca dos ahogados y aumenta la Perdición.', effect: { type: 'summon', count: 2, spawn: 'ahogado_sal', doom: 1 }, weight: 2 },
+      { id: 'canto_profundidad', name: 'Canto de la Profundidad', text: 'La party sufre Mareo del Abismo.', effect: { type: 'curse_all', curse: 'mareo_abismo' }, weight: 2 },
+      { id: 'costra_salina', name: 'Costra Salina', text: 'La party comienza a petrificarse.', effect: { type: 'curse_all', curse: 'petrificacion_sal' }, weight: 2 },
+      { id: 'coletazo_rompepuertos', name: 'Coletazo Rompepuertos', text: 'Golpea al más débil; su caída aumenta la Perdición.', effect: { type: 'attack', target: 'weakest', onKill: { doom: 2 } }, weight: 3 },
+      { id: 'beber_la_marea', name: 'Beber la Marea', text: 'Recupera 12 HP y aumenta la Perdición.', effect: { type: 'selfbuff', healSelf: 12, doom: 2 }, weight: 1 },
+    ],
+  },
+  {
+    id: 'abadesa_serath',
+    name: 'Serath, Abadesa del Noveno Toque',
+    maxHp: 108, dmg: 8,
+    behavior: 'boss', row: 'back', isBoss: true,
+    art: 'bosses/abadesa_serath.png',
+    deathDialogue: {
+      lastWords: 'Si dejo avanzar este segundo… volveré a perderlos a todos.',
+      narrator: 'La novena campanada no llega. El eclipse se mueve por primera vez y Serath contempla la noche que llevaba décadas evitando.',
+    },
+    behaviorDeck: [
+      { id: 'aguja_mediodia', name: 'Aguja del Mediodía', text: 'Ataca dos veces al héroe más débil.', effect: { type: 'attack', target: 'weakest', times: 2 }, weight: 3 },
+      { id: 'procesion_repetida', name: 'Procesión Repetida', text: 'Invoca dos penitentes y aumenta la Perdición.', effect: { type: 'summon', count: 2, spawn: 'penitente_ciego', doom: 1 }, weight: 2 },
+      { id: 'noveno_toque', name: 'Noveno Toque', text: 'La party sufre Eclipse Interior.', effect: { type: 'curse_all', curse: 'eclipse_interior' }, weight: 2 },
+      { id: 'minuto_sangre', name: 'Minuto de Sangre', text: 'La party sufre Tic Sangriento.', effect: { type: 'curse_all', curse: 'tic_sangriento' }, weight: 2 },
+      { id: 'futuro_cancelado', name: 'Futuro Cancelado', text: 'Golpea al más resistente; su caída aumenta mucho la Perdición.', effect: { type: 'attack', target: 'tank', onKill: { doom: 3 } }, weight: 3 },
+      { id: 'volver_atras', name: 'Volver Atrás', text: 'Recupera 14 HP y aumenta la Perdición.', effect: { type: 'selfbuff', healSelf: 14, doom: 2 }, weight: 1 },
+    ],
+  },
 ];
 
 export const bossesById = Object.fromEntries(bosses.map((b) => [b.id, b]));

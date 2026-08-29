@@ -1,0 +1,14 @@
+Use case: illustration-story
+Asset type: Grimorio II narrative event card artwork, wide 16:9 scene
+Input images: Image 1 defines the Black-Salt Coast geography and palette; Image 2 defines wet black-salt materials, monumental scale and painterly lighting; Image 3 defines the cinematic event-card framing and oil-painted detail level.
+Primary request: depict the ancient harbor bell that still contains Puerto Albor's final dawn and the voices of its drowned citizens.
+Scene/backdrop: the roofless interior of a ruined coastal bell tower flooded waist-deep with black seawater, rain entering through broken stone arches.
+Subject: one enormous tarnished bronze bell lies tilted and half submerged at center, its rope descending into the water. Warm dawn light is trapped inside the bell's mouth. Beneath the surface, a limited ring of pale hand silhouettes reaches toward the rope; show them softened and distorted by water, suggesting many more without rendering a crowd of anatomical limbs.
+Style/medium: mature dark-fantasy oil illustration, tactile brushwork, cinematic realism, solemn and supernatural, consistent with the supplied Grimorio II references.
+Composition/framing: symmetrical wide interior with the bell as the single dominant mass; waterline crosses the lower third; hands remain secondary underwater shapes; preserve a dark low-detail band near the lower edge for UI.
+Lighting/mood: cold teal rain and black water opposed by restrained golden dawn inside the bell; grief, sacred weight and difficult choice.
+Color palette: oxidized bronze, black salt, petroleum teal, bone ivory beneath water and muted dawn amber.
+Constraints: exactly one bell; no gore, no detached hands above water, no visible bodies, no characters, no text, no UI, no frame, no logo, no watermark; 8% safe margins.
+Avoid: giant swinging bell, horror pile of hands, church congregation, bright daylight, multiple bells, excessive orange glow.
+
+Ratio: 16:9 scene

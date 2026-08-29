@@ -1,0 +1,11 @@
+Use case: identity-preserve
+Asset type: evolved hero portrait and full-card background for a dark-fantasy game
+Input images: Image 1 is the original visual identity anchor for Orphen.
+Primary request: portray the same dark mage-warrior at the beginning of a new game, having survived and integrated the opposing powers of light and shadow.
+Subject: preserve his exact pale angular face, long loose black hair, severe frontal gaze, lean build, layered black coat, left-hand crimson shadow magic and dark one-handed sword. Evolve the outfit into weathered black leather and cloth armor repaired with narrow ivory-silver seams. Reforge the sword so one edge carries restrained pale light and the other deep crimson shadow, without changing its gothic silhouette. Replace the full moon with a distant eclipsed halo while keeping the ruined gothic architecture.
+Style/medium: the same dark-fantasy painterly oil illustration, detailed tactile brushwork, dramatic chiaroscuro, premium game key art.
+Composition/framing: vertical 3:4, near full three-quarter figure; face in the upper-middle safe zone, magic hand and sword readable, lower quarter dark enough for card text, safe margins for responsive crop.
+Lighting/mood: cold eclipse silver from behind, deep crimson magic from one hand, faint pale reflection on the sword; controlled, haunted, newly resolved.
+Color palette: black, graphite, eclipse silver, bone ivory, restrained crimson.
+Constraints: preserve identity, face, hair, gaze, body type, magic hand, sword class, gothic mood and original painterly language; no second character; no text; no UI; no border; no logo; no watermark.
+Avoid: white-haired redesign, bulky armor, dual swords, giant wings, heroic daylight, generic vampire glamour.

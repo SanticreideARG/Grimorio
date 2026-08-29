@@ -1,0 +1,4 @@
+FAMILIA: fondos promocionales del carrusel del menú principal.
+ANCLA: assets/img/_STYLE.txt (dark fantasy painterly, textura de óleo, claroscuro dramático, luz ámbar de brasas, sombras carmesí y teal-púrpura, atmósfera grim, alto detalle, paleta desaturada).
+FORMATO: 2560x1440, paisaje 16:9, ilustración cinematográfica para fondo de UI.
+REGLAS FIJAS: tercio izquierdo completamente vacío de narrativa para título y menú; motivo principal dentro del 38%-78% del ancho; aire suficiente para ampliación Ken Burns del 8%; composición legible en recorte vertical 9:16 centrado; nada de texto, logotipos, HUD, marcos, bordes, firmas ni marcas de agua.

@@ -72,9 +72,9 @@ test('el campamento (transición) cura a tope y reinicia la Perdición', () => {
   assert.equal(s.partyHp.mago, content.heroesById.mago.maxHp);
 });
 
-// ---- Campaña completa (caps 1–4) ----
-test('la campaña tiene 4 capítulos, cada uno con start, jefe y enemigos válidos', () => {
-  assert.equal(content.chapters.length, 4);
+// ---- Campaña completa (base + expansión) ----
+test('la campaña tiene 6 capítulos, cada uno con start, jefe y enemigos válidos', () => {
+  assert.equal(content.chapters.length, 6);
   for (const ch of content.chapters) {
     assert.equal(ch.nodes[0].type, 'start', `${ch.id}: primer nodo no es start`);
     assert.equal(ch.nodes.at(-1).type, 'boss', `${ch.id}: último nodo no es boss`);
@@ -87,8 +87,8 @@ test('la campaña tiene 4 capítulos, cada uno con start, jefe y enemigos válid
   }
 });
 
-test('los recuentos de nodos siguen el GDD (16/18/20/15)', () => {
-  assert.deepEqual(content.chapters.map((c) => c.nodes.length), [16, 18, 20, 15]);
+test('los recuentos de nodos siguen el GDD base y expansión', () => {
+  assert.deepEqual(content.chapters.map((c) => c.nodes.length), [16, 18, 20, 15, 18, 20]);
 });
 
 test('cada jefe que invoca lo hace con un enemigo existente', () => {
@@ -102,7 +102,7 @@ test('cada jefe que invoca lo hace con un enemigo existente', () => {
 });
 
 // ---- Combate de los jefes (todos terminan y usan su mazo) ----
-for (const chId of ['cap1', 'cap2', 'cap3', 'cap4']) {
+for (const chId of ['cap1', 'cap2', 'cap3', 'cap4', 'cap5', 'cap6']) {
   test(`el jefe de ${chId} usa su mazo de comportamiento y el combate termina`, () => {
     const rng = createRng(123);
     const bossNode = content.chaptersById[chId].nodes.at(-1);

@@ -14,6 +14,7 @@ import {
   describeNode,
   nodeLabel,
   nodeActionLabel,
+  hasNextChapter,
 } from '../../systems/board.js';
 import { getDoomRatio } from '../../systems/doom.js';
 import { script } from '../../data/script.js';
@@ -24,10 +25,12 @@ import { assetUrl } from '../assets.js';
 import BoardMap from '../components/BoardMap.jsx';
 import Coin from '../components/Coin.jsx';
 import CardDetailModal from '../components/CardDetailModal.jsx';
+import { buildEncounterPreview, THREAT_LABEL } from '../../systems/encounterPreview.js';
 
 export default function MapScreen() {
   const game = useGameStore((s) => s.game);
   const [detailPet, setDetailPet] = useState(null);
+  const [detailEnemy, setDetailEnemy] = useState(null);
   const resolveNode = useGameStore((s) => s.resolveNode);
   const advanceNode = useGameStore((s) => s.advanceNode);
   const startCombat = useGameStore((s) => s.startCombat);
@@ -36,6 +39,7 @@ export default function MapScreen() {
   const openShop = useGameStore((s) => s.openShop);
   const advanceChapter = useGameStore((s) => s.advanceChapter);
   const computeAndSetEnding = useGameStore((s) => s.computeAndSetEnding);
+  const startExpansion = useGameStore((s) => s.startExpansion);
   const quitToMenu = useGameStore((s) => s.quitToMenu);
 
   const chapter = getChapter(game);
@@ -44,7 +48,7 @@ export default function MapScreen() {
   const resolved = isCurrentResolved(game);
   const last = isLastNode(game);
   const complete = isChapterComplete(game);
-  const hasNext = game.chapterIndex < content.chapters.length - 1;
+  const hasNext = hasNextChapter(game);
   const atStart = game.nodeIndex === 0 && !resolved;
 
   // Narración del nodo (lugar + comentario de party + lore), solo al llegar.
@@ -177,7 +181,7 @@ export default function MapScreen() {
 
           {/* Preview de enemigos para nodos de combate (antes de entrar) */}
           {!resolved && ['combat', 'elite', 'boss'].includes(node.type) && node.enemies?.length > 0 && (
-            <EnemyPreview enemies={node.enemies} />
+            <EnemyPreview enemies={node.enemies} onInspect={setDetailEnemy} />
           )}
 
           <div className="node-panel__actions" data-tutorial="map-node">
@@ -198,6 +202,13 @@ export default function MapScreen() {
       {detailPet && (
         <CardDetailModal unit={detailPet} type="pet" onClose={() => setDetailPet(null)} />
       )}
+      {detailEnemy && (
+        <CardDetailModal
+          unit={detailEnemy}
+          type={detailEnemy.isBoss ? 'boss' : 'enemy'}
+          onClose={() => setDetailEnemy(null)}
+        />
+      )}
 
       {/* Final de capítulo */}
       {complete && (
@@ -215,9 +226,11 @@ export default function MapScreen() {
               />
             ) : (
               <EndingOverlay
-                ending={game.ending}
+                ending={chapter.arcEnd === 'expansion' ? game.expansionEnding : game.ending}
+                expansion={chapter.arcEnd === 'expansion'}
                 onCompute={computeAndSetEnding}
                 onQuit={quitToMenu}
+                onContinue={chapter.arcEnd === 'base' ? startExpansion : null}
               />
             )}
           </div>
@@ -233,18 +246,23 @@ const ENDING_TITLE = {
   bad: '☠ Un Final Oscuro ☠',
 };
 
-function EndingOverlay({ ending, onCompute, onQuit }) {
+function EndingOverlay({ ending, expansion, onCompute, onQuit, onContinue }) {
   // Calcular el final la primera vez que se muestra este overlay
   if (!ending) {
     onCompute();
     return null;
   }
   const title = ENDING_TITLE[ending] ?? 'FIN';
-  const text = script.endings[ending] ?? '';
+  const text = (expansion ? script.expansionEndings : script.endings)[ending] ?? '';
   return (
     <>
       <p className={`overlay__ending-type overlay__ending-type--${ending}`}>{title}</p>
       <p className="overlay__text">{text}</p>
+      {onContinue && (
+        <button className="btn btn--primary" onClick={onContinue}>
+          Continuar: Ecos del Vacío
+        </button>
+      )}
       <button className="btn btn--primary" onClick={onQuit}>
         Volver al menú
       </button>
@@ -343,28 +361,49 @@ function HeroComment({ heroId, line }) {
 
 // ── Preview de enemigos antes del combate ───────────────────────────────────
 
-function EnemyPreview({ enemies }) {
-  // Cuenta cuántos de cada tipo hay
-  const counts = {};
-  for (const id of enemies) counts[id] = (counts[id] ?? 0) + 1;
-
+function EnemyPreview({ enemies, onInspect }) {
+  const preview = buildEncounterPreview(enemies);
   return (
-    <div className="enemy-preview">
-      <div className="enemy-preview__label">Encuentro</div>
+    <div className={`enemy-preview enemy-preview--${preview.danger}`}>
+      <div className="enemy-preview__head">
+        <span className="enemy-preview__label">Formación enemiga</span>
+        <span className="enemy-preview__danger">
+          {preview.danger === 'boss' ? 'Jefe' : preview.danger === 'elite' ? 'Amenaza alta' : 'Amenaza normal'}
+        </span>
+      </div>
+      <PreviewRow label="Frente" entries={preview.front} onInspect={onInspect} />
+      <PreviewRow label="Retaguardia" entries={preview.back} onInspect={onInspect} />
+    </div>
+  );
+}
+
+function PreviewRow({ label, entries, onInspect }) {
+  if (!entries.length) return null;
+  return (
+    <div className="enemy-preview__row">
+      <span className="enemy-preview__row-label">{label}</span>
       <div className="enemy-preview__list">
-        {Object.entries(counts).map(([id, n]) => {
-          const e = content.enemiesById[id] ?? content.bossesById[id];
-          if (!e) return null;
-          const isBoss = !!e.isBoss;
+        {entries.map(({ id, unit, count, threat }) => {
+          const art = assetUrl(unit.art);
           return (
-            <span
+            <button
               key={id}
-              className={`enemy-preview__tag${isBoss ? ' is-boss' : ''}`}
-              title={e.name}
+              className={`enemy-preview__unit${unit.isBoss ? ' is-boss' : ''}${unit.isElite ? ' is-elite' : ''}`}
+              onClick={() => onInspect(unit)}
+              title={`Ver ficha de ${unit.name}`}
             >
-              {n > 1 && <span className="enemy-preview__count">×{n} </span>}
-              {e.name}
-            </span>
+              <span className="enemy-preview__portrait">
+                {art
+                  ? <img src={art} alt="" loading="lazy" />
+                  : <span aria-hidden="true">{unit.name[0]}</span>
+                }
+                {count > 1 && <strong className="enemy-preview__count">×{count}</strong>}
+              </span>
+              <span className="enemy-preview__unit-body">
+                <strong>{unit.name}</strong>
+                <small>{THREAT_LABEL[threat] ?? threat}</small>
+              </span>
+            </button>
           );
         })}
       </div>

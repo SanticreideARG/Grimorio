@@ -1,17 +1,21 @@
-// preload.js — Precarga (warming de caché) de todas las imágenes del juego.
-// Recorre el registro de assets (src/ui/assets.js, ya resuelto a URLs por Vite) y
-// las baja en segundo plano con `new Image()`, para que estén en caché antes de
-// que cada pantalla las necesite. No bloquea el render; expone progreso para una
-// barra opcional (ver components/PreloadBar.jsx).
+// preload.js — Precarga del shell visual y la selección inicial.
+// El resto del arte se descarga cuando su pantalla lo solicita; precargar las
+// más de 150 cartas al abrir el menú penalizaba especialmente a móvil.
 
 import { useEffect, useState } from 'react';
 import { assetRegistry } from './assets.js';
 
-// Orden de prioridad por carpeta: lo que se ve primero, se baja primero.
-const PRIORITY = ['ui', 'mapbackground', 'heroes', 'cardbacks', 'spells', 'enemies', 'bosses'];
+// Orden de prioridad: shell, menú, roster y dorsos visibles al principio.
+const PRIORITY = ['ui', 'mapbackground', 'heroes', 'cardbacks'];
 function priorityOf(key) {
   const i = PRIORITY.indexOf(key.split('/')[0]);
   return i < 0 ? PRIORITY.length : i;
+}
+
+function shouldPreload(key) {
+  const category = key.split('/')[0];
+  if (category === 'ui' || category === 'heroes' || category === 'cardbacks') return true;
+  return key === 'mapbackground/menu background' || key === 'mapbackground/About';
 }
 
 // Estado compartido a nivel módulo (una sola precarga por carga de página).
@@ -35,6 +39,7 @@ function preloadOne(url) {
 async function run(concurrency = 6) {
   const urls = [...new Set(
     Object.entries(assetRegistry)
+      .filter(([key]) => shouldPreload(key))
       .sort((a, b) => priorityOf(a[0]) - priorityOf(b[0]))
       .map(([, url]) => url),
   )];

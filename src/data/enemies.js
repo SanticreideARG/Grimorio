@@ -65,6 +65,24 @@ export const enemies = [
     lore: 'La manifestación física del Vacío. Su presencia dobla el tiempo y el espacio. Nada puede resistirle mucho tiempo.' },
   { id: 'ojo_abismo', name: 'Ojo del Abismo', maxHp: 20, dmg: 4, behavior: 'summon', row: 'back', summons: 'larva_vacio', isElite: true, art: 'enemies/ojo_abismo.png',
     lore: 'Un ojo eterno que contempla desde el Vacío. Con solo mirar invoca larvas que ejecutan su voluntad ancestral.' },
+
+  // --- Cap.5: Las Costas de Sal Negra ---
+  { id: 'ahogado_sal', name: 'Ahogado de Sal', maxHp: 10, dmg: 4, behavior: 'swarm', row: 'front', art: 'enemies/ahogado_sal.png', lore: 'Marinero cristalizado por sal negra; avanza con las voces de su tripulación.' },
+  { id: 'gaviota_osaria', name: 'Gaviota Osaria', maxHp: 8, dmg: 5, behavior: 'weakest', row: 'back', art: 'enemies/gaviota_osaria.png', lore: 'Ave de huesos y anzuelos que localiza a los heridos desde la tormenta.' },
+  { id: 'corsario_hueco', name: 'Corsario Hueco', maxHp: 14, dmg: 5, behavior: 'tank', row: 'front', art: 'enemies/corsario_hueco.png', lore: 'Una armadura naval vacía, colmada de agua negra y obediencia.' },
+  { id: 'cantor_marea', name: 'Cantor de la Marea', maxHp: 11, dmg: 3, behavior: 'curse', curse: 'mareo_abismo', row: 'back', art: 'enemies/cantor_marea.png', lore: 'Su caracola entona la presión de un océano sin superficie.' },
+  { id: 'recolector_nacar', name: 'Recolector de Nácar', maxHp: 12, dmg: 2, behavior: 'summon', summons: 'ahogado_sal', row: 'back', art: 'enemies/recolector_nacar.png', lore: 'Abre conchas funerarias para devolver ahogados al combate.' },
+  { id: 'capitan_sin_pulso', name: 'Capitán sin Pulso', maxHp: 25, dmg: 7, behavior: 'tank', row: 'front', isElite: true, art: 'enemies/capitan_sin_pulso.png', lore: 'El último timonel de Puerto Albor, encadenado a su ancla.' },
+  { id: 'oraculo_salmuera', name: 'Oráculo de Salmuera', maxHp: 21, dmg: 5, behavior: 'curse', curse: 'petrificacion_sal', row: 'back', isElite: true, art: 'enemies/oraculo_salmuera.png', lore: 'Ve futuros inmóviles a través de ojos de sal negra.' },
+
+  // --- Cap.6: El Monasterio del Eclipse ---
+  { id: 'penitente_ciego', name: 'Penitente Ciego', maxHp: 11, dmg: 4, behavior: 'swarm', row: 'front', art: 'enemies/penitente_ciego.png', lore: 'Repite el mismo paso desde que el eclipse detuvo el día.' },
+  { id: 'monje_campana', name: 'Monje Campana', maxHp: 16, dmg: 6, behavior: 'tank', row: 'front', art: 'enemies/monje_campana.png', lore: 'Cada golpe contra su torso de bronce anuncia una hora inexistente.' },
+  { id: 'arquero_meridiano', name: 'Arquero del Meridiano', maxHp: 10, dmg: 6, behavior: 'weakest', row: 'back', art: 'enemies/arquero_meridiano.png', lore: 'Dispara fragmentos del último rayo de mediodía.' },
+  { id: 'cantor_nona', name: 'Cantor de la Nona', maxHp: 13, dmg: 4, behavior: 'curse', curse: 'eclipse_interior', row: 'back', art: 'enemies/cantor_nona.png', lore: 'Canta la hora que Serath intenta imponer al mundo.' },
+  { id: 'sacristan_reloj', name: 'Sacristán del Reloj', maxHp: 14, dmg: 3, behavior: 'summon', summons: 'penitente_ciego', row: 'back', art: 'enemies/sacristan_reloj.png', lore: 'Recoge minutos descartados y les da forma de penitente.' },
+  { id: 'caballero_eclipse', name: 'Caballero del Eclipse', maxHp: 28, dmg: 8, behavior: 'tank', row: 'front', isElite: true, art: 'enemies/caballero_eclipse.png', lore: 'Mitad juramento solar, mitad sombra lunar; ninguna parte puede ceder.' },
+  { id: 'angel_horas_rotas', name: 'Ángel de las Horas Rotas', maxHp: 24, dmg: 6, behavior: 'curse', curse: 'tic_sangriento', row: 'back', isElite: true, art: 'enemies/angel_horas_rotas.png', lore: 'Sus alas contienen relojes que laten con sangre ajena.' },
 ];
 
 export const enemiesById = Object.fromEntries(enemies.map((e) => [e.id, e]));

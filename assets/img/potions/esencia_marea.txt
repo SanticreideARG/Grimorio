@@ -1,0 +1,5 @@
+Dark fantasy painterly illustration, oil-painting texture, dramatic chiaroscuro lighting with warm ember/amber key light and deep crimson + cold teal-purple shadows, grim and atmospheric, high detail, cinematic, muted desaturated palette with glowing ember accents. No text, no UI, no watermark, no border.
+
+Premium dark-fantasy consumable icon of one slender transparent vial shaped like a spiral seashell, containing a miniature luminous teal tide curling upward against gravity. The liquid has one clearly readable crest and a few pearl bubbles; aged-silver shell stopper, subtle wet reflections and a single attached droplet at the pointed base. Three-quarter front view, centered, full bottle visible, occupying about 72% of the square canvas. Cold teal inner glow with a restrained warm amber rim light. No table, floor, scenery, hands, labels, letters, numerals, readable glyphs, extra bottles, frame, icon plate, or detached splash.
+
+Ratio: 1:1. True transparent RGBA background with clean antialiased glass edges and no painted checkerboard.

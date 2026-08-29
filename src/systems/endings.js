@@ -71,3 +71,15 @@ export function computeEnding(state) {
   // Agridulce por defecto
   return 'bittersweet';
 }
+
+export function computeExpansionEnding(state) {
+  const flags = state.flags ?? {};
+  if (flags.expansion_seedUsed) return 'bad';
+  if (
+    flags.expansion_seedDestroyed &&
+    flags.cap5_bellRung &&
+    flags.cap6_choirFreed &&
+    (state.doom ?? 0) < 14
+  ) return 'good';
+  return 'bittersweet';
+}

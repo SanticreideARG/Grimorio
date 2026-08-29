@@ -1,0 +1,8 @@
+STATUS: GENERADO — menu_12.webp
+USE CASE: stylized-concept, fondo promocional de menú principal para videojuego dark fantasy.
+SCENE/BACKDROP: panorama simbólico que une los seis reinos en una sola geografía continua: valle, marisma, ciudadela, grieta, costa y monasterio, separados por luz y clima.
+SUBJECT: un grimorio cerrado sobre una piedra en el centro-derecha, pequeño ancla visual; seis líneas de luz conectan sus páginas con cada paisaje.
+DETAILS: transición natural entre biomas, brasas y polvo, profundidad atmosférica, sensación de mundo grande listo para explorar.
+REFERENCES: assets/img/mapbackground/map1.webp, map2.webp, map3.webp, map4.webp, map5.webp, map6.webp y assets/img/mapbackground/menu background.webp como referencias de escenarios.
+COMPOSITION: tercio izquierdo sólo cielo y bruma uniforme para título y menú; grimorio y convergencia en 50%-78%, con mucho aire para zoom 8%; los seis biomas se leen también en recorte 9:16 centrado.
+CONSTRAINTS: sin texto, UI, logo, watermark, marco, personajes adicionales ni iconografía legible; cerrar visualmente el ciclo hacia la imagen 01.

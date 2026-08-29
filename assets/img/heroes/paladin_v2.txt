@@ -1,0 +1,11 @@
+Use case: identity-preserve
+Asset type: evolved hero portrait and full-card background for a dark-fantasy game
+Input images: Image 1 is the original visual identity anchor for Sir Aldric.
+Primary request: portray the same female-presenting paladin after surviving the original campaign, with renewed sacred equipment shaped by the eclipse.
+Subject: preserve her exact face, dark tied-back hair, calm vigilant gaze, athletic build, one-handed war axe, kite shield and faint halo. Evolve the armor into weathered silver-black plate with restrained old-gold repairs, a repaired midnight-blue mantle, and subtle sun-and-eclipse engravings. The shield remains broad and functional, its worn sacred emblem restored with a thin pale-gold line.
+Style/medium: the same dark-fantasy painterly oil illustration, tactile brushwork, realistic metal, dramatic chiaroscuro, premium game key art.
+Composition/framing: vertical 3:4, three-quarter portrait from thighs upward; face and halo clear in the upper-middle safe zone, axe and shield readable without touching the crop, lower quarter subdued for card text.
+Lighting/mood: dim amber sanctified rim light with cool eclipse-blue shadows; solemn, protective, battle-tested.
+Color palette: tarnished silver, charcoal, midnight blue, muted old gold, pale sacred light.
+Constraints: preserve identity, gender presentation, face, hair, gaze, weapon types, shield silhouette and original painterly language; no helmet; no text; no UI; no border; no logo; no watermark.
+Avoid: changing the character into a man, pristine white armor, oversized cathedral ornament, glowing overexposure, extra weapons.

@@ -1,0 +1,14 @@
+Use case: ads-marketing
+Asset type: premium social-media teaser poster, vertical story 9:16
+Input images: Image 1 is the Black-Salt Leviathan reference; Image 2 is Abbess Serath's identity and costume reference; Image 3 is the Black-Salt Coast world reference; Image 4 is the Eclipse Monastery world reference.
+Primary request: create an official-looking world-and-villains teaser for Grimorio II, showing the two new regions as one impossible vertical landscape.
+Scene/backdrop: the lower third is a violent black sea around a drowned port and lone amber lighthouse; the Black-Salt Leviathan rises as an immense partial silhouette from the water. The middle transitions through black-salt cliffs into the high Eclipse Monastery. In the upper third, Abbess Serath floats small but unmistakable inside a vast broken clock halo beneath a red-silver eclipse and hanging bells.
+Subject: preserve the Leviathan's skeletal whale anatomy, black salt plating and hanging lanterns; preserve Serath's pale face, split black-white ritual robes, clock halo and orb. They must feel related but remain separated by scale and distance.
+Style/medium: painterly dark-fantasy oil illustration matching the supplied art; cinematic launch teaser; premium editorial game campaign.
+Composition/framing: vertical 9:16 story format; title in the upper safe area without covering Serath or the eclipse; large uninterrupted central depth; release date in the lower safe area above the platform crop; generous 10% top and bottom safety.
+Lighting/mood: amber lighthouse against teal-black sea below, cold silver and restrained blood-red eclipse above; apocalyptic, elegant, mysterious.
+Color palette: black salt, desaturated teal, bone ivory, old brass, eclipse red and silver.
+Text (verbatim): "GRIMORIO II"; "ECOS DEL VACÍO"; "NOVIEMBRE 2026".
+Typography: refined engraved high-contrast serif, weathered silver title, small old-gold subtitle, compact release date; excellent mobile legibility.
+Constraints: render each exact text once and only once; preserve both bosses and both regional visual languages; no heroes; no additional monsters; no platform logos; no publisher logo; no UI; no border; no watermark.
+Avoid: collage seams, split-screen divider, giant close-up faces, glossy mobile-game advertising, saturated neon, ornate filigree, duplicated bells or creatures, illegible date.

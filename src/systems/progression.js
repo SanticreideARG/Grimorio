@@ -148,6 +148,8 @@ export function partyHpRatio(game) {
 export function canBuyItem(game, itemId) {
   const it = content.itemsById[itemId];
   if (!it) return false;
+  if (it.shop === false) return false;
+  if ((it.chapterMin ?? 0) > (game.chapterIndex ?? 0)) return false;
   if ((game.inventory ?? []).includes(itemId)) return false;
   return (game.gold ?? 0) >= (it.price ?? Infinity);
 }
@@ -181,6 +183,7 @@ export function potionCount(game, potionId) {
 export function canBuyPotion(game, potionId) {
   const p = content.potionsById[potionId];
   if (!p) return false;
+  if ((p.chapterMin ?? 0) > (game.chapterIndex ?? 0)) return false;
   return (game.gold ?? 0) >= (p.price ?? Infinity);
 }
 
@@ -206,4 +209,20 @@ export function consumePotion(game, potionId) {
   bag[potionId] -= 1;
   if (bag[potionId] <= 0) delete bag[potionId];
   return { ...game, potionBag: bag };
+}
+
+/** Aplica recompensas fijas y únicas ligadas a nodos concretos. */
+export function grantNodeRewards(game, node) {
+  if (node?.id !== 'c5n18' || (game.inventory ?? []).includes('astrolabio_negro')) {
+    return game;
+  }
+  return {
+    ...game,
+    inventory: [...(game.inventory ?? []), 'astrolabio_negro'],
+    log: [...(game.log ?? []), {
+      kind: 'reward',
+      text: 'Recompensa única: Astrolabio Negro.',
+      at: Date.now(),
+    }],
+  };
 }

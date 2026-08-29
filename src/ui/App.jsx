@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useGameStore } from '../store/gameStore.js';
 import { DIFFICULTIES } from '../core/state.js';
 import { script } from '../data/script.js';
@@ -15,6 +15,8 @@ import { useAudio } from './hooks/useAudio.js';
 import { useAssetPreload } from './preload.js';
 import { cloudEnabled } from '../core/supabase.js';
 import { signInWithGoogle, signOut } from '../core/auth.js';
+import { debugAllowed } from '../core/debug.js';
+import DebugPanel from './components/DebugPanel.jsx';
 
 const DIFFICULTY_LABEL = { facil: 'Fácil', normal: 'Normal', dificil: 'Difícil' };
 
@@ -29,6 +31,7 @@ export default function App() {
   const [difficulty, setDifficulty] = useState('normal');
   const [playerCount, setPlayerCount] = useState(1);
   const [showAbout, setShowAbout] = useState(false);
+  const [showDebug, setShowDebug] = useState(false);
   const [tutorialOn, setTutorialOn] = useState(() => {
     try { return localStorage.getItem('grimorio_tutorial_off') !== '1'; } catch { return true; }
   });
@@ -48,6 +51,18 @@ export default function App() {
 
   // Precarga de imágenes en segundo plano (warming de caché) + barra de progreso
   const preload = useAssetPreload();
+
+  useEffect(() => {
+    if (!debugAllowed) return undefined;
+    const onKeyDown = (event) => {
+      if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'd') {
+        // Una partida normal nunca se reemplaza desde un atajo accidental.
+        if (!game || game.debugSession) setShowDebug((visible) => !visible);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [game]);
 
   if (game) {
     // La key cambia con cada vista → React desmonta/monta la pantalla
@@ -70,6 +85,12 @@ export default function App() {
         </div>
         <TutorialCoach />
         <MuteButton muted={muted} onToggle={toggleMuted} />
+        {debugAllowed && game.debugSession && (
+          <>
+            <button className="debug-fab" onClick={() => setShowDebug(true)}>DEBUG</button>
+            <DebugPanel open={showDebug} onClose={() => setShowDebug(false)} />
+          </>
+        )}
       </>
     );
   }
@@ -148,10 +169,16 @@ export default function App() {
           <button className="btn btn--ghost btn--xs about-btn" onClick={() => setShowAbout(true)}>
             Acerca de este juego
           </button>
+          {debugAllowed && (
+            <button className="btn btn--ghost btn--xs debug-menu-btn" onClick={() => setShowDebug(true)}>
+              Modo debug
+            </button>
+          )}
         </footer>
       </div>
 
       {showAbout && <AboutScreen onClose={() => setShowAbout(false)} />}
+      {debugAllowed && <DebugPanel open={showDebug} onClose={() => setShowDebug(false)} />}
     </main>
   );
 }

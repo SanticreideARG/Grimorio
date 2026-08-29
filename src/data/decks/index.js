@@ -536,6 +536,105 @@ export const eventos_cap4 = [
   },
 ];
 
+// ---- Ecos del Vacío: Cap.5 ----
+export const eventos_cap5 = [
+  {
+    id: 'carta_en_botella', title: 'La Carta en la Botella',
+    text: 'La carta fue escrita veinte años después de que Puerto Albor desapareciera. Para quienes quedaron dentro, el tiempo nunca se detuvo.',
+    art: 'events/carta_en_botella.png',
+    choices: [
+      { label: 'Leerla en voz alta y recordar sus nombres', effect: { doom: -1, flags: { cap5_namesRemembered: true } } },
+      { label: 'Guardar la botella sin abrir', effect: { gold: 8 } },
+    ],
+  },
+  {
+    id: 'mercado_fantasmas', title: 'Mercado de Fantasmas',
+    text: 'Los puestos no venden objetos: compran recuerdos. Una infancia feliz vale más que una corona.',
+    art: 'events/mercado_fantasmas.png',
+    choices: [
+      { label: 'Negarse a vender un recuerdo', effect: { doom: -1, flags: { cap5_memoryKept: true, unlock_mara_salobre: true } } },
+      { label: 'Vender un recuerdo doloroso', effect: { gold: 18, doom: 2, flags: { cap5_memorySold: true } } },
+    ],
+  },
+  {
+    id: 'jardin_corales', title: 'El Jardín que Recuerda',
+    text: 'Cada coral repite una voz de Puerto Albor. Al tocarlo, recordáis una vida que nunca fue vuestra.',
+    art: 'events/jardin_corales.png',
+    choices: [
+      { label: 'Escuchar hasta el final y liberar al cangrejo', requires: { symbol: 'star', threshold: 2 }, effect: { heal: 5, doom: -1, pet: 'cangrejo_farol', flags: { cap5_gardenFreed: true } }, failEffect: { curse: 'mareo_abismo', doom: 1 } },
+      { label: 'Cortar nácar para venderlo', effect: { gold: 14, doom: 2 } },
+    ],
+  },
+  {
+    id: 'faro_invertido', title: 'El Faro Invertido',
+    text: 'Su luz no guía barcos: proyecta una columna de oscuridad hacia una montaña atrapada bajo un eclipse.',
+    art: 'events/faro_invertido.png',
+    choices: [
+      { label: 'Orientar el espejo hacia la montaña', requires: { symbol: 'star', threshold: 2 }, effect: { flags: { cap5_monasteryLocated: true }, doom: -1 }, failEffect: { curse: 'petrificacion_sal' } },
+      { label: 'Apagar el mecanismo', effect: { doom: 1 } },
+    ],
+  },
+  {
+    id: 'campana_sumergida', title: 'La Campana Sumergida',
+    text: 'Bajo el agua negra espera una campana cubierta de nombres. Todos los ahogados contienen el aliento.',
+    art: 'events/campana_sumergida.png',
+    choices: [
+      { label: 'Hacerla sonar y liberar las voces', effect: { doom: -2, flags: { cap5_bellRung: true } } },
+      { label: 'Quebrarla y conservar su poder', effect: { gold: 22, doom: 3, flags: { cap5_bellBroken: true } } },
+    ],
+  },
+];
+
+// ---- Ecos del Vacío: Cap.6 ----
+export const eventos_cap6 = [
+  {
+    id: 'reloj_sin_sombra', title: 'El Reloj sin Sombra',
+    text: 'La esfera muestra la vida que cada héroe habría vivido sin la guerra. Ninguna de esas personas sabe que está siendo observada.',
+    art: 'events/reloj_sin_sombra.png',
+    choices: [
+      { label: 'Aceptar que ese futuro no os pertenece', effect: { doom: -1, flags: { cap6_futureReleased: true } } },
+      { label: 'Mirar un minuto más', effect: { heal: 7, doom: 2, curse: 'eclipse_interior' } },
+    ],
+  },
+  {
+    id: 'confesionario_vacio', title: 'El Confesionario Vacío',
+    text: 'No hay sacerdote al otro lado. Aun así, una voz pregunta qué culpa llevaríais hasta el fin del mundo.',
+    art: 'events/confesionario_vacio.png',
+    choices: [
+      { label: 'Confesar una verdad', effect: { doom: -2, flags: { cap6_truthConfessed: true } } },
+      { label: 'Mentirle al vacío', effect: { gold: 16, doom: 2, flags: { cap6_confessionLied: true } } },
+    ],
+  },
+  {
+    id: 'biblioteca_mananas', title: 'Biblioteca de Mañanas',
+    text: 'Los libros describen futuros borrados por cada intento de Serath. Sus protagonistas nunca llegarán a nacer.',
+    art: 'events/biblioteca_mananas.png',
+    choices: [
+      { label: 'Salvar sus nombres y a la polilla del reloj', requires: { symbol: 'star', threshold: 3 }, effect: { doom: -2, pet: 'polilla_reloj', flags: { cap6_futuresRemembered: true, cap6_futureSaved: true } }, failEffect: { curse: 'eclipse_interior' } },
+      { label: 'Cerrar la biblioteca', effect: {} },
+    ],
+  },
+  {
+    id: 'coro_detenido', title: 'El Coro Detenido',
+    text: 'Los monjes llevan décadas sosteniendo una sola nota. Si callan, el tiempo reclamará todos sus años de golpe.',
+    art: 'events/coro_detenido.png',
+    choices: [
+      { label: 'Liberarlos y acompañar su último aliento', effect: { doom: -2, flags: { cap6_choirFreed: true, unlock_elian_relojero: true } } },
+      { label: 'Mantener la nota para conservar el monasterio', effect: { heal: 8, doom: 3, flags: { cap6_choirBound: true } } },
+    ],
+  },
+  {
+    id: 'semilla_vacio', title: 'La Semilla del Vacío',
+    text: 'No piensa ni habla. Es una posibilidad pura: borrar, conservar o repetir. Serath la llama misericordia.',
+    art: 'events/semilla_vacio.png',
+    choices: [
+      { label: 'Destruirla', effect: { doom: -2, flags: { expansion_seedDestroyed: true } } },
+      { label: 'Conservarla sin usarla', effect: { doom: 1, flags: { expansion_seedKept: true } } },
+      { label: 'Usarla para recuperar lo perdido', effect: { heal: 12, doom: 5, flags: { expansion_seedUsed: true } } },
+    ],
+  },
+];
+
 /** Botín tras combate (se roba al ganar). */
 export const botin = [];
 
@@ -544,5 +643,7 @@ export const decks = {
   eventos_cap2,
   eventos_cap3,
   eventos_cap4,
+  eventos_cap5,
+  eventos_cap6,
   botin,
 };

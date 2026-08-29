@@ -6,7 +6,14 @@
 // .png faltante sin tocar los datos (el id es lo que importa, no la extensión).
 
 const modules = import.meta.glob(
-  '../../assets/img/**/*.{png,jpg,jpeg,webp,gif,svg}',
+  [
+    '../../assets/img/**/*.{png,jpg,jpeg,webp,gif,svg}',
+    // Variantes de evaluación conservadas junto al arte final, pero todavía no
+    // consumidas por los datos. Excluirlas evita publicarlas en cada build.
+    '!../../assets/img/heroes/*_v2.{png,jpg,jpeg,webp,gif,svg}',
+    '!../../assets/img/mapbackground/menu background - copia.{png,jpg,jpeg,webp,gif,svg}',
+    '!../../assets/img/nodes/treasurenotinuse.{png,jpg,jpeg,webp,gif,svg}',
+  ],
   { eager: true, import: 'default' },
 );
 

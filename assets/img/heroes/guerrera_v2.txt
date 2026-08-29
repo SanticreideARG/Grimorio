@@ -1,0 +1,11 @@
+Use case: identity-preserve
+Asset type: evolved hero portrait and full-card background for a dark-fantasy game
+Input images: Image 1 is the original visual identity anchor for Brenna.
+Primary request: portray the same battle-worn warrior years later, unmistakably the same woman, now equipped for a harsher new campaign.
+Subject: preserve her short black hair, facial structure, scars, stern sideways gaze, powerful build and two-handed war maul. Evolve her dented dark plate into layered blackened-steel armor repaired with restrained mother-of-pearl seams and salt-worn leather; give the maul a rebuilt angular head with visible campaign wear. She looks more experienced, not older beyond recognition.
+Style/medium: the same dark-fantasy painterly oil illustration, tactile brushwork, realistic materials, dramatic chiaroscuro, premium game key art.
+Composition/framing: vertical 3:4, three-quarter portrait from thighs upward; face clear in the upper-middle safe zone, maul silhouette readable, lower quarter darker and less detailed for card text, generous edge safety for responsive crops.
+Lighting/mood: warm ember rim light against cold teal-black shadows, faint black-salt storm atmosphere; grim, resolute, veteran.
+Color palette: charcoal iron, worn brown leather, ember orange, subtle cold nacre highlights.
+Constraints: preserve identity, gender presentation, hair, scars, body type, expression, weapon class and original painterly language; new outfit and weapon must feel like an evolution; no helmet; no text; no UI; no border; no logo; no watermark.
+Avoid: redesigning the face, glamorization, clean ceremonial armor, oversized fantasy ornaments, extra weapons, generic photorealism.

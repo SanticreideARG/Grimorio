@@ -53,6 +53,16 @@ export const heroBarks = {
     hurt:   ['Descuido mío.', '…Interesante.', 'No lo repetiré.', 'Eso sí dolió.'],
     idle:   ['No te confíes.', 'Cada movimiento tiene un precio.', 'Observo y aprendo.'],
   },
+  mara_salobre: {
+    attack: ['La marea cobra lo suyo.', 'A estribor… y cortá.', 'He sobrevivido a mares peores.', 'Nácar contra hueso.'],
+    hurt: ['La sal cierra la herida.', 'Todavía tengo cubierta.', 'He vuelto de más abajo.', 'Eso deja marca.'],
+    idle: ['El mar nunca devuelve nada gratis.', 'Contá las salidas.', 'No escuchéis las campanas.'],
+  },
+  elian_relojero: {
+    attack: ['Ahora. Exactamente ahora.', 'Tu segundo termina aquí.', 'La luz llega a tiempo.', 'Nueve pulsos.'],
+    hurt: ['Perdí la cuenta…', 'Aún queda un instante.', 'Eso no estaba escrito.', 'Puedo continuar.'],
+    idle: ['Uno… dos… seguimos.', 'Cada segundo importa.', 'Serath ya vivió este momento.'],
+  },
 };
 
 // ───────────────────────── Jefes ─────────────────────────
@@ -81,6 +91,18 @@ export const bossBarks = {
     taunt:  ['Yo soy el final de todo.', 'Los mundos caen en mí.', 'Vuestro refugio será olvidado.'],
     idle:   ['Más allá de vosotros, solo yo.', 'El silencio os espera.'],
   },
+  leviatan_sal_negra: {
+    attack: ['*la marea ruge dentro de sus costillas*', '*campanas ahogadas responden*'],
+    hurt: ['*cientos de voces contienen el aliento*', '*la sal negra se resquebraja*'],
+    taunt: ['*el puerto entero se inclina hacia la fosa*'],
+    idle: ['*los faros muertos vuelven a encenderse*'],
+  },
+  abadesa_serath: {
+    attack: ['Este segundo ya ocurrió.', 'Volved al principio.', 'La novena hora os reclama.'],
+    hurt: ['Puedo deshacer esa herida.', 'No permitiré otro final.'],
+    taunt: ['Antes de la guerra, todos seguían vivos.', 'Un minuto más. Sólo necesito un minuto más.'],
+    idle: ['La campana aún no ha sonado.', 'El tiempo también puede obedecer.'],
+  },
 };
 
 // ───────── Personalidades temáticas (enemigos comunes) ─────────
@@ -105,6 +127,16 @@ export const personalityBarks = {
     hurt:   ['*realidad se quiebra*', 'No… importa…', '*eco vacío*', 'Irrelevante.'],
     idle:   ['*la grieta respira*', 'Nada perdura.', '*susurros sin boca*'],
   },
+  salt: {
+    attack: ['La marea recuerda.', '*agua negra golpea la piedra*', 'Volved al fondo.'],
+    hurt: ['*cruje la sal*', 'No olvidamos.', '*goteo hueco*'],
+    idle: ['*olas sin viento*', 'Puerto Albor espera.', '*campana distante*'],
+  },
+  eclipse: {
+    attack: ['Otra vez.', 'La hora se cierra.', '*una campana marca el mismo segundo*'],
+    hurt: ['Esto ya ocurrió.', '*engranajes retroceden*', 'El día no termina.'],
+    idle: ['Ocho horas.', '*tic… tic… tic…*', 'El sol permanece.'],
+  },
 };
 
 // Mapa enemigo → personalidad (los que no figuran caen al fallback por behavior).
@@ -121,6 +153,14 @@ export const enemyPersonality = {
   // Cap.4 — void
   larva_vacio: 'void', abisal: 'void', heraldo_grieta: 'void', desgarrador: 'void',
   avatar_vacio: 'void', ojo_abismo: 'void',
+  // Cap.5 — salt
+  ahogado_sal: 'salt', gaviota_osaria: 'salt', corsario_hueco: 'salt',
+  cantor_marea: 'salt', recolector_nacar: 'salt', capitan_sin_pulso: 'salt',
+  oraculo_salmuera: 'salt',
+  // Cap.6 — eclipse
+  penitente_ciego: 'eclipse', monje_campana: 'eclipse', arquero_meridiano: 'eclipse',
+  cantor_nona: 'eclipse', sacristan_reloj: 'eclipse', caballero_eclipse: 'eclipse',
+  angel_horas_rotas: 'eclipse',
 };
 
 // Fallback de personalidad por comportamiento, por si falta el mapeo directo.

@@ -1,0 +1,5 @@
+Dark fantasy painterly illustration, oil-painting texture, dramatic chiaroscuro lighting with warm ember/amber key light and deep crimson + cold teal-purple shadows, grim and atmospheric, high detail, cinematic, muted desaturated palette with glowing ember accents. No text, no UI, no watermark, no border.
+
+Premium dark-fantasy inventory icon of one ritual rosary arranged as a clear open loop. It contains EXACTLY NINE large countable beads total: eight pale carved-stone beads and one visibly distinct forbidden ninth bead of glossy black glass at the bottom center. Below that black bead hangs one miniature cracked bronze bell. Faint old-gold light travels through the eight pale beads while a restrained eclipse-red glow lives only inside the black ninth bead. Keep every bead fully visible and separated enough to count, with a clean centered silhouette occupying about 76% of the square canvas. No extra spacer beads, table, floor, scenery, hands, letters, numerals, readable glyphs, frame, or icon plate.
+
+Ratio: 1:1. True transparent RGBA background with clean antialiased edges; no detached particles.

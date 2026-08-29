@@ -1,0 +1,5 @@
+Dark fantasy hand-inked cartographic illustration on aged parchment, consistent top-down oblique tabletop map, dark brown-black linework, restrained desaturated watercolor washes, dramatic but readable value grouping, medium environmental detail, sparse warm highlights, torn irregular parchment border of uniform thickness. The image is a background for a digital board-game overlay. Keep broad low-detail negative-space corridors across four horizontal bands for UI markers. No visible road or trail, no nodes, no circles, no numbers, no text, no labels, no compass rose, no characters, no enemies, no treasure chests, no camps, no shops, no UI, no watermark.
+
+El Valle Quemado: a broad scorched agricultural valley with blackened crop terraces, skeletal orchards, a ruined village, broken market district, dry well, profaned stone altar and an enormous beast lair at the far end. Ember-red accents and thin ash smoke, with landmarks distributed away from the four low-detail overlay corridors. The start and boss regions must read as opposite visual extremes without drawing a game route.
+
+Ratio: 16:9, 1920x1080

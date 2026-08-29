@@ -200,6 +200,52 @@ export const spells = [
     school: 'arcane',
     icon: 'spells/azalie.png',
   },
+
+  // ---- Mara: Corsaria Salobre ----
+  {
+    id: 'corte_resaca', name: 'Corte de Resaca', cost: 2, type: 'attack',
+    desc: '5 de daño al enemigo de enfrente.',
+    effect: { damage: 5, target: 'enemy', ignoreRow: false },
+    school: 'blade', fxId: 'tide',
+    icon: 'spells/corte_resaca.png',
+  },
+  {
+    id: 'marea_cuchillas', name: 'Marea de Cuchillas', cost: 3, type: 'attack_all',
+    desc: '3 de daño a TODOS los enemigos.',
+    effect: { damage: 3, damageAll: true, ignoreRow: true },
+    school: 'blade', fxId: 'tide',
+    icon: 'spells/marea_cuchillas.png',
+  },
+  {
+    id: 'ancla_espectral', name: 'Ancla Espectral', cost: 1, type: 'buff_block',
+    desc: 'Concedés 4 de bloqueo a un aliado.',
+    effect: { shieldAlly: 4, target: 'ally' },
+    school: 'arcane', fxId: 'pearl',
+    icon: 'spells/ancla_espectral.png',
+  },
+
+  // ---- Elian: Último Reloj ----
+  {
+    id: 'luz_meridiana', name: 'Luz Meridiana', cost: 2, type: 'attack',
+    desc: '5 de daño luminoso a cualquier enemigo.',
+    effect: { damage: 5, target: 'enemy', ignoreRow: true },
+    school: 'holy', fxId: 'time',
+    icon: 'spells/luz_meridiana.png',
+  },
+  {
+    id: 'plegaria_novena', name: 'Plegaria de la Nona', cost: 3, type: 'heal',
+    desc: 'Cura 4 de vida a TODOS los aliados.',
+    effect: { heal: 4, healAll: true },
+    school: 'holy', fxId: 'time',
+    icon: 'spells/plegaria_novena.png',
+  },
+  {
+    id: 'segundo_prestado', name: 'Segundo Prestado', cost: 1, type: 'buff_block',
+    desc: 'Concedés 4 de bloqueo a un aliado.',
+    effect: { shieldAlly: 4, target: 'ally' },
+    school: 'arcane', fxId: 'time',
+    icon: 'spells/segundo_prestado.png',
+  },
 ];
 
 export const spellsById = Object.fromEntries(spells.map((s) => [s.id, s]));

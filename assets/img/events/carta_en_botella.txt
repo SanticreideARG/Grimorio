@@ -1,0 +1,14 @@
+Use case: illustration-story
+Asset type: Grimorio II narrative event card artwork, wide 16:9 scene
+Input images: Image 1 defines the Black-Salt Coast geography and palette; Image 2 defines wet black-salt materials, lighting and painterly finish; Image 3 defines the cinematic event-card framing and oil-painted detail level.
+Primary request: depict the melancholy discovery of a message returned by the drowned city of Puerto Albor.
+Scene/backdrop: a rain-dark beach of granular black salt at low tide; ruined harbor towers emerge softly through teal storm haze in the distance.
+Subject: one sealed green-glass bottle rests prominently in the lower-middle foreground, partly nested in black salt. Inside it are a small folded letter with no visible writing and one restrained warm amber light.
+Style/medium: mature dark-fantasy oil illustration, tactile brushwork, cinematic realism, visually consistent with the supplied Grimorio II references.
+Composition/framing: low wide camera, bottle is the single unmistakable focal point and occupies roughly 20% of the frame; distant city remains secondary; preserve calmer low-detail space near the lower edge for card UI.
+Lighting/mood: cold storm ambience, wet reflections and one intimate amber glow from inside the bottle; mournful, quiet and mysterious.
+Color palette: black salt, petroleum teal, smoke gray, old green glass, pearl-white spray and restrained lighthouse amber.
+Constraints: no characters, no readable writing, no typography, no UI, no frame, no logo, no watermark; complete bottle visible; 8% safe margins.
+Avoid: giant bottle, treasure-map symbols, beach sunset, bright tropical colors, extra bottles, floating text, glossy product photography.
+
+Ratio: 16:9 scene

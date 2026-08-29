@@ -1,0 +1,8 @@
+STATUS: GENERADO — menu_02.webp
+USE CASE: stylized-concept, fondo promocional de menú principal para videojuego dark fantasy.
+SCENE/BACKDROP: Valle de los Susurros, puente de piedra roto entre pinos negros y niebla baja, cielo tormentoso.
+SUBJECT: Brenna en primer plano medio, firme y alerta, enfrentando a Gulrath que aparece al fondo como amenaza enorme pero completamente legible.
+DETAILS: espada y armadura de Brenna con desgaste realista; vapor y polvo alrededor de las patas de Gulrath; brasas cálidas contra sombras teal.
+REFERENCES: assets/img/heroes/guerrera_v2.webp, assets/img/bosses/gulrath.webp, assets/img/mapbackground/map1.webp.
+COMPOSITION: 2560x1440; tercio izquierdo sólo puente, niebla y rocas sin acción narrativa; Brenna y Gulrath entre el 42%-78% del ancho, separados por profundidad y con margen de 8% para zoom; siluetas principales dentro del recorte 9:16 central.
+CONSTRAINTS: sin texto, UI, logo, watermark, marco ni enemigos secundarios en el tercio izquierdo.

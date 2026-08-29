@@ -263,6 +263,7 @@ export function heroCast(combat, spellId, targetUid, rng) {
   const fx = spell.effect ?? {};
   const school = spell.school; // estilo visual (proyectil/impacto/brillo)
   const castfx = spell.castfx; // efecto especial sobre el lanzador (pentagram/armor)
+  const fxId = spell.fxId ?? school; // familia visual declarativa; no altera reglas
   const logStart = c.log.length; // para marcar el cardback de "magia" tras resolver
 
   // ---- AoE: daño a todos los enemigos ----
@@ -270,7 +271,7 @@ export function heroCast(combat, spellId, targetUid, rng) {
     const targets = c.enemies.filter((e) => e.hp > 0);
     for (const t of targets) t.hp = Math.max(0, t.hp - fx.damage);
     pushLog(c, 'spell', `${h.name} lanza ${spell.name} sobre todos (${fx.damage} c/u).`, {
-      anim: fx.explosion ? 'explosion' : 'aoe', source: h.id, school, dmg: fx.damage, targets: targets.map((t) => t.uid),
+      anim: fx.explosion ? 'explosion' : 'aoe', source: h.id, school, fxId, dmg: fx.damage, targets: targets.map((t) => t.uid),
     });
   }
 
@@ -279,7 +280,7 @@ export function heroCast(combat, spellId, targetUid, rng) {
     const allies = c.heroes.filter((a) => !a.down);
     for (const a of allies) a.hp = Math.min(a.maxHp, a.hp + fx.heal);
     pushLog(c, 'spell', `${h.name} lanza ${spell.name}: +${fx.heal} a toda la party.`, {
-      anim: 'heal_all', source: h.id, school, targets: allies.map((a) => a.id),
+      anim: 'heal_all', source: h.id, school, fxId, targets: allies.map((a) => a.id),
     });
   }
 
@@ -291,7 +292,7 @@ export function heroCast(combat, spellId, targetUid, rng) {
     target.hp = Math.max(0, target.hp - fx.damage);
     const singleAnim = fx.pierce ? 'laser' : (fx.ignoreRow ? 'ranged' : 'melee');
     pushLog(c, 'spell', `${h.name} lanza ${spell.name} sobre ${target.name} (${fx.damage}).`, {
-      anim: singleAnim, source: h.id, school, castfx, dmg: fx.damage, target: target.uid,
+      anim: singleAnim, source: h.id, school, fxId, castfx, dmg: fx.damage, target: target.uid,
     });
     // Pierce: also hits the next alive enemy behind the target
     if (fx.pierce) {
@@ -300,7 +301,7 @@ export function heroCast(combat, spellId, targetUid, rng) {
       if (behind) {
         behind.hp = Math.max(0, behind.hp - fx.damage);
         pushLog(c, 'spell', `El rayo traspasa y golpea a ${behind.name} (${fx.damage}).`, {
-          anim: 'laser', source: h.id, dmg: fx.damage, target: behind.uid,
+          anim: 'laser', source: h.id, school, fxId, dmg: fx.damage, target: behind.uid,
         });
       }
     }
@@ -320,7 +321,7 @@ export function heroCast(combat, spellId, targetUid, rng) {
     const ally = c.heroes.find((a) => a.id === targetUid && !a.down) ?? h;
     ally.hp = Math.min(ally.maxHp, ally.hp + fx.heal);
     pushLog(c, 'spell', `${h.name} cura a ${ally.name} (+${fx.heal}).`, {
-      anim: 'heal', source: h.id, school, target: ally.id,
+      anim: 'heal', source: h.id, school, fxId, target: ally.id,
     });
   }
 
@@ -329,7 +330,7 @@ export function heroCast(combat, spellId, targetUid, rng) {
     const ally = c.heroes.find((a) => a.id === targetUid && !a.down) ?? h;
     ally.block = (ally.block ?? 0) + fx.shieldAlly;
     pushLog(c, 'spell', `${h.name} protege a ${ally.name} (+${fx.shieldAlly} 🛡️).`, {
-      anim: 'shield', source: h.id, school, target: ally.id,
+      anim: 'shield', source: h.id, school, fxId, target: ally.id,
     });
   }
 
@@ -343,7 +344,7 @@ export function heroCast(combat, spellId, targetUid, rng) {
     const txt = count > 0
       ? `${h.name} purifica a ${cleaned.name} (${count} maldición${count > 1 ? 'es' : ''} eliminada${count > 1 ? 's' : ''}).`
       : `${h.name} purifica a ${cleaned.name}.`;
-    pushLog(c, 'spell', txt, { anim: 'cleanse', source: h.id, school, target: cleaned.id });
+    pushLog(c, 'spell', txt, { anim: 'cleanse', source: h.id, school, fxId, target: cleaned.id });
   }
 
   // ---- Bloqueo / autocura al lanzador ----
@@ -351,7 +352,7 @@ export function heroCast(combat, spellId, targetUid, rng) {
   if (fx.selfHeal) {
     h.hp = Math.min(h.maxHp, h.hp + fx.selfHeal);
     pushLog(c, 'spell', `${h.name} drena ${fx.selfHeal} de vida.`, {
-      anim: 'heal', source: h.id, school, target: h.id,
+      anim: 'heal', source: h.id, school, fxId, target: h.id,
     });
   }
 
@@ -359,7 +360,7 @@ export function heroCast(combat, spellId, targetUid, rng) {
   // dispara el brillo del lanzador, que de otro modo no tendría animación.
   if (c.log.length === logStart && (fx.block || fx.selfHeal)) {
     pushLog(c, 'spell', `${h.name} usa ${spell.name}.`, {
-      anim: 'selfbuff', source: h.id, school, castfx, target: h.id,
+      anim: 'selfbuff', source: h.id, school, fxId, castfx, target: h.id,
     });
   }
 

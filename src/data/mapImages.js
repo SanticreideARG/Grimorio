@@ -4,7 +4,10 @@
 // archivo por uno con el mismo nombre y diferente extensión sin tocar el código.
 
 const modules = import.meta.glob(
-  '../../assets/img/mapbackground/*.{png,jpg,jpeg,webp}',
+  [
+    '../../assets/img/mapbackground/*.{png,jpg,jpeg,webp}',
+    '!../../assets/img/mapbackground/menu background - copia.{png,jpg,jpeg,webp}',
+  ],
   { eager: true, import: 'default' },
 );
 
@@ -32,4 +35,6 @@ export const mapImages = {
   cap2: bg['map2'] ?? null,
   cap3: bg['map3'] ?? null,
   cap4: bg['map4'] ?? null, // se activa automáticamente cuando exista map4.png/jpg
+  cap5: bg['map5'] ?? null,
+  cap6: bg['map6'] ?? null,
 };

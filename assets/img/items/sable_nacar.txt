@@ -1,0 +1,5 @@
+Dark fantasy painterly illustration, oil-painting texture, dramatic chiaroscuro lighting with warm ember/amber key light and deep crimson + cold teal-purple shadows, grim and atmospheric, high detail, cinematic, muted desaturated palette with glowing ember accents. No text, no UI, no watermark, no border.
+
+Premium dark-fantasy inventory icon of one elegant curved naval saber forged from iridescent mother-of-pearl, with a controlled crust of black salt running only along the cutting edge. Tarnished brass shell-shaped guard, dark leather-wrapped grip, and a small teal pearl set into the pommel. Show the entire weapon diagonally from lower-left grip to upper-right tip, centered, no cropping, occupying about 82% of the square canvas. Refined functional silhouette with cold teal reflections and warm amber edge light. No scabbard, table, floor, scenery, hands, extra weapons, letters, numerals, readable glyphs, frame, or icon plate.
+
+Ratio: 1:1. True transparent RGBA background with clean antialiased edges; preserve only a subtle material glow.

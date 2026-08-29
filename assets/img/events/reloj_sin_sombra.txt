@@ -1,0 +1,14 @@
+Use case: illustration-story
+Asset type: Grimorio II narrative event card artwork, wide 16:9 scene
+Input images: Image 1 defines the Eclipse Monastery architecture and palette; Image 2 defines old-gold celestial machinery, eclipse lighting and painterly materials; Image 3 defines cinematic event-card framing and finish.
+Primary request: depict a monastery sundial that cannot cast a shadow and instead reveals peaceful lives that never happened.
+Scene/backdrop: a high circular terrace of midnight-blue stone surrounded by monumental monastery stairs beneath one perfectly motionless red-silver eclipse.
+Subject: one enormous weathered stone sundial dominates the terrace. Its raised gnomon is clearly visible, yet absolutely no shadow falls from it. The polished dial surface reflects three soft, dreamlike alternate-life fragments—a warm home, a peaceful workshop and a sunlit garden—without showing actual visitors or becoming separate panels.
+Style/medium: mature dark-fantasy oil illustration, tactile brushwork, cinematic realism, restrained supernatural detail, consistent with the supplied Grimorio II references.
+Composition/framing: wide slightly elevated view, sundial centered as one strong circular focal shape; stairs frame it symmetrically; keep the lower edge darker and quieter for card UI.
+Lighting/mood: cold lunar ambient light, thin eclipse-red corona and gentle impossible warmth only inside the reflections; contemplative, tempting and unsettling.
+Color palette: midnight blue stone, old gold, lunar white, charcoal and restrained eclipse red.
+Constraints: exactly one sundial and one eclipse; no cast shadow from the gnomon; no visible heroes, no readable symbols, no text, no UI, no frame, no logo, no watermark; 8% safe margins.
+Avoid: ordinary sunny sundial, three-panel collage, clock face replacing the sundial, bright fantasy rainbow, crowds, duplicated eclipses.
+
+Ratio: 16:9 scene

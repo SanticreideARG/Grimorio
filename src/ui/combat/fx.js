@@ -5,6 +5,8 @@
 //   heal   → brillo verde + cruces ascendentes sobre la carta curada
 // Las cartas se localizan por su atributo data-anim-key (uid de enemigo / id de héroe).
 
+import { resolveFxProfile } from './fxRegistry.js';
+
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const prefersReduced = () =>
@@ -31,18 +33,7 @@ function flash(key, cls, ms) {
   setTimeout(() => el.classList.remove(cls), ms);
 }
 
-// Color por escuela mágica (proyectil/impacto/brillo del lanzador).
-const SCHOOL_COLOR = {
-  arcane: '#c98bf0',
-  fire:   '#ff9a3c',
-  shadow: '#9a63d8',
-  blade:  '#bfe0ff',
-  poison: '#8fdc6b',
-  arrow:  '#e8c483',
-  steel:  '#d8c39a',
-  holy:   '#ffe9a8',
-};
-const schoolColor = (school) => SCHOOL_COLOR[school] ?? SCHOOL_COLOR.arcane;
+const schoolColor = (school) => resolveFxProfile({ fxId: school }).color;
 
 // Brillo en el contorno de la carta del lanzador al usar una habilidad. El color
 // se tinta según la escuela del hechizo (vía la variable CSS --cast).
@@ -173,6 +164,19 @@ function spawnArcaneCast(layer, at, school) {
     '<div class="fx-arcane-cast__ring"></div>';
   layer.appendChild(el);
   setTimeout(() => el.remove(), 750);
+}
+
+// Sello breve que distingue familias nuevas sin acoplar la lógica del combate.
+function spawnSignature(layer, at, profile) {
+  if (!layer || !profile?.signature || ['runes', 'embers', 'slash', 'drops'].includes(profile.signature)) return;
+  const el = document.createElement('div');
+  el.className = `fx-signature fx-signature--${profile.signature}`;
+  el.style.setProperty('--cast', profile.color);
+  el.style.left = `${at.x}px`;
+  el.style.top = `${at.y}px`;
+  el.innerHTML = '<i></i><i></i><i></i>';
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 820);
 }
 
 // Pentagrama invocador sobre la carta del lanzador (p.ej. Bola de Fuego de Veyra).
@@ -394,6 +398,7 @@ async function playDotAnim(layer, at, targetKey, dmg) {
 /** Reproduce una entrada de log con animación. Resuelve cuando termina. */
 export async function playEvent(layer, e) {
   if (prefersReduced()) return;
+  const profile = resolveFxProfile(e);
 
   // Miss
   if (e.anim === 'miss') {
@@ -419,12 +424,13 @@ export async function playEvent(layer, e) {
   // escuela) + un efecto de canalización; algunas magias tienen uno propio
   // (pentagrama, blindaje). No bloqueante.
   if (e.kind === 'spell' && e.source) {
-    flashCast(e.source, e.school);
+    flashCast(e.source, profile.id);
     const srcAt = getCenter(e.source);
     if (srcAt) {
-      if (e.castfx === 'pentagram') spawnPentagram(layer, srcAt, e.school);
+      if (e.castfx === 'pentagram') spawnPentagram(layer, srcAt, profile.id);
       else if (e.castfx === 'armor') spawnArmorShimmer(layer, srcAt);
-      else spawnArcaneCast(layer, srcAt, e.school);
+      else spawnArcaneCast(layer, srcAt, profile.id);
+      spawnSignature(layer, srcAt, profile);
     }
   }
 
@@ -435,7 +441,7 @@ export async function playEvent(layer, e) {
   }
   if (e.anim === 'aoe') {
     const from = e.source ? getCenter(e.source) : null;
-    await playAoe(layer, from, e.targets, e.school, e.dmg);
+    await playAoe(layer, from, e.targets, profile.projectile, e.dmg);
     return;
   }
   if (e.anim === 'heal_all') {
@@ -476,7 +482,7 @@ export async function playEvent(layer, e) {
   } else if (e.anim === 'ranged') {
     // La escuela del hechizo decide el proyectil (flecha, fuego, sombra, etc.);
     // los ataques básicos a distancia caen a arcano/flecha como antes.
-    const variant = e.school ?? ((e.kind === 'spell' || e.arcane) ? 'arcane' : 'arrow');
+    const variant = e.fxId || e.school ? profile.projectile : ((e.kind === 'spell' || e.arcane) ? 'arcane' : 'arrow');
     await playRanged(layer, from, to, e.target, variant, e.dmg);
   } else {
     await playMelee(layer, from, to, e.source, e.target, e.dmg);

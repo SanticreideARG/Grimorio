@@ -1,0 +1,5 @@
+Dark fantasy painterly illustration, oil-painting texture, dramatic chiaroscuro lighting with warm ember/amber key light and deep crimson + cold teal-purple shadows, grim and atmospheric, high detail, cinematic, muted desaturated palette with glowing ember accents. No text, no UI, no watermark, no border.
+
+Premium dark-fantasy inventory icon of one compact round buckler built from concentric overlapping black seashell plates and tarnished brass ribs. At its center, a single sculpted spiral wave appears frozen at the instant before breaking, picked out by a restrained cold-teal sheen. Three-quarter front view, strong circular silhouette, centered and occupying about 76% of the square canvas, with warm amber edge light. No table, floor, scenery, arm, hand, extra weapons, letters, numerals, readable glyphs, rectangular shadow, frame, or icon plate.
+
+Ratio: 1:1. True transparent RGBA background with clean antialiased edges; preserve only the natural contact-free rim glow.

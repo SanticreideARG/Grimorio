@@ -6,7 +6,7 @@
 import { randomSeed } from './rng.js';
 
 /** Versión del formato de save. Subir al cambiar la forma del estado. */
-export const SAVE_VERSION = 7;
+export const SAVE_VERSION = 8;
 
 /** Dificultades soportadas (Q-DIFICULTAD). */
 export const DIFFICULTIES = Object.freeze(['facil', 'normal', 'dificil']);
@@ -69,6 +69,9 @@ export function createNewGame(opts = {}) {
     // Narrativa / finales (Q-DERROTA: finales bueno/agridulce/malo)
     flags: {}, // banderas narrativas acumuladas por decisiones
     ending: null, // se fija al terminar la campaña
+    baseEnding: null,
+    expansionEnding: null,
+    expansionActive: false,
 
     // Diario de la partida (para depurar y para el log en pantalla)
     log: [],
@@ -129,6 +132,14 @@ export function migrate(save) {
   if (!(s.version >= 7)) {
     s.petAssignments = s.petAssignments ?? {};
     s.version = 7;
+  }
+
+  // v7 → v8: expansión opcional posterior al final base.
+  if (!(s.version >= 8)) {
+    s.baseEnding = s.baseEnding ?? null;
+    s.expansionEnding = s.expansionEnding ?? null;
+    s.expansionActive = s.expansionActive ?? false;
+    s.version = 8;
   }
 
   if (typeof s.version !== 'number') s.version = SAVE_VERSION;

@@ -9,6 +9,7 @@ import {
   listSlots,
   exportSave,
   importSave,
+  saveTimestamp,
   SLOT_COUNT,
 } from '../src/core/save.js';
 
@@ -74,4 +75,20 @@ test('save actualiza updatedAt', () => {
   g.updatedAt = before - 1000;
   saveToSlot(0, g, store);
   assert.ok(g.updatedAt >= before - 1000);
+});
+
+test('save puede cachear una copia remota sin alterar updatedAt', () => {
+  const storage = memStorage();
+  const game = createNewGame({ seed: 42 });
+  game.updatedAt = 1767323045000;
+
+  saveToSlot(0, game, storage, { touchUpdatedAt: false });
+
+  assert.equal(loadFromSlot(0, storage).updatedAt, 1767323045000);
+});
+
+test('saveTimestamp compara epoch numérico y fechas ISO', () => {
+  assert.equal(saveTimestamp(1767323045000), 1767323045000);
+  assert.equal(saveTimestamp('2026-01-02T03:04:05.000Z'), 1767323045000);
+  assert.equal(saveTimestamp('fecha-inválida'), 0);
 });

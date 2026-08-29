@@ -1,0 +1,11 @@
+Use case: identity-preserve
+Asset type: evolved hero portrait and full-card background for a dark-fantasy game
+Input images: Image 1 is the original visual identity anchor for Corvin.
+Primary request: portray the same hunter after crossing the ruined realms, with a rebuilt bow and travel gear adapted to salt storms and eclipse darkness.
+Subject: preserve his exact rugged face, long wet dark hair, full beard, focused gaze, raven companion, fur mantle and longbow. Evolve the coat into layered forest-black leather and salt-worn cloth, and the recurved bow with restrained bronze clock-hand fittings and pale nacre reinforcement at stressed joints. The same raven remains close to his shoulder.
+Style/medium: the same dark-fantasy painterly oil illustration, tactile fur, wood and leather, dramatic chiaroscuro, premium game key art.
+Composition/framing: vertical 3:4, three-quarter portrait; face and raven clear in the upper-middle safe zone, bow silhouette visible along one side, lower quarter subdued for card text.
+Lighting/mood: dim amber edge light through cold moss-green and teal shadow; patient, weathered, watchful.
+Color palette: forest black, dark olive, worn brown, bronze, faint nacre and amber.
+Constraints: preserve identity, face, hair, beard, raven, bow, fur mantle and original painterly language; no text; no UI; no border; no logo; no watermark.
+Avoid: replacing the raven, crossbow, bright heroic daylight, clean ranger costume, oversized clock machinery.

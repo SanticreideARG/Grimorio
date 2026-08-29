@@ -52,6 +52,10 @@ export const curses = [
     power: 1,
     icon: 'curses/veneno.png',
   },
+  { id: 'mareo_abismo', name: 'Mareo del Abismo', desc: 'Pierdes 1 espada al tirar dados. Dura 3 turnos.', hook: 'reduceSword', duration: 3, power: 1, icon: 'curses/mareo_abismo.png' },
+  { id: 'petrificacion_sal', name: 'Petrificación de Sal', desc: 'Pierdes 1 escudo al tirar dados. Dura 3 turnos.', hook: 'reduceShield', duration: 3, power: 1, icon: 'curses/petrificacion_sal.png' },
+  { id: 'eclipse_interior', name: 'Eclipse Interior', desc: 'Pierdes 1 estrella al tirar dados. Dura 3 turnos.', hook: 'reduceStar', duration: 3, power: 1, icon: 'curses/eclipse_interior.png' },
+  { id: 'tic_sangriento', name: 'Tic Sangriento', desc: 'Recibes 2 de daño al inicio del turno. Dura 2 turnos.', hook: 'dotDamage', duration: 2, power: 2, icon: 'curses/tic_sangriento.png' },
 ];
 
 export const cursesById = Object.fromEntries(curses.map((c) => [c.id, c]));

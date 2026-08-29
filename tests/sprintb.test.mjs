@@ -16,7 +16,7 @@ import { content } from '../src/data/index.js';
 // ---- Pools de eventos --------------------------------------------------------
 
 test('todos los pools de evento existen en content.decks', () => {
-  const expectedPools = ['eventos', 'eventos_cap2', 'eventos_cap3', 'eventos_cap4'];
+  const expectedPools = ['eventos', 'eventos_cap2', 'eventos_cap3', 'eventos_cap4', 'eventos_cap5', 'eventos_cap6'];
   for (const pool of expectedPools) {
     assert.ok(
       Array.isArray(content.decks[pool]) && content.decks[pool].length > 0,
@@ -26,14 +26,14 @@ test('todos los pools de evento existen en content.decks', () => {
 });
 
 test('cada pool tiene al menos 3 cartas', () => {
-  const pools = ['eventos', 'eventos_cap2', 'eventos_cap3', 'eventos_cap4'];
+  const pools = ['eventos', 'eventos_cap2', 'eventos_cap3', 'eventos_cap4', 'eventos_cap5', 'eventos_cap6'];
   for (const pool of pools) {
     assert.ok(content.decks[pool].length >= 3, `pool "${pool}" tiene menos de 3 cartas`);
   }
 });
 
 test('todos los ids de cartas son únicos en cada pool', () => {
-  const pools = ['eventos', 'eventos_cap2', 'eventos_cap3', 'eventos_cap4'];
+  const pools = ['eventos', 'eventos_cap2', 'eventos_cap3', 'eventos_cap4', 'eventos_cap5', 'eventos_cap6'];
   for (const pool of pools) {
     const ids = content.decks[pool].map((c) => c.id);
     const unique = new Set(ids);
@@ -42,7 +42,7 @@ test('todos los ids de cartas son únicos en cada pool', () => {
 });
 
 test('toda carta tiene title, text y al menos una elección', () => {
-  const allPools = ['eventos', 'eventos_cap2', 'eventos_cap3', 'eventos_cap4'];
+  const allPools = ['eventos', 'eventos_cap2', 'eventos_cap3', 'eventos_cap4', 'eventos_cap5', 'eventos_cap6'];
   for (const poolId of allPools) {
     for (const card of content.decks[poolId]) {
       assert.ok(card.title?.length > 0,    `${card.id}: sin título`);
@@ -52,11 +52,13 @@ test('toda carta tiene title, text y al menos una elección', () => {
   }
 });
 
-test('los capítulos 2-4 usan sus propios pools de evento', () => {
+test('los capítulos 2-6 usan sus propios pools de evento', () => {
   const expectedPools = {
     cap2: 'eventos_cap2',
     cap3: 'eventos_cap3',
     cap4: 'eventos_cap4',
+    cap5: 'eventos_cap5',
+    cap6: 'eventos_cap6',
   };
   for (const [capId, expectedPool] of Object.entries(expectedPools)) {
     const chapter = content.chaptersById[capId];

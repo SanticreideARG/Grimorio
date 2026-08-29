@@ -1,0 +1,8 @@
+STATUS: GENERADO — menu_03.webp
+USE CASE: stylized-concept, fondo promocional de menú principal para videojuego dark fantasy.
+SCENE/BACKDROP: Marismas de la Tejedora, árboles hundidos, agua negra espejada y redes de seda húmeda entre juncos.
+SUBJECT: Nix y Corvin avanzan juntos sobre una pasarela de madera; La Tejedora ocupa el fondo alto, monumental y parcialmente velada por niebla.
+DETAILS: reflejos rotos, hilos tensos, pequeñas luciérnagas frías, contraste entre magia turquesa y luz de antorcha ámbar.
+REFERENCES: assets/img/heroes/picara_v2.webp, assets/img/heroes/cazador_v2.webp, assets/img/bosses/la_tejedora.webp, assets/img/mapbackground/map2.webp.
+COMPOSITION: tercio izquierdo reservado a agua oscura y niebla sin sujetos; personajes y jefe en 40%-80% del ancho; aire sobre la silueta de la jefa para Ken Burns 8%; motivo legible en 9:16 centrado.
+CONSTRAINTS: sin texto, UI, logo, watermark, marco ni criaturas inventadas.

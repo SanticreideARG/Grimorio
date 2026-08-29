@@ -1,0 +1,5 @@
+Dark fantasy painterly illustration, oil-painting texture, dramatic chiaroscuro lighting with warm ember/amber key light and deep crimson + cold teal-purple shadows, grim and atmospheric, high detail, cinematic, muted desaturated palette with glowing ember accents. No text, no UI, no watermark, no border.
+
+Premium dark-fantasy status icon built as one compact curse emblem: a stylized anatomical heart in dark oxidized silver, its center eclipsed by one perfect black disc so only a narrow crimson corona remains. Three tiny star-shaped lights set into the heart's outer metal fade toward black, communicating lost stellar energy. Strong symmetrical silhouette, centered, front view, occupying about 76% of the square canvas; ominous and mature, symbolic rather than gory. No blood spray, body, hands, scenery, text, letters, numerals, readable glyphs, extra discs, frame, icon plate, or detached particles.
+
+Ratio: 1:1. True transparent RGBA background with clean antialiased edges; retain only the close crimson corona glow.

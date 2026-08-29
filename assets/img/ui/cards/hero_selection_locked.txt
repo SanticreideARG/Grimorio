@@ -1,0 +1,11 @@
+Use case: ui-mockup
+Asset type: polished in-game hero selection card concept
+Input images: Image 1 is the hero artwork reference and must remain visually recognizable.
+Primary request: design the locked-state version of the mature hero card system for the Dark Knight, using the supplied portrait as full-bleed background artwork.
+Style/medium: shippable dark-fantasy game UI mockup; sober editorial hierarchy; tactile historical materials; ominous and refined.
+Composition/framing: one vertical 3:4 card filling the canvas. Preserve the full crown-like helmet, magenta eyes, raised hand and armor silhouette. Add a thin blackened-iron outer frame, narrow obsidian inner bevel and a subdued cold-silver accent line. Use a black-blue lower gradient for text.
+Text (verbatim): "VANGUARDIA"; "CABALLERO OSCURO"; "BLOQUEADO"; "COMPLETÁ EL JURAMENTO".
+Typography: elegant engraved serif for the name; compact restrained uppercase sans serif for metadata; cold ivory and blue-gray text.
+State: locked. Keep the silhouette readable under a cool desaturated patina, add one fine diagonal chain and a small central dark-metal seal; the eyes retain a faint magenta glow. The unlock condition stays below the name and never crosses the helmet.
+Constraints: preserve the original masked identity and painterly artwork; locked state must be understandable without relying only on desaturation; minimal ornament; no fake buttons; no extra text; no logo; no watermark.
+Avoid: giant padlock icon, multiple chains, opaque overlay, red warning UI, thick frame, bright gold, glossy mobile UI, circular portrait window.

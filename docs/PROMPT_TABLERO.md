@@ -1,4 +1,12 @@
-# Prompt del Tablero — para Claude Design
+# Prompt del Tablero — referencia histórica
+
+> **Superado por `docs/BOARD_ENGINE_V2.md`.** El prompt original pedía caminos,
+> nodos, números e iconos horneados dentro de cada mapa. El motor V2 separa esos
+> elementos en capas SVG/HTML, por lo que los fondos nuevos deben contener solo
+> territorio y landmarks ambientales. No usar el prompt antiguo para generar los
+> mapas 1–6 definitivos.
+
+# Diseño original
 
 ## Decisión de estructura: campaña larga por capítulos
 

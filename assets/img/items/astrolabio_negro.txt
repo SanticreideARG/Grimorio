@@ -1,0 +1,5 @@
+Dark fantasy painterly illustration, oil-painting texture, dramatic chiaroscuro lighting with warm ember/amber key light and deep crimson + cold teal-purple shadows, grim and atmospheric, high detail, cinematic, muted desaturated palette with glowing ember accents. No text, no UI, no watermark, no border.
+
+Premium dark-fantasy inventory icon of one ancient black astrolabe made from interlocking mother-of-pearl rings and aged brass pivots, wet with seawater. Its long needle points straight upward toward one tiny suspended black eclipse with a thin ember-red corona instead of toward north. Powerful unique quest relic, three-quarter front view, symmetrical readable silhouette, centered and occupying about 78% of the square canvas. Controlled teal reflections and one warm rim light reveal the materials without flattening the blacks. No table, floor, scenery, hands, extra objects, letters, numerals, readable glyphs, drop-shadow rectangle, frame, or icon plate.
+
+Ratio: 1:1. True transparent RGBA background with clean antialiased edges; preserve subtle internal glow only.

@@ -10,6 +10,7 @@ export const cap4 = {
   map: 'board/La Grieta.html',
   boss: 'el_devorado',
   doomMax: 18,
+  arcEnd: 'base',
   script: {
     intro:
       'No hay suelo, no hay cielo: solo la Grieta, una herida en el mundo que respira ' +

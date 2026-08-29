@@ -1,0 +1,11 @@
+Use case: identity-preserve
+Asset type: evolved hero portrait and full-card background for a dark-fantasy game
+Input images: Image 1 is the original visual identity anchor for Veyra.
+Primary request: portray the same hooded fire mage after the first campaign, now wielding a more deliberate and refined flame.
+Subject: preserve his gaunt pale face, amber eyes, wet dark strands, short pointed beard, deep hood and both open casting hands. Evolve the ash-black robes into layered charcoal vestments reinforced with scorched leather, small bronze astrolabe clasps and subtle clockwork stitching. One hand shapes concentrated ember-orange flame while the other contains a faint cold-blue counterglow, both restrained and readable.
+Style/medium: the same dark-fantasy painterly oil illustration, tactile brushwork, realistic worn cloth, dramatic chiaroscuro, premium game key art.
+Composition/framing: vertical 3:4, three-quarter portrait; face clear in the upper-middle safe zone, both hands legible, lower quarter darker for card text, edge-safe for responsive cropping.
+Lighting/mood: ember light from below and cool eclipse rim light; focused, weary, dangerous.
+Color palette: ash black, charcoal brown, ember orange, sparse bronze and cold blue.
+Constraints: preserve face, gender presentation, hood, beard, eyes, pose language and original painterly identity; do not turn him into a staff-wielding wizard; no text; no UI; no border; no logo; no watermark.
+Avoid: youthful redesign, clean robes, large steampunk machinery, bright rainbow magic, extra hands.

@@ -1,0 +1,14 @@
+Use case: illustration-story
+Asset type: Grimorio II narrative event card artwork, wide 16:9 scene
+Input images: Image 1 defines the Black-Salt Coast geography and inverted lighthouse design; Image 2 defines wet black-salt materials, monumental scale and painterly lighting; Image 3 defines the cinematic event-card framing and oil-painted detail level.
+Primary request: depict the impossible lighthouse that reveals the route from the Black-Salt Coast to the Eclipse Monastery.
+Scene/backdrop: storm clouds above the shattered coast support one colossal lighthouse hanging perfectly upside down, its lantern pointing toward the sea; broken spiral stairs float around it. Far across the water, an eclipsed mountain monastery appears as a small but recognizable silhouette.
+Subject: the inverted lighthouse is the dominant focal structure. Its beam is a volumetric wedge of dim darkness, subtly removing light from sea mist as it connects visually toward the distant monastery.
+Style/medium: mature dark-fantasy oil illustration, tactile brushwork, cinematic realism, monumental environmental storytelling, consistent with the supplied Grimorio II references.
+Composition/framing: wide low-angle vista, lighthouse in the upper-middle and dark beam forming a diagonal toward the monastery; coast and sea establish scale; reserve calmer dark values near the lower edge for card UI.
+Lighting/mood: violent teal-black storm, sparse amber windows and a red-silver eclipse in the far distance; awe, dread and revelation.
+Color palette: black salt, petroleum teal, storm gray, old brass, restrained amber and distant eclipse red.
+Constraints: exactly one inverted lighthouse, one distant monastery and no characters; no visible game route, no text, no UI, no frame, no logo, no watermark; 8% safe margins.
+Avoid: normal upright lighthouse, solid black graphic stripe, science-fiction beam, floating island city, extra towers, bright lightning dominating the scene.
+
+Ratio: 16:9 scene

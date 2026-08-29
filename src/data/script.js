@@ -26,4 +26,9 @@ export const script = {
       'mutado, oscuro, difícilmente digno de llamarse hogar. Ganasteis la batalla. ' +
       'Perdisteis algo más difícil de nombrar.',
   },
+  expansionEndings: {
+    good: 'La semilla se apaga y el tiempo vuelve a avanzar. Puerto Albor conserva sus nombres; el monasterio acepta su primera noche. No recuperasteis lo perdido: hicisteis algo más difícil. Le permitisteis descansar.',
+    bittersweet: 'El eclipse termina, aunque algunos recuerdos permanecen encadenados a la sal y a las campanas. El mundo continúa incompleto, como todos los que lo habitan. Esta vez nadie intentará obligarlo a retroceder.',
+    bad: 'La semilla concede el deseo. Durante un instante todo vuelve a ser como antes de la guerra. Luego el instante se repite. Y se repite. El mundo ya no sufre pérdidas, porque tampoco puede llegar a mañana.',
+  },
 };

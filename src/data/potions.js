@@ -30,6 +30,30 @@ export const potions = [
     desc: 'Elimina todos los estados alterados de un héroe.',
     icon: 'potions/antidoto.png',
   },
+  {
+    id: 'salmuera_roja', name: 'Salmuera Roja', type: 'heal', power: 9,
+    price: 16, chapterMin: 4,
+    desc: 'Restaura 9 de vida a un héroe en combate.',
+    icon: 'potions/salmuera_roja.png',
+  },
+  {
+    id: 'esencia_marea', name: 'Esencia de Marea', type: 'energy', power: 2,
+    price: 18, chapterMin: 4,
+    desc: 'Restaura 2⭐ de energía a un héroe en combate.',
+    icon: 'potions/esencia_marea.png',
+  },
+  {
+    id: 'lagrima_nacar', name: 'Lágrima de Nácar', type: 'cleanse',
+    price: 16, chapterMin: 4,
+    desc: 'Elimina todos los estados alterados de un héroe.',
+    icon: 'potions/lagrima_nacar.png',
+  },
+  {
+    id: 'infusion_novena', name: 'Infusión de la Nona', type: 'heal', power: 13,
+    price: 24, chapterMin: 4,
+    desc: 'Restaura 13 de vida a un héroe en combate.',
+    icon: 'potions/infusion_novena.png',
+  },
 ];
 
 export const potionsById = Object.fromEntries(potions.map((p) => [p.id, p]));

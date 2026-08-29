@@ -90,6 +90,42 @@ export const items = [
     price: 80,
     icon: 'items/corona_sombra.png',
   },
+  {
+    id: 'sable_nacar', name: 'Sable de Nácar',
+    desc: 'Convierte la primera cara en blanco del pool en [🗡️1].',
+    mod: { upgradeFace: { from: {}, to: { sword: 1 } } },
+    price: 92, chapterMin: 4, icon: 'items/sable_nacar.png',
+  },
+  {
+    id: 'broquel_marea', name: 'Broquel de Marea',
+    desc: 'Convierte la primera cara en blanco del pool en [🛡️1].',
+    mod: { upgradeFace: { from: {}, to: { shield: 1 } } },
+    price: 84, chapterMin: 4, icon: 'items/broquel_marea.png',
+  },
+  {
+    id: 'lente_eclipse', name: 'Lente del Eclipse',
+    desc: 'Convierte una cara [🗡️1] en [⭐1].',
+    mod: { upgradeFace: { from: { sword: 1 }, to: { star: 1 } } },
+    price: 108, chapterMin: 4, icon: 'items/lente_eclipse.png',
+  },
+  {
+    id: 'corazon_leviatan', name: 'Corazón del Leviatán',
+    desc: '+5 de vida máxima a cada héroe.',
+    mod: { maxHp: 5 }, price: 128, chapterMin: 4,
+    icon: 'items/corazon_leviatan.png',
+  },
+  {
+    id: 'rosario_novena', name: 'Rosario de la Novena',
+    desc: '+1 dado y +3 de vida máxima a cada héroe.',
+    mod: { dice: 1, maxHp: 3 }, price: 156, chapterMin: 4,
+    icon: 'items/rosario_novena.png',
+  },
+  {
+    id: 'astrolabio_negro', name: 'Astrolabio Negro',
+    desc: '+2 dados al pool de cada héroe. Recompensa única del Leviatán.',
+    mod: { dice: 2 }, shop: false, chapterMin: 4,
+    icon: 'items/astrolabio_negro.png',
+  },
 ];
 
 export const itemsById = Object.fromEntries(items.map((i) => [i.id, i]));

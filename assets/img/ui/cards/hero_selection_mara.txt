@@ -1,0 +1,10 @@
+Use case: ui-mockup
+Asset type: polished in-game hero selection card concept, resting state
+Input images: Image 1 is Mara's exact hero artwork reference and must remain recognizable.
+Primary request: place the supplied portrait as full-bleed art inside the mature Grimorio hero-card system.
+Composition/framing: one vertical 3:4 card filling the canvas; preserve face, salt-streaked hair, oilskin coat, saber, spectral chain and lighthouse. Thin irregular blackened-iron outer frame, narrow obsidian inner bevel, one restrained nacre accent line, subtle vignette and black-blue lower gradient.
+Text (verbatim): "VANGUARDIA"; "MARA"; "CORSARIA SALOBRE"; "12 HP"; "4 DADOS".
+Typography: elegant engraved serif name; compact uppercase sans serif metadata; warm ivory and muted blue-gray.
+State: resting, available, not selected; natural artwork saturation, no glow.
+Constraints: preserve identity and painterly art; saber and spectral chain remain readable; no extra text; no logo; no watermark.
+Avoid: pirate caricature, skull-and-crossbones, thick frame, bright turquoise UI, circular portrait window.

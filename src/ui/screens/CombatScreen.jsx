@@ -3,7 +3,7 @@
 // (estrellas) → termina turno. Tras todos los héroes, se resuelve la fase
 // enemiga. Victoria/derrota muestran overlay.
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useGameStore } from '../../store/gameStore.js';
 import { content } from '../../data/index.js';
 import CardDetailModal from '../components/CardDetailModal.jsx';
@@ -19,6 +19,7 @@ import { assetUrl } from '../assets.js';
 import { DieFace, DieSymbol } from '../components/Dice.jsx';
 import CardbackFlash from '../components/CardbackFlash.jsx';
 import { canControlHero, activePlayerName } from '../../systems/turn.js';
+import { buildCombatViewModel } from '../../systems/combatViewModel.js';
 
 const KIND_LABEL = { combat: 'Combate', elite: 'Combate de Élite', boss: 'Jefe' };
 
@@ -112,6 +113,7 @@ export default function CombatScreen() {
     : new Set();
 
   const hasPotions = Object.values(potionBag).some((n) => n > 0);
+  const battleView = useMemo(() => buildCombatViewModel(combat), [combat]);
 
   const onEnemyClick = (enemy) => {
     if (!clickableEnemies.has(enemy.uid)) return;
@@ -186,7 +188,7 @@ export default function CombatScreen() {
   const front = (units) => units.filter((u) => u.row !== 'back');
 
   return (
-    <main className="combat">
+    <main className={`combat combat--region-${chapterIndex + 1}`}>
       <header className="combat-top">
         <span className="combat-kind">{KIND_LABEL[combat.kind] ?? 'Combate'}</span>
         <span className="combat-round">Round {combat.round}</span>
@@ -195,16 +197,18 @@ export default function CombatScreen() {
         </button>
       </header>
 
+      <BattleFlow view={battleView} round={combat.round} />
+
       {/* Enemigos */}
       <section className="side side--enemies">
         <Row label="Retaguardia">
           {back(combat.enemies).map((e) => (
-            <EnemyCard key={e.uid} e={e} bark={barks[e.uid]} clickable={clickableEnemies.has(e.uid)} onClick={() => onEnemyClick(e)} onOpenDetail={(u) => { setDetailUnit(u); setDetailType('enemy'); }} />
+            <EnemyCard key={e.uid} e={e} intent={battleView.intents[e.uid]} next={battleView.nextEnemyUid === e.uid} bark={barks[e.uid]} clickable={clickableEnemies.has(e.uid)} onClick={() => onEnemyClick(e)} onOpenDetail={(u) => { setDetailUnit(u); setDetailType('enemy'); }} />
           ))}
         </Row>
         <Row label="Frente">
           {front(combat.enemies).map((e) => (
-            <EnemyCard key={e.uid} e={e} bark={barks[e.uid]} clickable={clickableEnemies.has(e.uid)} onClick={() => onEnemyClick(e)} onOpenDetail={(u) => { setDetailUnit(u); setDetailType('enemy'); }} />
+            <EnemyCard key={e.uid} e={e} intent={battleView.intents[e.uid]} next={battleView.nextEnemyUid === e.uid} bark={barks[e.uid]} clickable={clickableEnemies.has(e.uid)} onClick={() => onEnemyClick(e)} onOpenDetail={(u) => { setDetailUnit(u); setDetailType('enemy'); }} />
           ))}
         </Row>
       </section>
@@ -405,6 +409,31 @@ function Row({ label, children }) {
   );
 }
 
+function BattleFlow({ view, round }) {
+  return (
+    <section className="battle-flow" aria-label={`Orden de actuación, ronda ${round}`}>
+      <div className="battle-flow__phase">
+        <span>RONDA {round}</span>
+        <strong>{view.phaseLabel}</strong>
+      </div>
+      <ol className="battle-flow__actors">
+        {view.actors.map((actor) => (
+          <li
+            key={actor.key}
+            className={`battle-actor battle-actor--${actor.side} is-${actor.status}`}
+            aria-current={actor.status === 'active' ? 'step' : undefined}
+          >
+            <span className="battle-actor__sigil" aria-hidden="true">
+              {actor.side === 'hero' ? '✦' : '◆'}
+            </span>
+            <span>{actor.name}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
 function DiceTray({ pool, attacked, energy }) {
   return (
     <div className="dice-tray">
@@ -445,13 +474,13 @@ function SpeechBubble({ bark }) {
   );
 }
 
-function EnemyCard({ e, bark, clickable, onClick, onOpenDetail }) {
+function EnemyCard({ e, intent, next, bark, clickable, onClick, onOpenDetail }) {
   const dead = e.hp <= 0;
   return (
     <div className="unit-wrap" onContextMenu={(ev) => { ev.preventDefault(); onOpenDetail?.(e); }}>
       <button
         data-anim-key={e.uid}
-        className={`unit unit--enemy${e.isBoss ? ' unit--boss' : ''}${e.isElite ? ' unit--elite' : ''}${clickable ? ' is-clickable' : ''}${dead ? ' is-dead' : ''}`}
+        className={`unit unit--enemy${e.isBoss ? ' unit--boss' : ''}${e.isElite ? ' unit--elite' : ''}${clickable ? ' is-clickable' : ''}${next ? ' is-next-actor' : ''}${dead ? ' is-dead' : ''}`}
         onClick={onClick}
         disabled={!clickable}
       >
@@ -461,6 +490,12 @@ function EnemyCard({ e, bark, clickable, onClick, onOpenDetail }) {
           <CurseIcons curses={e.curses} />
         </div>
         <span className="unit__name">{e.name}</span>
+        {!dead && intent && (
+          <span className={`enemy-intent enemy-intent--${intent.tone}`} title="Lectura aproximada de su comportamiento">
+            <span aria-hidden="true">{intent.icon}</span> {intent.label}
+            {intent.damage > 0 && <small>{intent.damage} daño base</small>}
+          </span>
+        )}
         <HpBar hp={e.hp} maxHp={e.maxHp} kind="enemy" />
         <span className="unit__meta">{e.dmg}🗡️ · {e.row === 'back' ? 'dist.' : 'melé'}</span>
       </button>

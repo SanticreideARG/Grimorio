@@ -1,0 +1,8 @@
+STATUS: GENERADO — menu_08.webp
+USE CASE: stylized-concept, fondo promocional de menú principal para videojuego dark fantasy.
+SCENE/BACKDROP: campamento de la compañía en un claro nocturno, tienda remendada, brasero y bosque profundo.
+SUBJECT: cuervo, lobezno, polilla del reloj y cangrejo farol reunidos alrededor del brasero, curiosos y expresivos; no humanos protagonistas.
+DETAILS: plumas, pelaje, alas translúcidas y caparazón iluminado con cuidado; sombras suaves, sensación de respiro entre expediciones.
+REFERENCES: assets/img/pets/cuervo.webp, assets/img/pets/lobezno.webp, assets/img/pets/polilla_reloj.png, assets/img/pets/cangrejo_farol.png.
+COMPOSITION: tercio izquierdo sólo bosque desenfocado y aire sin mascotas ni objetos narrativos; grupo en 42%-78%, con margen para zoom 8%; las cuatro mascotas permanecen visibles en recorte 9:16.
+CONSTRAINTS: sin texto, UI, logo, watermark, marco, accesorios nuevos ni mascotas extra.

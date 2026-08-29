@@ -1,0 +1,14 @@
+Use case: illustration-story
+Asset type: Grimorio II narrative event card artwork, wide 16:9 scene
+Input images: Image 1 defines the Eclipse Monastery architecture and palette; Image 2 defines old-gold celestial machinery, eclipse lighting and painterly materials; Image 3 defines cinematic event-card framing and finish.
+Primary request: depict the infinite library where books preserve possible tomorrows that the monastery prevented from occurring.
+Scene/backdrop: immense curved tiers of midnight-blue library shelves spiral around one suspended celestial clock whose hands are motionless; upper shelves disappear into lunar haze.
+Subject: one large open book rests on a stone reading table in the foreground. From its blank pages rises a single continuous luminous vision of an unwritten city becoming a modest home and family silhouettes, like light shaped from memory rather than separate miniature scenes. On one distant shelf, black ash quietly erases a short row of closed volumes.
+Style/medium: mature dark-fantasy oil illustration, tactile brushwork, cinematic realism, monumental but readable, consistent with the supplied Grimorio II references.
+Composition/framing: strong central book and ascending spiral depth; celestial clock remains secondary; foreground and lower edge contain calmer dark values for card UI.
+Lighting/mood: pale lunar book-light, restrained old-gold clock reflections and deep blue-black shelves; wonder, grief and dangerous possibility.
+Color palette: midnight blue, old gold, parchment ivory, lunar white, black ash and minimal eclipse red.
+Constraints: no readable writing, glyphs or letters on any page or spine; no visible characters, no text, no UI, no frame, no logo, no watermark; 8% safe margins.
+Avoid: flying-book chaos, many unrelated miniature scenes, modern library, magical rainbow, legible book titles, burning library.
+
+Ratio: 16:9 scene

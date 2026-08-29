@@ -1,0 +1,14 @@
+Use case: ads-marketing
+Asset type: premium social-media launch poster, Instagram feed 4:5
+Input images: Image 1 is Orphen's identity and outfit reference; Image 2 is Mara's identity and outfit reference; Image 3 is Elian's identity and outfit reference.
+Primary request: create official-looking launch key art for the dark-fantasy sequel Grimorio II, presenting these exact three heroes as the new campaign's central party.
+Scene/backdrop: a black-salt coast in the lower background transitions into the distant Monastery of the Eclipse; a restrained solar eclipse hangs above them, with amber lighthouse mist on one side and cold clockwork-blue haze on the other.
+Subject: Orphen stands centered and slightly forward, preserving his pale angular face, long black hair, crimson shadow magic and dual-aspect sword. Mara stands behind on one side with salt-streaked dark hair, weathered oilskin coat, saber and spectral chain. Elian stands behind on the other side with silver hair, midnight robes, lantern and cracked astrolabe staff. Mature expressions, no heroic smiles.
+Style/medium: painterly dark-fantasy oil illustration matching the supplied character art; cinematic promotional key art; tactile materials; dramatic but refined.
+Composition/framing: vertical 4:5; triangular three-character composition; title in the upper safe area, character faces unobstructed in the middle, release date in the lower safe area; generous 8% safe margins for social cropping.
+Lighting/mood: crimson shadow light, amber lantern and lighthouse glow, cold eclipse rim light; ominous, mature, anticipatory.
+Color palette: graphite black, eclipse silver, restrained crimson, salt teal and old gold.
+Text (verbatim): "GRIMORIO II"; "ECOS DEL VACÍO"; "NOVIEMBRE 2026".
+Typography: refined engraved high-contrast serif, weathered silver title with very restrained old-gold edge; subtitle smaller and widely tracked; release date compact and highly legible.
+Constraints: render each exact text once and only once; preserve the three character identities, clothing, weapons and relative scale; no additional characters; no platform logos; no publisher logo; no UI; no border; no watermark.
+Avoid: glossy mobile-game advertising, superhero poses, bright saturated color, ornate gold filigree, illegible title, duplicated limbs or weapons, generic faces.

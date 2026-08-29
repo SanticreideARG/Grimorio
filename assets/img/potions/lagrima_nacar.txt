@@ -1,0 +1,5 @@
+Dark fantasy painterly illustration, oil-painting texture, dramatic chiaroscuro lighting with warm ember/amber key light and deep crimson + cold teal-purple shadows, grim and atmospheric, high detail, cinematic, muted desaturated palette with glowing ember accents. No text, no UI, no watermark, no border.
+
+Premium dark-fantasy consumable icon of one small clear reliquary bottle holding a single large iridescent mother-of-pearl tear suspended inside. The pearl tear radiates cleansing white light with a faint teal halo; exactly three thin black corruption tendrils enter through the lower glass and visibly dissolve before reaching it. Old-silver cap shaped like folded petals, elegant teardrop bottle silhouette. Three-quarter front view, centered, full bottle visible, occupying about 70% of the square canvas. No table, floor, scenery, hands, labels, letters, numerals, readable glyphs, extra pearls, extra bottles, frame, icon plate, or detached smoke.
+
+Ratio: 1:1. True transparent RGBA background with clean antialiased glass edges; tendrils must remain contained within the bottle.

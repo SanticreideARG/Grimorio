@@ -34,6 +34,10 @@ export default function ShopScreen() {
 
   const node = getCurrentNode(game);
   const owned = new Set(game.inventory ?? []);
+  const visibleItems = content.items.filter((it) =>
+    it.shop !== false && (it.chapterMin ?? 0) <= (game.chapterIndex ?? 0));
+  const visiblePotions = content.potions.filter((p) =>
+    (p.chapterMin ?? 0) <= (game.chapterIndex ?? 0));
 
   return (
     <main className="shop-screen">
@@ -55,7 +59,7 @@ export default function ShopScreen() {
         <section className="shop-section">
           <SectionBanner cardback="cardbacks/magias.png" title="Equipo (mejoras permanentes)" />
           <div className="shop-grid">
-            {content.items.map((it) => {
+            {visibleItems.map((it) => {
               const has = owned.has(it.id);
               const buyable = canBuyItem(game, it.id);
               return (
@@ -97,7 +101,7 @@ export default function ShopScreen() {
         <section className="shop-section">
           <SectionBanner cardback="cardbacks/pociones.png" title="Pociones (para combate)" />
           <div className="shop-grid">
-            {content.potions.map((p) => {
+            {visiblePotions.map((p) => {
               const buyable = canBuyPotion(game, p.id);
               const count = potionCount(game, p.id);
               return (

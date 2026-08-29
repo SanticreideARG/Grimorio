@@ -1,0 +1,5 @@
+Dark fantasy painterly illustration, oil-painting texture, dramatic chiaroscuro lighting with warm ember/amber key light and deep crimson + cold teal-purple shadows, grim and atmospheric, high detail, cinematic, muted desaturated palette with glowing ember accents. No text, no UI, no watermark, no border.
+
+Premium dark-fantasy status icon built as one compact curse emblem: one cracked monastery clock face fused to a deep-crimson anatomical heart. Its two black iron hands cross like needles and visibly pin the heart at the center; twelve restrained dark-red droplets replace the hour marks around the dial, suggesting recurring damage without a blood splash. Strong circular silhouette, centered, front view, occupying about 76% of the square canvas; old gold, black iron and crimson internal glow. No body, extra clocks, scenery, text, letters, numerals, readable glyphs, frame around the canvas, icon plate, or detached gore.
+
+Ratio: 1:1. True transparent RGBA background with clean antialiased edges; keep all droplets embedded in the dial.

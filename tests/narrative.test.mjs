@@ -8,7 +8,7 @@ test('getNodeNarration devuelve null para nodos sin entrada', () => {
   assert.equal(getNodeNarration('nodo_inexistente', ['guerrera']), null);
 });
 
-test('todo nodo de los 4 capítulos tiene narración de lugar', () => {
+test('todo nodo de campaña base y expansión tiene narración de lugar', () => {
   for (const cap of content.chapters) {
     for (const n of cap.nodes) {
       const nar = getNodeNarration(n.id, []);

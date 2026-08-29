@@ -109,6 +109,8 @@ export function advanceNode(state) {
 
 /** ¿Hay un capítulo después del actual? */
 export function hasNextChapter(state) {
+  const chapter = getChapter(state);
+  if (chapter?.arcEnd === 'base' && !state.expansionActive) return false;
   return state.chapterIndex < content.chapters.length - 1;
 }
 

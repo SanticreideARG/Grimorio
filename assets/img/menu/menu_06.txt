@@ -1,0 +1,8 @@
+STATUS: GENERADO — menu_06.webp
+USE CASE: stylized-concept, fondo promocional de menú principal para videojuego dark fantasy.
+SCENE/BACKDROP: Costas de Sal Negra, playa rocosa durante tormenta, espuma oscura y faro derrumbado.
+SUBJECT: Mara Salobre en plano entero sobre una roca, mirando al Leviatán de Sal Negra que rompe el horizonte marino.
+DETAILS: abrigo y cabello azotados por viento, gotas salinas, relámpago teal y contraluz ámbar de un farol.
+REFERENCES: assets/img/heroes/mara_salobre.webp, assets/img/bosses/leviatan_sal_negra.webp, assets/img/mapbackground/map5.webp.
+COMPOSITION: tercio izquierdo sólo mar, cielo y espuma sin sujeto; Mara y Leviatán en 42%-80%, con espacio de seguridad para zoom 8%; horizonte y siluetas sobreviven al 9:16.
+CONSTRAINTS: sin texto, UI, logo, watermark, marco, barcos modernos ni gore explícito.

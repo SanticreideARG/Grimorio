@@ -1,0 +1,11 @@
+Use case: identity-preserve
+Asset type: evolved hero portrait and full-card background for a dark-fantasy game
+Input images: Image 1 is the original visual identity anchor for Maevis.
+Primary request: portray the same healer after the original campaign, her gentle presence strengthened by practical protection and deeper mastery.
+Subject: preserve her exact young face, lowered eyes, long dark braids, silver forehead ornament, teal-and-ivory identity and healing light held between both hands. Evolve her garments into layered teal vestments over subtle flexible silver scale and salt-worn ivory sleeves, with restrained pearl and ninth-bell motifs. Her healing light now forms a compact luminous reliquary shape between her palms.
+Style/medium: the same dark-fantasy painterly oil illustration, delicate tactile brushwork, realistic fabric and metal, dramatic chiaroscuro, premium game key art.
+Composition/framing: vertical 3:4, three-quarter portrait; face clear in the upper-middle safe zone, hands and healing light visible above the lower text-safe gradient area, edge-safe for card crops.
+Lighting/mood: cold blue-white healing glow balanced by a faint warm ember rim; compassionate, exhausted, unwavering.
+Color palette: deep teal, worn ivory, silver, pale blue-white, tiny amber accents.
+Constraints: preserve identity, face, braids, jewelry language, calm expression, hand pose and original painterly style; armor remains light and practical; no text; no UI; no border; no logo; no watermark.
+Avoid: battle-princess armor, crown, exposed glamour styling, staff replacing the hand magic, excessive angelic wings.

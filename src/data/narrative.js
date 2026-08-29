@@ -616,12 +616,68 @@ const cap4 = {
   },
 };
 
-// Registro completo de la campaña (caps 1-4).
+// ───────────────────────── Capítulo 5: Las Costas de Sal Negra ────────────────
+const cap5Places = [
+  'La costa volvió durante la noche. La arena es sal negra y cada ola deposita un objeto que alguien perdió hace décadas.',
+  'No hay nombres en las lápidas de la playa: los muertos llegaron antes que la ciudad que debía recordarlos.',
+  'Una botella verde rueda contra la marea. Dentro, una carta amarilleó durante veinte años que aquí afuera nunca pasaron.',
+  'El rompeolas se vitrificó cuando Puerto Albor regresó. Bajo el cristal caminan marineros que aún creen estar de guardia.',
+  'El bazar flota sobre puertas y tejados arrancados. La moneda aceptada sigue siendo oro, por una vez una costumbre sensata.',
+  'La lluvia cae hacia arriba, pero la fogata insiste en arder. A veces la esperanza es sólo algo que desconoce las reglas.',
+  'Las calles conservan peces en sus balcones y campanas bajo el pavimento. La ciudad no decidió todavía cuál lado es el fondo.',
+  'Los fantasmas han reabierto sus puestos. Venden recuerdos ajenos y garantizan que ningún comprador pedirá devolución.',
+  'El capitán sigue sujetando un timón sin barco. Todo Puerto Albor gira alrededor de una orden que nadie puede revocar.',
+  'Los jardines crecieron sobre plazas y dormitorios. Sus flores de coral pronuncian nombres cuando la marea las toca.',
+  'Cada rama recuerda una vida distinta. El jardín tiene mejor memoria que el mundo que permitió que desaparecieran.',
+  'El agua alcanza los tejados y continúa subiendo hacia las nubes. Los ahogados avanzan como si por fin estuvieran llegando a casa.',
+  'El vigía dejó un registro por cada amanecer bajo la Grieta. Hay miles de páginas y ninguna describe un sol.',
+  'El faro proyecta oscuridad hacia el interior. A lo lejos, una montaña responde cubriendo el sol con una sombra inmóvil.',
+  'Las estatuas de sal tienen los ojos abiertos. El Oráculo asegura que sólo inmoviliza a quienes iban a tomar una mala decisión.',
+  'La última lonja comercia armas junto a pescado imposible. El mercader recomienda no preguntar cuál de ambos sigue vivo.',
+  'La campana espera bajo treinta metros de agua. Todos los muertos del puerto contienen el aliento alrededor de ella.',
+  'La fosa respira. El Leviatán no defiende un tesoro: protege el instante inmóvil en que nadie puede volver a perder a nadie.',
+];
+const cap5 = Object.fromEntries(cap5Places.map((place, index) => [`c5n${String(index + 1).padStart(2, '0')}`, { place }]));
+cap5.c5n01.heroBarks = { cazador: ['Una costa no reaparece. Y, sin embargo, aquí está.'] };
+cap5.c5n08.heroBarks = { picara: ['He vendido cosas peores que un recuerdo. No significa que vaya a hacerlo gratis.'] };
+cap5.c5n18.lore = 'El Leviatán guardó las memorias de Puerto Albor para que nada volviera a perderse. Es la misma mentira del Rey: confundir amor con impedir que el mundo continúe.';
+
+// ───────────────────────── Capítulo 6: El Monasterio del Eclipse ──────────────
+const cap6Places = [
+  'El camino asciende pero el sol no baja. Vuestra sombra repite el paso anterior antes de decidir seguir al cuerpo.',
+  'Los peregrinos recorren la misma curva desde hace décadas. La cera sobre sus ojos conserva todavía el calor del último mediodía.',
+  'El reloj no proyecta sombra. En su esfera, cada héroe ve una mañana que habría existido si la guerra nunca hubiese comenzado.',
+  'Los escalones están gastados por una procesión que jamás llegó arriba. Las plegarias vuelven desde la cima antes de ser pronunciadas.',
+  'Un peregrino vende provisiones con fecha de mañana. Lleva cincuenta años esperando que llegue el día de cobrarlas.',
+  'Los enfermos duermen sin envejecer. Despertarlos sería una cura y una condena con el mismo gesto.',
+  'La galería conserva un único rayo de mediodía, dividido en flechas y apuntado contra cualquier cosa que intente avanzar.',
+  'No hay confesor tras la rejilla. La voz que pregunta por vuestros pecados se parece demasiado a la propia.',
+  'Su armadura muestra sol en un costado y luna en el otro. En el centro no queda espacio para el hombre que la vistió.',
+  'Ocho vueltas rodean un patio de apenas veinte pasos. Tras la novena, cada puerta conduce al lugar del que partisteis.',
+  'Los libros catalogan futuros cancelados. Sus índices contienen más nombres que todos los cementerios del reino.',
+  'El coro sostiene una nota que ningún pulmón humano debería sobrevivir. Aquí, sobrevivir dejó de ser una medida de misericordia.',
+  'Las estatuas cambian de postura cuando nadie mira. Tal vez no sean estatuas; tal vez moverse sea lo único que aún sueñan.',
+  'El Ángel marca cada segundo con un latido robado. Sus alas se abren como relojes rotos alrededor del eclipse.',
+  'Los monjes llevan décadas en la misma nota. Si callan, todos los años detenidos caerán sobre ellos de una vez.',
+  'El observatorio apunta a estrellas que ya murieron. Serath conserva su luz porque se niega a aceptar el mensaje.',
+  'La sacristía vende reliquias de días que no ocurrieron. Algunas llevan vuestros nombres grabados con una letra familiar.',
+  'La semilla del Vacío cabe en una mano. Dentro caben todas las excusas necesarias para volver a cometer el mismo error.',
+  'Ocho campanas rodean la escalera final. Cada una recuerda una versión distinta del mundo; ninguna acepta ser la equivocada.',
+  'Serath sostiene el último segundo antes de la guerra. Soltarlo salvará el futuro, pero le exigirá perder el pasado otra vez.',
+];
+const cap6 = Object.fromEntries(cap6Places.map((place, index) => [`c6n${String(index + 1).padStart(2, '0')}`, { place }]));
+cap6.c6n03.heroBarks = { mago: ['Una vida posible no es una vida robada. Aunque duela mirarla.'] };
+cap6.c6n15.heroBarks = { sanadora: ['Vivir para siempre no es vivir si nadie puede terminar una canción.'] };
+cap6.c6n20.lore = 'Serath repite el gesto del Rey Ceniza con palabras más amables: imponer su duelo al mundo y llamarlo salvación. Detenerla es aceptar que amar también significa dejar avanzar el tiempo.';
+
+// Registro completo de campaña base y expansión.
 export const narrative = {
   ...cap1,
   ...cap2,
   ...cap3,
   ...cap4,
+  ...cap5,
+  ...cap6,
 };
 
 // ───────────────────────── Selector (puro) ─────────────────────────

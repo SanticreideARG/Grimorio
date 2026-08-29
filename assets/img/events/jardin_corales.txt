@@ -1,0 +1,14 @@
+Use case: illustration-story
+Asset type: Grimorio II narrative event card artwork, wide 16:9 scene
+Input images: Image 1 defines the Black-Salt Coast geography and palette; Image 2 defines wet black-salt materials, lighting and painterly finish; Image 3 defines the cinematic event-card framing and oil-painted detail level.
+Primary request: depict an impossible memorial garden where coral has reconstructed the people and houses lost with Puerto Albor.
+Scene/backdrop: flooded city streets above the current waterline, overtaken by pale branching coral shaped suggestively like remembered doorways, families and rooftops without becoming literal living people.
+Subject: a small brave lantern crab is trapped inside one cracked pearl cage in the foreground, its black shell glowing warm amber through carved fissures. It is the single primary focal point.
+Style/medium: mature dark-fantasy oil illustration, tactile brushwork, cinematic realism, beautiful but mournful, consistent with the supplied Grimorio II references.
+Composition/framing: wide three-depth composition; crab and pearl cage lower-middle, memorial coral avenue leading toward drowned architecture; silhouettes remain readable, lower edge relatively quiet for card UI.
+Lighting/mood: diffuse cold coastal light, wet nacre reflections and one warm glow from the crab; elegiac wonder rather than horror.
+Color palette: pearl ivory, black salt, desaturated coral pink, petroleum teal and restrained amber.
+Constraints: exactly one lantern crab and one pearl cage; no heroes, no living crowd, no text, no UI, no frame, no logo, no watermark; complete focal subject visible with 8% safe margins.
+Avoid: tropical reef, cute cartoon treatment, bright saturated coral, literal coral zombies, multiple crabs, aquarium composition.
+
+Ratio: 16:9 scene

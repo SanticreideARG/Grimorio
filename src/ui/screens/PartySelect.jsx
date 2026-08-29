@@ -157,12 +157,13 @@ function HeroPick({ h, isSel, order, full, locked, players, onToggle, onDetail }
       <button
         className={`hero-pick${isSel ? ' is-selected' : ''}${disabled ? ' is-disabled' : ''}${locked ? ' is-locked' : ''}`}
         aria-disabled={disabled}
+        aria-pressed={isSel}
         onClick={() => {
           if (consumeClick()) return;   // fue long-press → no togglear
           if (disabled) return;
           onToggle(h.id);
         }}
-        title={locked ? 'Disponible luego de completar el juego en Difícil.' : undefined}
+        title={locked ? (h.unlockHint ?? 'Este héroe todavía no está desbloqueado.') : undefined}
       >
         {locked && <span className="hero-pick__locked">🔒</span>}
         {isSel && (
@@ -176,7 +177,7 @@ function HeroPick({ h, isSel, order, full, locked, players, onToggle, onDetail }
           {ROW_LABEL[h.row] ?? h.row}
         </span>
         <HeroPortrait portrait={h.portrait} name={h.name} />
-        <span className="hero-pick__name">{h.name.split(' ')[0]}</span>
+        <span className="hero-pick__name">{SHORT_HERO_NAME[h.id] ?? h.name.split(' ')[0]}</span>
         <span className="hero-pick__role">{h.role}</span>
         <dl className="hero-pick__stats">
           <span>❤ {h.maxHp}</span>
@@ -196,8 +197,14 @@ function HeroPick({ h, isSel, order, full, locked, players, onToggle, onDetail }
   );
 }
 
+const SHORT_HERO_NAME = {
+  paladin: 'Sir Aldric',
+  caballero_oscuro: 'Caballero Oscuro',
+  mara_salobre: 'Mara',
+};
+
 function HeroPortrait({ portrait, name }) {
   const url = assetUrl(portrait);
-  if (url) return <img className="hero-pick__art" src={url} alt={name} loading="lazy" />;
+  if (url) return <img className="hero-pick__art" src={url} alt="" loading="lazy" />;
   return <span className="hero-pick__art hero-pick__art--placeholder" aria-hidden="true">{name[0]}</span>;
 }

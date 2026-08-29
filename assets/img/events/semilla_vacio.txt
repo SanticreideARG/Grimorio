@@ -1,0 +1,14 @@
+Use case: illustration-story
+Asset type: Grimorio II narrative event card artwork, wide 16:9 final-choice scene
+Input images: Image 1 defines the Eclipse Monastery architecture and palette; Image 2 defines old-gold celestial machinery, eclipse energy and painterly materials; Image 3 defines cinematic event-card framing and finish.
+Primary request: depict the Seed of the Void at the final irreversible choice, with three possible fates expressed inside one coherent ritual space.
+Scene/backdrop: the ruined summit observatory of the monastery beneath the fixed eclipse, its floor formed by one enormous broken old-gold astrolabe around a low ancient altar.
+Subject: a tiny perfectly black seed levitates above the altar as the dominant central focal point, edged by a hair-thin pale corona. Three subtle phenomena occupy separate arcs of the same astrolabe rather than panels: dawn light fractures against one arc, a closed pearl reliquary waits on another, and red clock hands flow backward across the third.
+Style/medium: mature dark-fantasy oil illustration, tactile brushwork, cinematic realism, ceremonial and apocalyptic but visually controlled, consistent with the supplied Grimorio II references.
+Composition/framing: symmetrical wide view with altar and seed centered; broken astrolabe guides the eye through the three options; no split-screen dividers; quiet dark lower edge for card UI.
+Lighting/mood: near-black center, pale lunar corona, restrained dawn gold and a narrow eclipse-red temporal glow; absolute stillness before consequence.
+Color palette: midnight blue-black, old gold, pearl white, pale dawn and restrained eclipse red.
+Constraints: exactly one seed, one pearl reliquary and one set of backward clock hands; no characters, no labels, no text, no UI, no frame, no logo, no watermark; 8% safe margins.
+Avoid: three-panel collage, giant planet, plant sprout, multiple seeds, colorful magic circles, readable runes, explosive action.
+
+Ratio: 16:9 scene

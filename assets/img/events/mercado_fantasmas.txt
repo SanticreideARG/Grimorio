@@ -1,0 +1,14 @@
+Use case: illustration-story
+Asset type: Grimorio II narrative event card artwork, wide 16:9 scene
+Input images: Image 1 defines the Black-Salt Coast geography and palette; Image 2 defines wet black-salt materials, lighting and painterly finish; Image 3 defines the cinematic event-card framing and oil-painted detail level.
+Primary request: depict Puerto Albor's spectral market, where the dead trade preserved memories instead of goods.
+Scene/backdrop: a flooded night market suspended just above black harbor water, with three or four black-sailed stalls receding into mist and ruined port arches behind them.
+Subject: one foreground stall is dominant. A translucent dead merchant presents three pearl jars containing abstract warm memory-light: a small hearth glow, a child's wooden boat silhouette and a summer window. Other merchants remain indistinct background silhouettes. In the water below, the stall reflects normally but the implied visitor's reflection is an empty human-shaped darkness; do not show the visitor's body.
+Style/medium: mature dark-fantasy oil illustration, tactile brushwork, cinematic realism, visually consistent with the supplied Grimorio II references.
+Composition/framing: wide eye-level scene with one clear foreground transaction, limited cast and strong depth; central subject readable at card thumbnail size; preserve a darker low-detail strip near the lower edge for UI.
+Lighting/mood: pearl jars and sparse amber lanterns against petroleum-teal fog and black water; uncanny, tempting and melancholic rather than crowded or festive.
+Color palette: black salt, petroleum teal, drowned bronze, pearl white and restrained memory amber.
+Constraints: maximum four visible merchants, faces indistinct, no heroes, no readable signs, no text, no UI, no frame, no logo, no watermark; 8% safe margins.
+Avoid: busy bazaar crowd, carnival colors, dozens of jars, modern market, coins as the focal point, duplicated figures, horror gore.
+
+Ratio: 16:9 scene

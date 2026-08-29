@@ -1,0 +1,8 @@
+STATUS: GENERADO — menu_09.webp
+USE CASE: stylized-concept, fondo promocional de menú principal para videojuego dark fantasy.
+SCENE/BACKDROP: cruce de caminos entre bosque, ruinas y pantano, cubierto por niebla y ceniza, sin jefe visible.
+SUBJECT: formación escalonada de enemigos ya existentes — esbirros, cultistas, bestias y no-muertos — avanzando desde la profundidad.
+DETAILS: variedad de siluetas y materiales, ojos y armas con pequeños acentos de brasa, amenaza contenida sin gore.
+REFERENCES: assets/img/enemies/ (usar sólo enemigos publicados del directorio), assets/img/mapbackground/map1.webp y map2.webp como ambiente.
+COMPOSITION: tercio izquierdo vacío de acción, sólo niebla y árboles; horda contenida entre 42%-80% con separación y aire para zoom 8%; siluetas reconocibles en recorte 9:16.
+CONSTRAINTS: no inventar especies dominantes, no jefes, sin texto, UI, logo, watermark ni marco.

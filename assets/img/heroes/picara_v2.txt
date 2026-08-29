@@ -1,0 +1,11 @@
+Use case: identity-preserve
+Asset type: evolved hero portrait and full-card background for a dark-fantasy game
+Input images: Image 1 is the original visual identity anchor for Nix.
+Primary request: portray the same masked rogue after the original campaign, equipped with more specialized tools from the black coast.
+Subject: preserve her intense visible eyes, dark hair, low hood, cracked violet face wrap, compact athletic build and paired curved daggers. Evolve her gear into asymmetrical black-salt leather with flexible dark scale on the striking arm, a repaired smoke-violet cloak and mother-of-pearl inlays along both dagger spines. Add only small practical vials and fastening hooks.
+Style/medium: the same dark-fantasy painterly oil illustration, tactile worn leather and metal, dramatic chiaroscuro, premium game key art.
+Composition/framing: vertical 3:4, dynamic three-quarter portrait; eyes and hood in the upper-middle safe zone, both curved blades readable, lower quarter dark and uncluttered for card text.
+Lighting/mood: ember-red side light and cold violet-blue shadow; alert, predatory, controlled.
+Color palette: soot black, worn steel, smoke violet, muted crimson, subtle nacre.
+Constraints: preserve identity, gender presentation, mask, eyes, hood, dual curved daggers, pose language and original painterly style; no exposed full face; no text; no UI; no border; no logo; no watermark.
+Avoid: ninja costume, excessive belts, firearms, bright poison green, extra blades floating in the scene.

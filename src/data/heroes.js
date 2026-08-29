@@ -14,6 +14,8 @@ const ROGUE    = [{ sword: 1 }, { sword: 2 }, { sword: 1 }, { star: 1 }, { shiel
 const HUNTER   = [{ sword: 1 }, { sword: 1 }, { sword: 2 }, { star: 1 }, { star: 1 }, { shield: 1 }];
 // Mago oscuro de primera línea: mezcla de espada y estrella, sin blancos.
 const DARKMAGE = [{ sword: 1 }, { sword: 2 }, { star: 1 }, { star: 1 }, { star: 2 }, {}];
+const SALT     = [{ sword: 1 }, { sword: 1 }, { sword: 2 }, { shield: 1 }, { shield: 1 }, { star: 1 }];
+const CLOCK    = [{ star: 1 }, { star: 1 }, { star: 2 }, { shield: 1 }, { shield: 1 }, {}];
 
 /** @type {import('./schema.js').Hero[]} */
 export const heroes = [
@@ -90,6 +92,38 @@ export const heroes = [
     passive: { id: 'sombra', text: 'El poder oscuro lo empuja hacia adelante.', hook: 'onTurnStart' },
     portrait: 'heroes/orphen.png',
     unlockKey: 'grimorio_orphen_unlocked',
+    unlockHint: 'Completá el juego en Difícil para desbloquearlo.',
+  },
+  {
+    id: 'mara_salobre',
+    name: 'Mara, la Corsaria Salobre',
+    role: 'DPS frontal / Bloqueo',
+    maxHp: 12, maxMana: 0, dice: 4, diceFaces: SALT,
+    row: 'front', spells: ['corte_resaca', 'marea_cuchillas', 'ancla_espectral'],
+    passive: {
+      id: 'pie_de_cubierta',
+      text: 'Mantiene el pie firme incluso cuando la cubierta desaparece.',
+      hook: 'passive',
+    },
+    portrait: 'heroes/mara_salobre.png',
+    unlockKey: 'grimorio_mara_salobre_unlocked',
+    unlockHint: 'Conservá tus recuerdos en el Mercado de Fantasmas.',
+  },
+  {
+    id: 'elian_relojero',
+    name: 'Elian del Último Reloj',
+    role: 'Soporte arcano (retaguardia)',
+    maxHp: 9, maxMana: 0, dice: 3, diceFaces: CLOCK,
+    row: 'back', attackAnim: 'arcane',
+    spells: ['luz_meridiana', 'plegaria_novena', 'segundo_prestado'],
+    passive: {
+      id: 'un_instante_mas',
+      text: 'Cuenta cada segundo perdido y se niega a olvidar a los caídos.',
+      hook: 'passive',
+    },
+    portrait: 'heroes/elian_relojero.png',
+    unlockKey: 'grimorio_elian_relojero_unlocked',
+    unlockHint: 'Liberá al Coro Detenido de su ciclo.',
   },
 ];
 

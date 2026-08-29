@@ -1,0 +1,5 @@
+Dark fantasy painterly illustration, oil-painting texture, dramatic chiaroscuro lighting with warm ember/amber key light and deep crimson + cold teal-purple shadows, grim and atmospheric, high detail, cinematic, muted desaturated palette with glowing ember accents. No text, no UI, no watermark, no border.
+
+Premium dark-fantasy status icon built as one compact curse emblem: a weathered human skull trapped at the center of a tilted black seawater whirlpool, enclosed by one broken tarnished-brass compass ring. Four bent compass needles point in contradictory directions while the skull remains clearly readable. Strong circular silhouette, centered, three-quarter front view, occupying about 76% of the square canvas; cold teal highlights and restrained rust-red accents convey vertigo and lost direction. No horizon scene, body, ships, text, letters, cardinal labels, numerals, readable glyphs, extra skulls, frame, icon plate, or detached splash.
+
+Ratio: 1:1. True transparent RGBA background with clean antialiased edges; water remains attached to the emblem.

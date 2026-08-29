@@ -1,0 +1,8 @@
+STATUS: GENERADO — menu_07.webp
+USE CASE: stylized-concept, fondo promocional de menú principal para videojuego dark fantasy.
+SCENE/BACKDROP: Monasterio de Relojes bajo eclipse, claustro de piedra, péndulos inmóviles y vitrales rotos.
+SUBJECT: Elian el Relojero y Maevis juntos en guardia; Abadesa Serath levita en el fondo superior, envuelta en luz de eclipse.
+DETAILS: engranajes antiguos, polvo suspendido, magia dorada enfrentada a violeta, composición solemne y sin violencia gráfica.
+REFERENCES: assets/img/heroes/elian_relojero.webp, assets/img/heroes/sanadora_v2.webp, assets/img/bosses/abadesa_serath.webp, assets/img/mapbackground/map6.webp.
+COMPOSITION: tercio izquierdo sólo claustro y sombra sin narrativa; personajes entre 40%-80%, suficiente aire alrededor de manos, reloj y halo para zoom 8%; lectura vertical 9:16 centrada.
+CONSTRAINTS: sin texto, UI, logo, watermark, marco ni figuras religiosas adicionales.

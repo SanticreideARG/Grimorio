@@ -1,0 +1,8 @@
+STATUS: GENERADO — menu_04.webp
+USE CASE: stylized-concept, fondo promocional de menú principal para videojuego dark fantasy.
+SCENE/BACKDROP: Ciudadela del Rey Ceniza, sala del trono derruida, ventanales verticales y lluvia de ceniza.
+SUBJECT: Caballero Oscuro en tres cuartos en el patio central; Rey Ceniza sentado en un trono lejano, dominante por escala y humo.
+DETAILS: acero ennegrecido, corona mineral, brasas suspendidas, contraluz rojo tenue y arquitectura gótica quebrada.
+REFERENCES: assets/img/heroes/caballero_oscuro_v2.webp, assets/img/bosses/rey_ceniza.webp, assets/img/mapbackground/map3.webp.
+COMPOSITION: tercio izquierdo sólo columnas, lluvia y espacio negativo; sujeto y trono entre 42%-78%; dejar margen superior y lateral para zoom 8%; recorte 9:16 conserva ambos focos.
+CONSTRAINTS: sin texto, UI, logo, watermark, marco ni acción narrativa en el tercio izquierdo.
